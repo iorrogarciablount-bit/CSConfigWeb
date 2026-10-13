@@ -74,10 +74,21 @@ def http_json(url: str, token: str, body: dict | None = None):
         return json.loads(r.read().decode())
 
 
-def download(url: str, dest: Path):
+def download(url: str, dest: Path, max_mb: int = 1500):
+    if not url.lower().startswith("https://"):
+        raise RuntimeError("solo se aceptan enlaces https://")
     req = urllib.request.Request(url, headers={"User-Agent": UA})
+    limit = max_mb * 1024 * 1024
     with urllib.request.urlopen(req, timeout=600) as r, open(dest, "wb") as f:
-        shutil.copyfileobj(r, f, 1 << 20)
+        size = int(r.headers.get("Content-Length") or 0)
+        if size > limit:
+            raise RuntimeError(f"el archivo pesa {size // 2**20} MB y el máximo es {max_mb} MB")
+        got = 0
+        while chunk := r.read(1 << 20):
+            got += len(chunk)
+            if got > limit:
+                raise RuntimeError(f"el archivo supera el máximo de {max_mb} MB")
+            f.write(chunk)
 
 
 # ---------------------------------------------------------------- demos
@@ -273,6 +284,8 @@ def apply_manual(db: dict):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", choices=["faceit", "urls", "local", "manual"], help="usar solo una fuente")
+    ap.add_argument("--require-teams", action="store_true", help="descartar demos sin nombres de equipo (envíos de la comunidad)")
+    ap.add_argument("--report", type=Path, help="guardar un resumen JSON de la ejecución")
     args = ap.parse_args()
 
     cfg = load_json(CONFIG, {})
@@ -281,6 +294,12 @@ def main():
     db = {"players": {p["id"]: p for p in current.get("players", [])}}
     min_players = int(cfg.get("min_players_per_demo", 8))
     stats = {"demos": 0, "new": 0, "changed": 0, "errors": 0}
+    report = {"messages": [], "players": []}
+    max_mb = int(cfg.get("max_demo_mb", 1500))
+
+    def note(msg):
+        log(msg)
+        report["messages"].append(msg)
 
     sources = []
     if args.only in (None, "faceit"):
@@ -306,21 +325,26 @@ def main():
                     else:
                         src = work / item["name"]
                         log(f"Descargando {item['name']} …")
-                        download(item["url"], src)
+                        download(item["url"], src, max_mb)
                     for dem in unpack(src, work):
                         res = extract(dem)
                         if len(res["players"]) < min_players:
-                            log(f"{dem.name}: solo {len(res['players'])} jugadores con mira; se ignora.")
+                            note(f"{dem.name}: solo {len(res['players'])} jugadores con mira; se ignora.")
+                            continue
+                        teams = {p["team"] for p in res["players"].values() if p["team"]}
+                        if args.require_teams and len(teams) < 2:
+                            note(f"{dem.name}: no tiene nombres de equipo, así que no parece un partido profesional; se ignora.")
                             continue
                         stats["demos"] += 1
                         for sid, info in res["players"].items():
                             r = merge(db, sid, info, item["source"], item["date"], res["map"])
                             if r in ("new", "changed"):
                                 stats[r] += 1
-                        log(f"{dem.name}: {len(res['players'])} jugadores ({res['map']})")
+                            report["players"].append({"name": info["name"], "team": info["team"], "status": r})
+                        note(f"{dem.name}: {len(res['players'])} jugadores ({res['map'] or 'mapa desconocido'})")
                 except Exception as e:  # noqa: BLE001
                     stats["errors"] += 1
-                    log(f"Error con {item['name']}: {e}")
+                    note(f"Error con {item['name']}: {e}")
                 finally:
                     shutil.rmtree(work, ignore_errors=True)
 
@@ -333,6 +357,8 @@ def main():
            "players": players}
     save_json(DATA, out)
     save_json(STATE, state)
+    if args.report:
+        save_json(args.report, {**stats, **report, "total": len(players)})
     log(f"Hecho: {stats['demos']} demos, {stats['new']} jugadores nuevos, {stats['changed']} cambios de mira, {stats['errors']} errores. Total: {len(players)} jugadores.")
     return 0 if stats["errors"] == 0 or stats["demos"] > 0 else 1
 

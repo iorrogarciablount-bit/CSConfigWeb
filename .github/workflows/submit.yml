@@ -1,0 +1,86 @@
+name: Procesar demo enviada
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  # Envíos de personas sin permisos en el repo: quedan pendientes hasta que les pongas la etiqueta "aprobada".
+  pendiente:
+    if: >-
+      github.event.action == 'opened' &&
+      contains(github.event.issue.labels.*.name, 'demo') &&
+      !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Avisar de que queda en revisión
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUM: ${{ github.event.issue.number }}
+        run: |
+          gh label create pendiente --repo "$REPO" --color FBCA04 --description "Demo enviada, pendiente de revisión" --force
+          gh label create aprobada --repo "$REPO" --color 0E8A16 --description "Pon esta etiqueta para procesar la demo" --force
+          gh issue edit "$NUM" --repo "$REPO" --add-label pendiente
+          gh issue comment "$NUM" --repo "$REPO" --body "¡Gracias por la demo! Queda pendiente de una revisión rápida. En cuanto se apruebe, se procesa sola y te contesto aquí con las miras que se han añadido."
+
+  # Tus propios envíos se procesan al momento; los de otros, cuando les pones la etiqueta "aprobada".
+  procesar:
+    if: >-
+      contains(github.event.issue.labels.*.name, 'demo') && (
+        (github.event.action == 'opened' && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)) ||
+        (github.event.action == 'labeled' && github.event.label.name == 'aprobada')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    concurrency:
+      group: update-crosshairs
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      NUM: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r pipeline/requirements.txt
+          command -v 7z || sudo apt-get install -y p7zip-full
+
+      - name: Leer el envío
+        id: leer
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: python .github/scripts/leer_envio.py
+
+      - name: Procesar la demo
+        if: steps.leer.outputs.ok == 'true'
+        run: python pipeline/update.py --only urls --require-teams --report "$RUNNER_TEMP/report.json"
+
+      - name: Guardar cambios
+        if: steps.leer.outputs.ok == 'true'
+        run: |
+          git config user.name "csconfig-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/data/crosshairs.json pipeline/state.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios."
+          else
+            git commit -m "Miras de la demo enviada en #$NUM"
+            for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
+          fi
+
+      - name: Contestar y cerrar
+        if: always()
+        run: python .github/scripts/responder.py

@@ -1,0 +1,26 @@
+name: Enviar una demo
+description: Comparte el enlace de una demo de un partido profesional de CS2 y sus miras se añadirán a la web.
+title: "Demo: "
+labels: ["demo"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por aportar. Pega el **enlace directo** a la demo (`.dem`, `.dem.gz`, `.dem.zst`, `.zip`, `.rar` o `.7z`).
+        Tras una revisión rápida, la demo se procesa sola y las miras de los jugadores aparecen en la web.
+        Solo partidos profesionales o semiprofesionales: las partidas de matchmaking o de amigos se descartan.
+  - type: input
+    id: url
+    attributes:
+      label: Enlace a la demo
+      placeholder: https://…
+    validations:
+      required: true
+  - type: input
+    id: event
+    attributes:
+      label: Torneo o partido
+      description: Opcional. Aparecerá como fuente de las miras.
+      placeholder: "IEM Chengdu 2026 · Spirit vs Vitality · Mirage"
+    validations:
+      required: false

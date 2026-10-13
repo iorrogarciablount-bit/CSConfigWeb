@@ -15,6 +15,7 @@
   <nav class="topnav">
     <a href="./" aria-current="page" data-i="navPros">Miras pro</a>
     <a href="conversor/" data-i="navConv">Conversor</a>
+    <a href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=enviar-demo.yml" target="_blank" rel="noopener" data-i="navSubmit">Enviar demo</a>
     <div class="lang" role="group" aria-label="Idioma / Language">
       <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
     </div>
@@ -83,7 +84,7 @@
 (() => {
 const T = {
 es: {
-  navPros:'Miras pro', navConv:'Conversor', title:'Miras de los <span>pros</span>',
+  navPros:'Miras pro', navConv:'Conversor', navSubmit:'Enviar demo', title:'Miras de los <span>pros</span>',
   lead:'Las miras que usan los jugadores profesionales, sacadas directamente de las demos de sus partidas y actualizadas cada día. Pulsa un jugador para ver los detalles y copiar su código.',
   stPlayers:'Jugadores', stTeams:'Equipos', stUpdated:'Actualizado', find:'Buscar',
   q:'Jugador o equipo…', allTeams:'Todos los equipos', sort:['Recientes','Nombre','Equipo'],
@@ -92,19 +93,20 @@ es: {
   changed:'Cambió hace poco', source:(s, d) => `Visto por última vez el ${d} · ${s}`,
   vals:{style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor', color:'Color', a:'Opacidad', dot:'Punto', t:'Estilo T', outline:'Contorno', recoil:'Sigue el retroceso', h:'Resolución del código'},
   yes:'Sí', no:'No', outlineOpts:['No','Completo','Medio'],
-  emptyTitle:'La base de datos se está llenando', emptyText:'Las miras aparecen aquí en cuanto se procesa la primera tanda de demos. Vuelve en unas horas.',
+  emptyTitle:'La base de datos se está llenando', emptyText:'Las miras aparecen aquí en cuanto se procesa la primera tanda de demos. ¿Tienes la demo de un partido profesional? <a href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=enviar-demo.yml" target="_blank" rel="noopener">Envíala</a> y sus miras se añadirán solas.',
   noMatch:'Ningún jugador coincide con la búsqueda.', loadErr:'No se han podido cargar los datos. Recarga la página.',
   aboutTitle:'Cómo funciona',
   about:[['¿De dónde salen las miras?','Cada demo de CS2 guarda el código de mira de todos los jugadores. Analizamos demos de partidas profesionales y guardamos la mira que cada jugador tenía al final del partido.'],
          ['¿Cada cuánto se actualiza?','Una vez al día. Si un jugador cambia de mira, la nueva aparece arriba y la anterior queda en su historial.'],
          ['¿Cómo la pongo en el juego?','Copia el código y en CS2 ve a Ajustes → Juego → Mira / Miras telescópicas → Compartir o importar → pega y pulsa Importar.'],
+         ['¿Puedo aportar demos?','Sí. Pulsa «Enviar demo» y pega el enlace directo a la demo de un partido profesional (necesitas una cuenta de GitHub). Tras una revisión rápida se procesa sola y te contestamos con los jugadores añadidos.'],
          ['Tengo un código antiguo (CSGO-…)','Usa el conversor de la pestaña Conversor para pasarlo al formato nuevo.']],
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve ni por los equipos o jugadores que aparecen.',
   styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
   locale:'es-ES',
 },
 en: {
-  navPros:'Pro crosshairs', navConv:'Converter', title:'Pro <span>crosshairs</span>',
+  navPros:'Pro crosshairs', navConv:'Converter', navSubmit:'Submit a demo', title:'Pro <span>crosshairs</span>',
   lead:'The crosshairs pro players actually use, pulled straight from their match demos and updated every day. Tap a player to see the details and copy their code.',
   stPlayers:'Players', stTeams:'Teams', stUpdated:'Updated', find:'Search',
   q:'Player or team…', allTeams:'All teams', sort:['Recent','Name','Team'],
@@ -113,12 +115,13 @@ en: {
   changed:'Recently changed', source:(s, d) => `Last seen ${d} · ${s}`,
   vals:{style:'Style', length:'Length', gap:'Gap', thickness:'Thickness', color:'Color', a:'Opacity', dot:'Dot', t:'T style', outline:'Outline', recoil:'Follow recoil', h:'Code resolution'},
   yes:'Yes', no:'No', outlineOpts:['No','Full','Half'],
-  emptyTitle:'The database is filling up', emptyText:'Crosshairs show up here as soon as the first batch of demos is processed. Check back in a few hours.',
+  emptyTitle:'The database is filling up', emptyText:'Crosshairs show up here as soon as the first batch of demos is processed. Have a pro match demo? <a href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=enviar-demo.yml" target="_blank" rel="noopener">Submit it</a> and its crosshairs are added automatically.',
   noMatch:'No player matches your search.', loadErr:'The data could not be loaded. Reload the page.',
   aboutTitle:'How it works',
   about:[['Where do the crosshairs come from?','Every CS2 demo stores each player\'s crosshair code. We parse demos from pro matches and keep the crosshair each player had at the end of the match.'],
          ['How often is it updated?','Once a day. If a player changes crosshair, the new one moves to the top and the old one stays in their history.'],
          ['How do I use it in game?','Copy the code, then in CS2 go to Settings → Game → Crosshair / Scopes → Share or Import → paste and press Import.'],
+         ['Can I contribute demos?','Yes. Press "Submit a demo" and paste a direct link to a pro match demo (you need a GitHub account). After a quick review it is processed automatically and we reply with the players added.'],
          ['I have an old code (CSGO-…)','Use the Converter tab to turn it into the new format.']],
   footer:'Independent project. Not affiliated with or endorsed by Valve or the teams and players shown.',
   styles:['Dynamic cross','Dynamic circle','Dynamic cross (legacy)','Static circle','Static cross','Static cross with shot feedback','Dot only','Dynamic quad','Static square','Static quad'],

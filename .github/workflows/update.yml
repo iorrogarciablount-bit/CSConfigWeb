@@ -55,5 +55,5 @@ jobs:
             echo "Sin cambios."
           else
             git commit -m "Actualizar miras $(date -u +%F)"
-            git push
+            for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
           fi

@@ -56,7 +56,16 @@ python pipeline/update.py --only local
 
 Después sube `site/data/crosshairs.json` y `pipeline/state.json`. Las demos no se suben al repositorio porque pesan demasiado; ya están en `.gitignore`.
 
-### 4. Correcciones manuales
+### 4. Envíos de la comunidad
+
+Cualquiera puede enviar una demo desde el botón **Enviar demo** de la web, que abre el formulario de *issues* del repositorio. Necesita una cuenta de GitHub.
+
+- **Tus envíos**, y los de colaboradores del repo, se procesan al momento.
+- **Los de otras personas** quedan con la etiqueta `pendiente`. Revisa que el enlace sea de un partido profesional y ponle la etiqueta `aprobada`: se procesa solo.
+- **Respuesta:** el bot contesta en el propio envío con los jugadores añadidos y lo cierra con la etiqueta `procesada` o `rechazada`.
+- **Filtros:** se descartan las demos sin nombres de equipo (matchmaking, partidas de amigos), las de menos de 8 jugadores y los archivos de más de `max_demo_mb` MB, que se ajusta en `config.json`.
+
+### 5. Correcciones manuales
 
 `pipeline/manual.json` permite añadir un jugador, corregir su nombre o equipo, u ocultarlo:
 
