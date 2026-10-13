@@ -191,3 +191,4 @@ dialog.sheet::backdrop{background:#05080bcc}
 .links a:hover{text-decoration:underline}
 .links .aka{color:var(--muted);flex-basis:100%}
 footer a{color:var(--muted)}
+.ret{color:var(--muted);font-style:italic}

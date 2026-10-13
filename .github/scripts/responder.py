@@ -27,6 +27,17 @@ else:
     body = "No se ha añadido ninguna mira:\n\n" + "\n".join(f"- {m}" for m in msgs)
     label = "rechazada"
 
+# Resumen legible por la web (la página de envío lo muestra sin tener que ir a GitHub).
+summary = {"state": label}
+if rep:
+    summary.update({k: rep.get(k) for k in ("new", "changed", "demos")})
+    summary["players"] = [{k: p.get(k, "") for k in ("id", "name", "team", "faceit", "status")} for p in rep.get("players", [])][:20]
+    summary["messages"] = (rep.get("messages") or [])[:5]
+if error:
+    summary["messages"] = [error]
+body += "\n\n<!-- resultado: " + json.dumps(summary, ensure_ascii=False).replace("-->", "") + " -->"
+
+
 def gh(*args):
     subprocess.run(["gh", *args, "--repo", repo], check=False)
 

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enviar una demo · CSConfig</title>
+<meta name="description" content="Envía el enlace de una partida de CS2 y sus miras se añadirán a CSConfig.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/app.css">
+<style>
+.form{display:grid;gap:14px}
+.field{display:grid;gap:6px}
+.field label{font:700 13px var(--display);text-transform:uppercase;letter-spacing:.05em}
+.field small{font-size:12px;color:var(--muted)}
+.field input{width:100%;font:15px var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:11px 13px}
+.field input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.msg{font-size:13px;min-height:20px;margin:0}
+.msg.err{color:var(--err)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:0;padding:0;list-style:none;counter-reset:s}
+.how li{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--muted);counter-increment:s}
+.how li::before{content:counter(s);display:inline-grid;place-items:center;width:20px;height:20px;border-radius:2px;background:var(--accent);color:var(--accent-ink);font:700 12px var(--display);margin-right:8px}
+.how b{color:var(--ink);font-weight:500}
+.subs{display:grid;gap:10px}
+.sub{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;gap:8px;min-width:0}
+.sub .shd{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.sub .what{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+.pill{font:700 11px var(--display);text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:2px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+.pill.pendiente{color:var(--warn);border-color:var(--warn)}
+.pill.procesando{color:var(--accent);border-color:var(--accent)}
+.pill.procesada{background:var(--ok);border-color:var(--ok);color:#fff}
+.pill.rechazada,.pill.error{color:var(--err);border-color:var(--err)}
+.sub ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
+.sub li a{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 8px;background:var(--bg);border:1px solid var(--line);border-radius:2px;color:var(--ink);text-decoration:none}
+.sub li a:hover{border-color:var(--accent)}
+.sub li small{color:var(--muted)}
+.sub .note{font-size:12px;color:var(--muted);margin:0}
+.off{border-left:3px solid var(--warn)}
+#ts{min-height:0}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
+  <nav class="topnav">
+    <a href="../" data-i="navPros">Miras</a>
+    <a href="../conversor/" data-i="navConv">Conversor</a>
+    <a href="./" aria-current="page" data-i="navSubmit">Enviar demo</a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div>
+    <h2 class="ptitle" data-i="title">Enviar una <span>demo</span></h2>
+    <p class="lead" data-i="lead"></p>
+  </div>
+
+  <ol class="how" id="how"></ol>
+
+  <section class="card">
+    <p class="step"><span data-i="formTitle">Tu partida</span></p>
+    <form class="form" id="form" novalidate>
+      <div class="field">
+        <label for="url" data-i="urlLabel">Enlace</label>
+        <input id="url" type="url" inputmode="url" autocomplete="off" spellcheck="false" required>
+        <small data-i="urlHelp"></small>
+      </div>
+      <div class="field">
+        <label for="event" data-i="eventLabel">Torneo o partido (opcional)</label>
+        <input id="event" type="text" maxlength="80" autocomplete="off">
+      </div>
+      <div id="ts"></div>
+      <div class="row">
+        <p class="msg" id="msg" role="status"></p>
+        <button class="copy" id="send" type="submit" data-i="send">Enviar</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card off" id="offCard" hidden>
+    <p style="margin:0" id="offText"></p>
+  </section>
+
+  <section id="mine" hidden>
+    <p class="sublabel" data-i="mine">Tus envíos</p>
+    <div class="subs" id="subs"></div>
+  </section>
+
+  <footer data-i="footer"></footer>
+</main>
+
+<script>
+(() => {
+const GH_FORM = 'https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=enviar-demo.yml';
+const T = {
+es: {
+  navPros:'Miras', navConv:'Conversor', navSubmit:'Enviar demo', title:'Enviar una <span>demo</span>',
+  lead:'Pega el enlace de una partida y sus miras se añadirán a la web: las de los pros a la pestaña Pros y las de todos los demás a Jugadores.',
+  how:[['Pega el enlace','de la sala de FACEIT o el enlace directo a la demo.'],['Revisamos','que sea una partida de CS2 válida. Suele ser rápido.'],['Listo','las miras aparecen en la web y aquí mismo ves quién se ha añadido.']],
+  formTitle:'Tu partida', urlLabel:'Enlace', urlHelp:'Sala de FACEIT (faceit.com/…/cs2/room/…) o enlace directo a la demo (.dem, .zip, .rar, .7z, .gz, .zst).',
+  urlPh:'https://www.faceit.com/es/cs2/room/1-…', eventLabel:'Torneo o partido (opcional)', eventPh:'Por ejemplo: FPL · 13 oct', send:'Enviar', sending:'Enviando…',
+  needUrl:'Pega un enlace que empiece por https://', needCaptcha:'Completa la comprobación anti-bots.', sent:'Recibido. Te mostramos el estado aquí abajo.',
+  netErr:'No se ha podido enviar. Revisa tu conexión y vuelve a intentarlo.',
+  off:`El envío desde la web todavía no está activado. Mientras tanto puedes usar el <a href="${GH_FORM}" target="_blank" rel="noopener">formulario de GitHub</a>.`,
+  mine:'Tus envíos', states:{pendiente:'En revisión', procesando:'Procesando', procesada:'Añadida', rechazada:'Descartada', error:'Error'},
+  notes:{pendiente:'Esperando revisión. Puedes cerrar la página: el estado se guarda en este navegador.', procesando:'Procesando la demo, tarda unos minutos.', error:'Algo ha fallado al procesarla. Lo revisaremos.'},
+  added:(n, c) => `${n} jugadores nuevos${c ? ` y ${c} con la mira cambiada` : ''}. Ya están en la web.`,
+  st:{new:'nueva', changed:'cambiada', same:'igual', old:'historial'},
+  footer:'Proyecto independiente. No está afiliado ni respaldado por Valve ni FACEIT.',
+},
+en: {
+  navPros:'Crosshairs', navConv:'Converter', navSubmit:'Submit a demo', title:'Submit a <span>demo</span>',
+  lead:'Paste a match link and its crosshairs are added to the site: pros go to the Pros tab and everyone else to Players.',
+  how:[['Paste the link','to the FACEIT room or a direct link to the demo.'],['We review it','to check it\'s a valid CS2 match. It\'s usually quick.'],['Done','the crosshairs show up on the site and you see who was added right here.']],
+  formTitle:'Your match', urlLabel:'Link', urlHelp:'FACEIT room (faceit.com/…/cs2/room/…) or a direct link to the demo (.dem, .zip, .rar, .7z, .gz, .zst).',
+  urlPh:'https://www.faceit.com/en/cs2/room/1-…', eventLabel:'Tournament or match (optional)', eventPh:'For example: FPL · 13 Oct', send:'Submit', sending:'Sending…',
+  needUrl:'Paste a link that starts with https://', needCaptcha:'Complete the anti-bot check.', sent:'Received. You can follow its status below.',
+  netErr:'It could not be sent. Check your connection and try again.',
+  off:`Submitting from the site isn't enabled yet. Meanwhile you can use the <a href="${GH_FORM}" target="_blank" rel="noopener">GitHub form</a>.`,
+  mine:'Your submissions', states:{pendiente:'In review', procesando:'Processing', procesada:'Added', rechazada:'Rejected', error:'Error'},
+  notes:{pendiente:'Waiting for review. You can close the page: the status is saved in this browser.', procesando:'Processing the demo, it takes a few minutes.', error:'Something went wrong while processing it. We\'ll look into it.'},
+  added:(n, c) => `${n} new players${c ? ` and ${c} with a changed crosshair` : ''}. They're on the site now.`,
+  st:{new:'new', changed:'changed', same:'same', old:'history'},
+  footer:'Independent project. Not affiliated with or endorsed by Valve or FACEIT.',
+}};
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
+const t = () => T[lang];
+let subs = []; try { subs = JSON.parse(store.get('mySubmissions') || '[]'); } catch {}
+let tsKey = null, tsWidget = null, enabled = true;
+
+function saveSubs() { store.set('mySubmissions', JSON.stringify(subs.slice(0, 20))); }
+
+function renderSubs() {
+  const L = t();
+  $('mine').hidden = !subs.length;
+  $('subs').innerHTML = subs.map(s => {
+    const st = s.state || 'pendiente', r = s.result || {};
+    let extra = '';
+    if (st === 'procesada' && r.players) {
+      extra = `<p class="note">${L.added(r.new || 0, r.changed || 0)}</p><ul>${r.players.map(p =>
+        `<li><a href="../?jugador=${encodeURIComponent(p.id)}">${esc(p.name)} <small>${L.st[p.status] || ''}</small></a></li>`).join('')}</ul>`;
+    } else if (st === 'rechazada') {
+      extra = `<p class="note">${(r.messages || []).map(esc).join('<br>')}</p>`;
+    } else if (L.notes[st]) {
+      extra = `<p class="note">${L.notes[st]}</p>`;
+    }
+    return `<div class="sub"><div class="shd"><span class="what" title="${esc(s.url)}">${esc(s.event || s.url)}</span><span class="pill ${st}">${L.states[st] || st}</span></div>${extra}</div>`;
+  }).join('');
+}
+
+async function poll() {
+  const open = subs.filter(s => !['procesada', 'rechazada'].includes(s.state));
+  for (const s of open) {
+    try {
+      const r = await fetch(`/api/status?id=${s.id}`, { cache: 'no-store' });
+      if (!r.ok) continue;
+      const j = await r.json();
+      s.state = j.state; if (j.result) s.result = j.result;
+    } catch {}
+  }
+  if (open.length) { saveSubs(); renderSubs(); }
+}
+
+function loadTurnstile(key) {
+  const sc = document.createElement('script');
+  sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+  sc.async = true;
+  sc.onload = () => { try { tsWidget = window.turnstile.render('#ts', { sitekey: key, theme: 'auto', language: lang }); } catch {} };
+  document.head.append(sc);
+}
+
+$('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const L = t(), msg = $('msg'), btn = $('send');
+  const url = $('url').value.trim(), event = $('event').value.trim();
+  msg.className = 'msg err';
+  if (!/^https:\/\/\S{8,}$/.test(url)) { msg.textContent = L.needUrl; $('url').focus(); return; }
+  const token = tsKey && window.turnstile ? window.turnstile.getResponse(tsWidget) : '';
+  if (tsKey && !token) { msg.textContent = L.needCaptcha; return; }
+  btn.disabled = true; btn.textContent = L.sending; msg.textContent = '';
+  try {
+    const r = await fetch('/api/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ url, event, turnstile: token }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.id) { msg.textContent = j.error || L.netErr; }
+    else {
+      subs.unshift({ id: j.id, url, event, state: 'pendiente', at: new Date().toISOString() });
+      saveSubs(); renderSubs();
+      msg.className = 'msg'; msg.textContent = L.sent;
+      $('url').value = ''; $('event').value = '';
+    }
+  } catch { msg.textContent = L.netErr; }
+  btn.disabled = !enabled; btn.textContent = L.send;
+  if (tsKey && window.turnstile) try { window.turnstile.reset(tsWidget); } catch {}
+});
+
+function applyLang() {
+  const L = t();
+  document.documentElement.lang = lang;
+  document.title = (lang === 'es' ? 'Enviar una demo' : 'Submit a demo') + ' · CSConfig';
+  document.querySelectorAll('[data-i]').forEach(el => { const v = L[el.dataset.i]; if (typeof v === 'string') el.innerHTML = v; });
+  $('how').innerHTML = L.how.map(([a, b]) => `<li><b>${a}</b> ${b}</li>`).join('');
+  $('url').placeholder = L.urlPh; $('event').placeholder = L.eventPh;
+  $('offText').innerHTML = L.off;
+  $('lang_es').setAttribute('aria-pressed', lang === 'es'); $('lang_en').setAttribute('aria-pressed', lang === 'en');
+  renderSubs();
+}
+$('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
+$('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
+
+applyLang();
+fetch('/api/config', { cache: 'no-store' })
+  .then(r => r.ok ? r.json() : { enabled: false })
+  .catch(() => ({ enabled: false }))
+  .then(c => {
+    enabled = !!c.enabled;
+    $('offCard').hidden = enabled; $('send').disabled = !enabled;
+    if (enabled && c.turnstile) { tsKey = c.turnstile; loadTurnstile(tsKey); }
+    if (enabled) { poll(); setInterval(poll, 15000); }
+  });
+})();
+</script>
+</body>
+</html>

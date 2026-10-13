@@ -15,7 +15,7 @@
   <nav class="topnav">
     <a href="./" aria-current="page" data-i="navPros">Miras</a>
     <a href="conversor/" data-i="navConv">Conversor</a>
-    <a href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=enviar-demo.yml" target="_blank" rel="noopener" data-i="navSubmit">Enviar demo</a>
+    <a href="enviar/" data-i="navSubmit">Enviar demo</a>
     <div class="lang" role="group" aria-label="Idioma / Language">
       <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
     </div>
@@ -103,9 +103,10 @@
 <script src="assets/crosshair.js"></script>
 <script>
 (() => {
-const SUBMIT = 'https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=enviar-demo.yml';
+const SUBMIT = 'enviar/';
 const T = {
 es: {
+  retired:'Retirado', retiredOpt:'Retirados',
   navPros:'Miras', navConv:'Conversor', navSubmit:'Enviar demo', title:'Miras de <span>CS2</span>',
   lead:'Las miras que usan los profesionales y cualquier jugador, sacadas directamente de las demos de sus partidas. Pulsa un jugador para ver los detalles y copiar su código.',
   stPros:'Pros', stPlayers:'Jugadores', stUpdated:'Actualizado', tabPros:'Pros', tabPlayers:'Jugadores',
@@ -122,20 +123,21 @@ es: {
   aka:'También jugó como', steam:'Perfil de Steam', faceitProfile:'Perfil de FACEIT', faceitRoom:'Partida en FACEIT',
   vals:{style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor', color:'Color', a:'Opacidad', dot:'Punto', t:'Estilo T', outline:'Contorno', recoil:'Sigue el retroceso', h:'Resolución del código'},
   yes:'Sí', no:'No', outlineOpts:['No','Completo','Medio'],
-  emptyTitle:'La base de datos se está llenando', emptyText:`Las miras aparecen aquí en cuanto se procesan demos. ¿Tienes la demo de una partida? <a href="${SUBMIT}" target="_blank" rel="noopener">Envíala</a> y sus miras se añadirán solas.`,
+  emptyTitle:'La base de datos se está llenando', emptyText:`Las miras aparecen aquí en cuanto se procesan demos. ¿Tienes la demo de una partida? <a href="${SUBMIT}">Envíala</a> y sus miras se añadirán solas.`,
   loadErr:'No se han podido cargar los datos. Recarga la página.',
   aboutTitle:'Cómo funciona',
   about:[['¿De dónde salen las miras?','Cada demo de CS2 guarda el código de mira de todos los jugadores. Analizamos demos de partidas y guardamos la mira que cada jugador tenía al final.'],
          ['¿Qué diferencia hay entre Pros y Jugadores?','En Pros están los profesionales que tenemos identificados, con su nombre y equipo. En Jugadores está todo el que haya aparecido en alguna demo, para que puedas buscar la mira de cualquiera.'],
          ['¿Cómo la pongo en el juego?','Copia el código y en CS2 ve a Ajustes → Juego → Mira / Miras telescópicas → Compartir o importar → pega y pulsa Importar.'],
-         ['¿Puedo aportar demos?','Sí. Pulsa «Enviar demo» y pega el enlace directo a la demo (necesitas una cuenta de GitHub). Se procesa sola y te contestamos con los jugadores añadidos.'],
+         ['¿Puedo aportar demos?','Sí. Pulsa «Enviar demo», pega el enlace de la partida de FACEIT o el enlace directo a la demo y envíalo. Tras una revisión rápida se procesa sola y en la misma página ves los jugadores añadidos.'],
          ['No quiero aparecer','Pulsa «Pedir que retiremos un jugador» al final de la página e indica tu SteamID64.'],
          ['Tengo un código antiguo (CSGO-…)','Usa la pestaña Conversor para pasarlo al formato nuevo.']],
-  footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.', remove:'Pedir que retiremos un jugador',
+  footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen. Equipos: <a href="https://liquipedia.net/counterstrike/" target="_blank" rel="noopener">Liquipedia</a> (CC BY-SA 3.0).', remove:'Pedir que retiremos un jugador',
   styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
   locale:'es-ES',
 },
 en: {
+  retired:'Retired', retiredOpt:'Retired',
   navPros:'Crosshairs', navConv:'Converter', navSubmit:'Submit a demo', title:'CS2 <span>crosshairs</span>',
   lead:'The crosshairs pros and any player actually use, pulled straight from their match demos. Tap a player to see the details and copy their code.',
   stPros:'Pros', stPlayers:'Players', stUpdated:'Updated', tabPros:'Pros', tabPlayers:'Players',
@@ -152,16 +154,16 @@ en: {
   aka:'Also played as', steam:'Steam profile', faceitProfile:'FACEIT profile', faceitRoom:'FACEIT match',
   vals:{style:'Style', length:'Length', gap:'Gap', thickness:'Thickness', color:'Color', a:'Opacity', dot:'Dot', t:'T style', outline:'Outline', recoil:'Follow recoil', h:'Code resolution'},
   yes:'Yes', no:'No', outlineOpts:['No','Full','Half'],
-  emptyTitle:'The database is filling up', emptyText:`Crosshairs show up here as soon as demos are processed. Have a match demo? <a href="${SUBMIT}" target="_blank" rel="noopener">Submit it</a> and its crosshairs are added automatically.`,
+  emptyTitle:'The database is filling up', emptyText:`Crosshairs show up here as soon as demos are processed. Have a match demo? <a href="${SUBMIT}">Submit it</a> and its crosshairs are added automatically.`,
   loadErr:'The data could not be loaded. Reload the page.',
   aboutTitle:'How it works',
   about:[['Where do the crosshairs come from?','Every CS2 demo stores each player\'s crosshair code. We parse match demos and keep the crosshair each player had at the end.'],
          ['What\'s the difference between Pros and Players?','Pros are the professionals we have identified, with their name and team. Players includes everyone who has appeared in a demo, so you can look up anyone\'s crosshair.'],
          ['How do I use it in game?','Copy the code, then in CS2 go to Settings → Game → Crosshair / Scopes → Share or Import → paste and press Import.'],
-         ['Can I contribute demos?','Yes. Press "Submit a demo" and paste a direct link to the demo (you need a GitHub account). It is processed automatically and we reply with the players added.'],
+         ['Can I contribute demos?','Yes. Press "Submit a demo", paste the FACEIT match link or a direct link to the demo and send it. After a quick review it is processed automatically and you see the players added on the same page.'],
          ['I don\'t want to be listed','Press "Ask us to remove a player" at the bottom of the page and give your SteamID64.'],
          ['I have an old code (CSGO-…)','Use the Converter tab to turn it into the new format.']],
-  footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.', remove:'Ask us to remove a player',
+  footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown. Teams: <a href="https://liquipedia.net/counterstrike/" target="_blank" rel="noopener">Liquipedia</a> (CC BY-SA 3.0).', remove:'Ask us to remove a player',
   styles:['Dynamic cross','Dynamic circle','Dynamic cross (legacy)','Static circle','Static cross','Static cross with shot feedback','Dot only','Dynamic quad','Static square','Static quad'],
   locale:'en-GB',
 }};
@@ -174,6 +176,9 @@ let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().star
 let bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, 6);
 const ds = { pros: { rows: [], loaded: false, failed: false, updated: null }, players: { rows: [], loaded: false, failed: false, updated: null } };
 let tab = location.hash === '#jugadores' || location.hash === '#players' ? 'players' : 'pros', current = null;
+let startQuery = '';
+try { startQuery = (new URLSearchParams(location.search).get('jugador') || '').slice(0, 80); } catch {}
+if (startQuery) tab = 'players';
 const t = () => T[lang];
 
 const fmtDate = iso => { try { return new Date(iso).toLocaleDateString(t().locale, { day:'numeric', month:'short', year:'numeric' }); } catch { return iso || ''; } };
@@ -185,7 +190,7 @@ const shownCode = (code, n) => /^CSGO-/.test(code) ? encodeNew(n) : code;
 function drawThumb(cv, n) { const p = newParams(n); paint(cv, p, clamp(fitZoom(cv.width, p), 2, 4), bgIdx); }
 
 function subline(r) {
-  if (r.pro) return esc(r.team || '—');
+  if (r.pro) return r.status === 'retired' ? `<span class="ret">${t().retired}</span>` : esc(r.team || '—');
   if (r.faceit) return `<span class="fc">FACEIT</span> ${esc(r.faceit)}`;
   return esc(r.map ? t().seenOn(mapName(r.map), fmtDate(r.seen)) : fmtDate(r.seen));
 }
@@ -219,7 +224,7 @@ function listPros() {
   if (!d.loaded) return;
   if (!d.rows.length) { $('count').textContent = ''; return emptyBox(box, `<h3>${L.emptyTitle}</h3><p>${L.emptyText}</p>`); }
   const q = $('q').value.trim().toLowerCase(), team = $('team').value, sort = +$('sort').value;
-  const out = d.rows.filter(r => (!team || r.team === team) && (!q || r.name.toLowerCase().includes(q) || (r.team || '').toLowerCase().includes(q)));
+  const out = d.rows.filter(r => (!team || (team === '__ret' ? r.status === 'retired' : r.team === team)) && (!q || r.name.toLowerCase().includes(q) || (r.team || '').toLowerCase().includes(q)));
   out.sort([(a, b) => (b.seen || '').localeCompare(a.seen || '') || a.name.localeCompare(b.name),
             (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity:'base' }),
             (a, b) => (a.team || '~').localeCompare(b.team || '~') || a.name.localeCompare(b.name)][sort]);
@@ -274,7 +279,7 @@ function showCode(code) {
 }
 function openSheet(r) {
   const L = t(); current = r;
-  const sub = r.pro ? esc(r.team || '') : (r.faceit ? `FACEIT: ${esc(r.faceit)}` : '');
+  const sub = r.pro ? (r.status === 'retired' ? t().retired : esc(r.team || '')) : (r.faceit ? `FACEIT: ${esc(r.faceit)}` : '');
   $('sName').innerHTML = `${esc(r.name)}<small>${sub}</small>`;
   showCode(r.code);
   const links = [`<a href="https://steamcommunity.com/profiles/${esc(r.id)}" target="_blank" rel="noopener">${L.steam}</a>`];
@@ -324,8 +329,9 @@ function stats() {
 function fillFilters() {
   const L = t(), teamSel = $('team'), keep = teamSel.value;
   const teams = [...new Set(ds.pros.rows.map(r => r.team).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-  teamSel.innerHTML = `<option value="">${L.allTeams}</option>` + teams.map(x => `<option>${esc(x)}</option>`).join('');
-  teamSel.value = teams.includes(keep) ? keep : '';
+  const anyRet = ds.pros.rows.some(r => r.status === 'retired');
+  teamSel.innerHTML = `<option value="">${L.allTeams}</option>` + teams.map(x => `<option>${esc(x)}</option>`).join('') + (anyRet ? `<option value="__ret">${L.retiredOpt}</option>` : '');
+  teamSel.value = teams.includes(keep) || (keep === '__ret' && anyRet) ? keep : '';
   const s = $('sort'), ks = s.value || '0';
   s.innerHTML = L.sort.map((x, i) => `<option value="${i}">${x}</option>`).join(''); s.value = ks;
   $('q').placeholder = L.q; $('pq').placeholder = L.pq;
@@ -369,6 +375,7 @@ function loadPlayers() {
     .finally(render);
   return playersPromise;
 }
+if (startQuery) $('pq').value = startQuery;
 buildBg(); applyLang(); setTab(tab, false);
 get('data/pros.json')
   .then(j => { ds.pros.rows = prep(j, true); ds.pros.updated = j.updated; ds.pros.loaded = true; })

@@ -1,7 +1,7 @@
 [
  {"id": "76561198386265483", "name": "donk", "team": "Team Spirit"},
- {"id": "76561198113666193", "name": "ZywOo", "team": ""},
- {"id": "76561197989744167", "name": "apEX", "team": ""},
- {"id": "76561198006920295", "name": "shox", "team": ""},
- {"id": "76561197988768248", "name": "ScreaM", "team": ""}
+ {"id": "76561198113666193", "name": "ZywOo", "team": "Team Vitality"},
+ {"id": "76561197989744167", "name": "apEX", "team": "Team Vitality"},
+ {"id": "76561198006920295", "name": "shox"},
+ {"id": "76561197988768248", "name": "ScreaM"}
 ]

@@ -9,12 +9,15 @@ permissions:
   issues: write
 
 jobs:
-  # Envíos de personas sin permisos en el repo: quedan pendientes hasta que les pongas la etiqueta "aprobada".
+  # Envíos de personas sin permisos en el repo, o hechos desde el formulario de la web (que se crean con tu token):
+  # quedan pendientes hasta que les pongas la etiqueta "aprobada".
   pendiente:
     if: >-
       github.event.action == 'opened' &&
-      contains(github.event.issue.labels.*.name, 'demo') &&
-      !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
+      contains(github.event.issue.labels.*.name, 'demo') && (
+        contains(github.event.issue.labels.*.name, 'web') ||
+        !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Avisar de que queda en revisión
@@ -26,13 +29,13 @@ jobs:
           gh label create pendiente --repo "$REPO" --color FBCA04 --description "Demo enviada, pendiente de revisión" --force
           gh label create aprobada --repo "$REPO" --color 0E8A16 --description "Pon esta etiqueta para procesar la demo" --force
           gh issue edit "$NUM" --repo "$REPO" --add-label pendiente
-          gh issue comment "$NUM" --repo "$REPO" --body "¡Gracias por la demo! Queda pendiente de una revisión rápida. En cuanto se apruebe, se procesa sola y te contesto aquí con las miras que se han añadido."
+          gh issue comment "$NUM" --repo "$REPO" --body "Demo recibida. Queda pendiente de revisión: ponle la etiqueta **aprobada** para procesarla."
 
   # Tus propios envíos se procesan al momento; los de otros, cuando les pones la etiqueta "aprobada".
   procesar:
     if: >-
       contains(github.event.issue.labels.*.name, 'demo') && (
-        (github.event.action == 'opened' && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)) ||
+        (github.event.action == 'opened' && !contains(github.event.issue.labels.*.name, 'web') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)) ||
         (github.event.action == 'labeled' && github.event.label.name == 'aprobada')
       )
     runs-on: ubuntu-latest
@@ -66,6 +69,9 @@ jobs:
 
       - name: Procesar la demo
         if: steps.leer.outputs.ok == 'true'
+        env:
+          FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
+          FACEIT_DOWNLOADS_TOKEN: ${{ secrets.FACEIT_DOWNLOADS_TOKEN }}
         run: python pipeline/update.py --only urls --require-teams --report "$RUNNER_TEMP/report.json"
 
       - name: Guardar cambios

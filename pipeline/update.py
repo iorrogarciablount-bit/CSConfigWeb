@@ -23,6 +23,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -42,6 +43,7 @@ LOCAL_DIR = PIPE / "demos"
 
 NEW_CODE = re.compile(r"^CS[A-Za-z0-9]{44}$")
 # Las demos de FACEIT se llaman como la partida: 1-<uuid>-1-1.dem(.zip)
+FACEIT_ROOM = re.compile(r"^https://(?:www\.)?faceit\.com/[a-z-]{2,5}/cs2/room/(1-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", re.I)
 FACEIT_FILE = re.compile(r"(1-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", re.I)
 OLD_CODE = re.compile(r"^CSGO(-[A-Za-z0-9]{5}){5}$")
 FACEIT_API = "https://open.faceit.com/data/v4"
@@ -259,6 +261,91 @@ def faceit_verify(db: dict, state: dict, cfg: dict):
         log(f"Verificación FACEIT: {checked} jugadores consultados, {found} verificados.")
 
 
+LIQUIPEDIA_API = "https://liquipedia.net/counterstrike/api.php"
+LIQUIPEDIA_UA = "CSConfigWeb/1.0 (https://github.com/iorrogarciablount-bit/CSConfigWeb; equipos de jugadores pro)"
+
+
+def liquipedia_team(name: str) -> tuple[bool, str, str]:
+    """Busca el equipo actual de un jugador en Liquipedia. Devuelve (encontrado, equipo, estado)."""
+    import gzip as _gz  # noqa: PLC0415
+    from urllib.parse import urlencode  # noqa: PLC0415
+    q = urlencode({"action": "query", "prop": "revisions", "rvprop": "content", "rvslots": "main",
+                   "format": "json", "formatversion": "2", "redirects": "1", "titles": name})
+    req = urllib.request.Request(f"{LIQUIPEDIA_API}?{q}", headers={"User-Agent": LIQUIPEDIA_UA, "Accept-Encoding": "gzip"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        raw = r.read()
+        if r.headers.get("Content-Encoding") == "gzip":
+            raw = _gz.decompress(raw)
+    pages = json.loads(raw.decode()).get("query", {}).get("pages", [])
+    if not pages or pages[0].get("missing"):
+        return False, "", ""
+    text = pages[0]["revisions"][0]["slots"]["main"]["content"]
+    if "{{Infobox player" not in text:  # página de desambiguación u otra cosa
+        return False, "", ""
+    box = text[text.index("{{Infobox player"):]
+    m = re.search(r"^\s*\|\s*team\s*=\s*([^\n|]*)", box, re.M)
+    team = (m.group(1) if m else "").strip()
+    team = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", team)  # [[enlace|texto]] -> texto
+    team = re.sub(r"<[^>]+>|\{\{[^}]*\}\}", "", team).strip()
+    st = re.search(r"^\s*\|\s*status\s*=\s*([^\n|]*)", box, re.M)
+    status = (st.group(1) if st else "").strip().lower()  # active, retired, inactive…
+    return True, team, ("retired" if status.startswith("retired") else status)
+
+
+def liquipedia_teams(db: dict, state: dict, cfg: dict, candidates: set[str], seen_now: set[str]):
+    """Rellena el equipo de los pros desde Liquipedia (CC BY-SA 3.0): al verlos en una demo nueva y, si no, cada pocos días."""
+    lc = cfg.get("liquipedia", {})
+    if lc.get("enabled", True) is False:
+        return
+    cache = state.setdefault("liquipedia", {})
+    days = int(lc.get("recheck_days", 14))
+    limit = int(lc.get("lookups_per_run", 40))
+    cutoff = (dt.date.today() - dt.timedelta(days=days)).isoformat()
+    todo = [pid for pid in candidates if pid in db["players"] and (pid in seen_now or cache.get(pid, {}).get("t", "") < cutoff)]
+    done = 0
+    for pid in todo[:limit]:
+        p = db["players"][pid]
+        name = p.get("lp_name") or p.get("name") or ""
+        if not name:
+            continue
+        if done:
+            time.sleep(2.2)  # Liquipedia pide como mucho 1 petición cada 2 segundos
+        try:
+            found, team, status = liquipedia_team(name)
+        except Exception as e:  # noqa: BLE001
+            log(f"Liquipedia {name}: {e}")
+            break  # si nos limitan, mejor parar y seguir otro día
+        done += 1
+        cache[pid] = {"t": today(), "found": found, "team": team, "status": status}
+    for pid, c in cache.items():
+        if pid in db["players"] and c.get("found"):
+            db["players"][pid]["lp_team"] = c.get("team", "")
+            db["players"][pid]["lp_status"] = c.get("status", "")
+    if done:
+        log(f"Liquipedia: {done} jugadores consultados.")
+
+
+def faceit_room_download(item: dict, work: Path, max_mb: int) -> Path:
+    """Descarga la demo de una sala de FACEIT a partir de su enlace."""
+    key = os.environ.get("FACEIT_API_KEY", "").strip()
+    token = os.environ.get("FACEIT_DOWNLOADS_TOKEN", "").strip()
+    if not key or not token:
+        raise RuntimeError("los enlaces de salas de FACEIT funcionarán cuando FACEIT apruebe el acceso a sus descargas. "
+                           "Mientras tanto, descarga la demo desde la sala y súbela como archivo")
+    det = http_json(f"{FACEIT_API}/matches/{item['faceit_room']}", key)
+    urls = det.get("demo_url") or []
+    if not urls:
+        raise RuntimeError("esa partida de FACEIT todavía no tiene demo disponible")
+    signed = http_json(FACEIT_DL, token, {"resource_url": urls[0]})["payload"]["download_url"]
+    ts = det.get("finished_at") or det.get("started_at")
+    if ts:
+        item["date"] = dt.datetime.fromtimestamp(ts, dt.timezone.utc).date().isoformat()
+    src = work / urls[0].split("?")[0].rsplit("/", 1)[-1]
+    log(f"Descargando {src.name} …")
+    download(signed, src, max_mb)
+    return src
+
+
 def url_matches(state: dict):
     lines = []
     if URLS.exists():
@@ -272,6 +359,13 @@ def url_matches(state: dict):
         url, _, label = line.partition(" ")
         hid = hashlib.sha1(url.encode()).hexdigest()[:16]
         if hid in done:
+            continue
+        room = FACEIT_ROOM.match(url)
+        if room:  # enlace a una sala de FACEIT: la demo se baja con la API
+            yield {"id": f"faceit:{room.group(1)}", "faceit_room": room.group(1), "name": room.group(1),
+                   "source": label.strip() or "FACEIT", "date": today()}
+            if os.environ.get("FACEIT_DOWNLOADS_TOKEN", "").strip():
+                done.add(hid)  # sin acceso a descargas no se marca, para poder reintentarlo más adelante
             continue
         name = url.split("?")[0].rsplit("/", 1)[-1] or "demo.dem"
         yield {"id": f"url:{hid}", "url": url, "name": name, "source": label.strip() or "demo", "date": today()}
@@ -414,12 +508,15 @@ def main():
             p = dict(p)
             if p.pop("pro", None) and p.get("nick"):  # en pros.json el nombre mostrado es el de la lista
                 p["name"] = p["nick"]
+                p["team"] = p.get("demo_team", "")
+            p.pop("demo_team", None)
             p.pop("nick", None)
             p["team"] = clean_team(p.get("team", ""))
             db["players"][p["id"]] = p
     min_players = int(cfg.get("min_players_per_demo", 8))
     stats = {"demos": 0, "new": 0, "changed": 0, "errors": 0}
     report = {"messages": [], "players": []}
+    seen_now: set[str] = set()
     max_mb = int(cfg.get("max_demo_mb", 1500))
 
     def note(msg):
@@ -449,6 +546,8 @@ def main():
                 try:
                     if "path" in item:
                         src = item["path"]
+                    elif "faceit_room" in item:
+                        src = faceit_room_download(item, work, max_mb)
                     else:
                         src = work / item["name"]
                         log(f"Descargando {item['name']} …")
@@ -472,9 +571,10 @@ def main():
                             if tournament and clean_team(info.get("team", "")):
                                 info = {**info, "pro_auto": "torneo"}
                             r = merge(db, sid, info, item["source"], item["date"], res["map"])
+                            seen_now.add(sid)
                             if r in ("new", "changed"):
                                 stats[r] += 1
-                            report["players"].append({"name": info["name"], "team": info["team"], "status": r})
+                            report["players"].append({"id": sid, "name": info["name"], "team": clean_team(info["team"]), "faceit": info.get("faceit", ""), "status": r})
                         note(f"{dem.name}: {len(res['players'])} jugadores ({res['map'] or 'mapa desconocido'})")
                 except Exception as e:  # noqa: BLE001
                     stats["errors"] += 1
@@ -489,15 +589,29 @@ def main():
     # salvo que manual.json diga "pro": false.
     pros = {str(x["id"]): x for x in load_json(PROS, []) if x.get("id")}
     not_pro = {str(e["id"]) for e in load_json(MANUAL, []) if e.get("id") and e.get("pro") is False}
+    is_pro = lambda p: p["id"] in pros or (p.get("auto_pro") and p["id"] not in not_pro)  # noqa: E731
+    for pid, x in pros.items():  # nombre de la lista para buscar en Liquipedia
+        if pid in db["players"] and x.get("name"):
+            db["players"][pid]["lp_name"] = x["name"]
+    # Equipos: los de la lista que tengan "team" mandan; si no, Liquipedia; si no, el de la demo.
+    candidates = {p["id"] for p in db["players"].values() if is_pro(p) and not pros.get(p["id"], {}).get("team")}
+    if args.only != "manual":
+        liquipedia_teams(db, state, cfg, candidates, seen_now)
     pro_rows, rest = [], []
     for p in db["players"].values():
-        if p["id"] in pros:
-            x = pros[p["id"]]
-            pro_rows.append({**p, "pro": True, "nick": p.get("name", ""), "name": x.get("name") or p.get("name", ""), "team": x.get("team", p.get("team", ""))})
-        elif p.get("auto_pro") and p["id"] not in not_pro:
-            pro_rows.append({**p, "pro": True, "nick": p.get("name", "")})
+        if is_pro(p):
+            x = pros.get(p["id"], {})
+            team = x.get("team") or (p.get("lp_team") if "lp_team" in p else p.get("team", ""))
+            status = x.get("status") or ("" if x.get("team") else p.get("lp_status", ""))
+            if status == "retired":
+                team = ""
+            row = {**p, "status": status, "pro": True, "nick": p.get("name", ""), "demo_team": p.get("team", ""), "name": x.get("name") or p.get("name", ""), "team": team}
+            row.pop("lp_name", None)
+            pro_rows.append(row)
         else:
-            rest.append(p)
+            row = dict(p)
+            row.pop("lp_name", None)
+            rest.append(row)
     key = lambda p: (p.get("name") or "").lower()  # noqa: E731
     pro_rows.sort(key=key)
     rest.sort(key=key)

@@ -67,7 +67,26 @@ Para los `.rar` y `.7z` hace falta [7-Zip](https://www.7-zip.org), que se detect
 
 Pega la URL en **Enviar demo**, en la web, o en **Actions → Actualizar miras → Run workflow**. También puedes añadir varias a `pipeline/demo_urls.txt`, una por línea.
 
-### 4. Envíos de la comunidad
+### 4. Formulario de envío en la web
+
+La página **Enviar demo** (`site/enviar/`) deja que cualquiera mande el enlace de una partida sin cuenta de GitHub. Por dentro, una función de Cloudflare (`functions/api/`) crea el envío en GitHub y la página va mostrando su estado, con los jugadores añadidos al terminar.
+
+Para activarlo, en Cloudflare entra en **Workers & Pages → tu proyecto → Settings → Variables and Secrets** y añade:
+
+| Nombre | Tipo | Valor |
+|---|---|---|
+| `GITHUB_REPO` | Text | `iorrogarciablount-bit/CSConfigWeb` |
+| `GITHUB_TOKEN` | Secret | Token *fine-grained* de GitHub (Settings → Developer settings → Fine-grained tokens) con acceso solo a este repositorio y permiso **Issues: Read and write** |
+| `TURNSTILE_SITEKEY` | Text | Clave pública del widget anti-bots |
+| `TURNSTILE_SECRET` | Secret | Clave secreta del widget |
+
+Las claves de Turnstile se crean gratis en Cloudflare, en **Turnstile → Add widget**, añadiendo el dominio de la web. Después vuelve a desplegar el proyecto (**Deployments → Retry deployment**).
+
+Los envíos de la web quedan siempre con la etiqueta `pendiente`. Ponles `aprobada` desde GitHub, también desde la app del móvil, y se procesan solos.
+
+Los enlaces de salas de FACEIT (`faceit.com/…/cs2/room/…`) funcionarán cuando FACEIT apruebe el acceso a la Downloads API. Hasta entonces, el envío se descarta con un aviso; los enlaces directos a demos funcionan ya.
+
+### 4b. Envíos desde GitHub
 
 Cualquiera puede enviar una demo desde el botón **Enviar demo** de la web, que abre el formulario de *issues* del repositorio. Necesita una cuenta de GitHub.
 
@@ -98,6 +117,8 @@ Un jugador aparece en la pestaña **Pros** si se cumple cualquiera de estas cond
 - **Partido de torneo:** la demo tiene dos equipos con nombre real, no los `team_xxx` de FACEIT. Sus jugadores pasan a Pros solos, con ese equipo.
 - **Cuenta verificada en FACEIT:** se comprueba con la Data API, así que necesita el secreto `FACEIT_API_KEY`, que se obtiene al momento sin aprobación. Cada jugador se revisa como mucho una vez cada 30 días.
 - **Lista manual:** está en `pipeline/pros.json`, que además fija su nombre y equipo reales.
+
+**Equipos:** para los pros sin equipo fijado en `pros.json`, el equipo y si están retirados se consultan en [Liquipedia](https://liquipedia.net/counterstrike/) (CC BY-SA 3.0, citado al pie de la web). La consulta se hace cada vez que un pro aparece en una demo nueva y, si no, cada 14 días, respetando el límite de Liquipedia de una consulta cada 2 segundos. Si un pro está retirado, la web muestra «Retirado» en lugar del equipo. En `pros.json` puedes fijar `"team"` o `"status": "retired"` a mano.
 
 Para quitar a alguien de Pros aunque se haya detectado solo, añade a `manual.json` una línea como `{ "id": "SteamID64", "pro": false }`. Todos los demás jugadores siguen guardados y se pueden buscar en la pestaña **Jugadores**.
 
