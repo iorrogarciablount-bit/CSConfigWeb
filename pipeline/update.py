@@ -28,7 +28,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PIPE = ROOT / "pipeline"
-DATA = ROOT / "site" / "data" / "crosshairs.json"
+DATA_DIR = ROOT / "site" / "data"
+DATA_PROS = DATA_DIR / "pros.json"          # jugadores de la lista de pros (página de inicio)
+DATA_PLAYERS = DATA_DIR / "players.json"    # el resto de jugadores (pestaña Jugadores)
+LEGACY = DATA_DIR / "crosshairs.json"       # formato antiguo, se migra solo
+PROS = PIPE / "pros.json"
 STATE = PIPE / "state.json"
 CONFIG = PIPE / "config.json"
 MANUAL = PIPE / "manual.json"
@@ -36,6 +40,8 @@ URLS = PIPE / "demo_urls.txt"
 LOCAL_DIR = PIPE / "demos"
 
 NEW_CODE = re.compile(r"^CS[A-Za-z0-9]{44}$")
+# Las demos de FACEIT se llaman como la partida: 1-<uuid>-1-1.dem(.zip)
+FACEIT_FILE = re.compile(r"(1-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", re.I)
 OLD_CODE = re.compile(r"^CSGO(-[A-Za-z0-9]{5}){5}$")
 FACEIT_API = "https://open.faceit.com/data/v4"
 FACEIT_DL = "https://open.faceit.com/download/v2/demos/download"
@@ -291,9 +297,12 @@ def merge(db: dict, sid: str, info: dict, source: str, date: str, map_name: str 
     """Añade la mira vista de un jugador. Si cambió, guarda la anterior en el historial."""
     players = db.setdefault("players", {})
     p = players.get(sid)
+    info = {**info, "team": clean_team(info.get("team", ""))}
     if p is None:
         players[sid] = {"id": sid, "name": info["name"], "team": info.get("team", ""), "code": info["code"],
                         "since": date, "seen": date, "source": source, "map": map_name, "history": []}
+        if info.get("faceit"):
+            players[sid]["faceit"], players[sid]["faceit_match"] = info["faceit"], info.get("faceit_match", "")
         return "new"
     if date < p.get("seen", ""):
         # Demo más antigua que lo que ya tenemos: solo sirve para completar el historial.
@@ -301,7 +310,11 @@ def merge(db: dict, sid: str, info: dict, source: str, date: str, map_name: str 
             p["history"].append({"code": info["code"], "from": date, "to": date})
             p["history"].sort(key=lambda h: h.get("from") or "")
         return "old"
-    if info.get("name"):
+    if info.get("faceit"):
+        p["faceit"], p["faceit_match"] = info["faceit"], info.get("faceit_match", p.get("faceit_match", ""))
+    if info.get("name") and info["name"] != p.get("name"):
+        if p.get("name"):
+            p["aliases"] = ([p["name"]] + [a for a in p.get("aliases", []) if a not in (p["name"], info["name"])])[:5]
         p["name"] = info["name"]
     if info.get("team"):
         p["team"] = info["team"]
@@ -314,13 +327,21 @@ def merge(db: dict, sid: str, info: dict, source: str, date: str, map_name: str 
     return "same"
 
 
-def apply_manual(db: dict):
+def clean_team(team: str) -> str:
+    """FACEIT llama a los equipos de sus partidas «team_<capitán>»: eso no es un equipo real."""
+    team = (team or "").strip()
+    return "" if team.lower().startswith("team_") else team
+
+
+def apply_manual(db: dict, only_hidden: bool = False):
     entries = load_json(MANUAL, [])
     for e in entries:
-        if not e.get("id") or not e.get("code"):
+        if not e.get("id"):
             continue
         if e.get("hidden"):
             db.get("players", {}).pop(str(e["id"]), None)
+            continue
+        if only_hidden or not e.get("code"):
             continue
         if not (NEW_CODE.match(e["code"]) or OLD_CODE.match(e["code"])):
             log(f"manual.json: código no válido para {e['id']}")
@@ -342,8 +363,18 @@ def main():
 
     cfg = load_json(CONFIG, {})
     state = load_json(STATE, {})
-    current = load_json(DATA, {"players": []})
-    db = {"players": {p["id"]: p for p in current.get("players", [])}}
+    db = {"players": {}}
+    previous = {}
+    for path in (LEGACY, DATA_PLAYERS, DATA_PROS):
+        doc = load_json(path, {"players": []})
+        previous[path] = doc
+        for p in doc.get("players", []):
+            p = dict(p)
+            if p.pop("pro", None) and p.get("nick"):  # en pros.json el nombre mostrado es el de la lista
+                p["name"] = p["nick"]
+            p.pop("nick", None)
+            p["team"] = clean_team(p.get("team", ""))
+            db["players"][p["id"]] = p
     min_players = int(cfg.get("min_players_per_demo", 8))
     stats = {"demos": 0, "new": 0, "changed": 0, "errors": 0}
     report = {"messages": [], "players": []}
@@ -390,7 +421,10 @@ def main():
                             note(f"{dem.name}: no tiene nombres de equipo, así que no parece un partido profesional; se ignora.")
                             continue
                         stats["demos"] += 1
+                        fm = FACEIT_FILE.search(dem.name) or FACEIT_FILE.search(item["name"]) or (FACEIT_FILE.search(item["id"]) if item["id"].startswith("faceit:") else None)
                         for sid, info in res["players"].items():
+                            if fm:  # en los servidores de FACEIT el nombre del jugador es su usuario de FACEIT
+                                info = {**info, "faceit": info["name"], "faceit_match": fm.group(1)}
                             r = merge(db, sid, info, item["source"], item["date"], res["map"])
                             if r in ("new", "changed"):
                                 stats[r] += 1
@@ -402,14 +436,26 @@ def main():
                 finally:
                     shutil.rmtree(work, ignore_errors=True)
 
-    if args.only in (None, "manual"):
-        apply_manual(db)
+    apply_manual(db, only_hidden=args.only not in (None, "manual"))
 
-    players = sorted(db["players"].values(), key=lambda p: (p.get("name") or "").lower())
-    changed = players != current.get("players", [])
-    out = {"updated": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat() if changed else current.get("updated"),
-           "players": players}
-    save_json(DATA, out)
+    pros = {str(x["id"]): x for x in load_json(PROS, []) if x.get("id")}
+    pro_rows, rest = [], []
+    for p in db["players"].values():
+        if p["id"] in pros:
+            x = pros[p["id"]]
+            pro_rows.append({**p, "pro": True, "nick": p.get("name", ""), "name": x.get("name") or p.get("name", ""), "team": x.get("team", p.get("team", ""))})
+        else:
+            rest.append(p)
+    key = lambda p: (p.get("name") or "").lower()  # noqa: E731
+    pro_rows.sort(key=key)
+    rest.sort(key=key)
+    players = pro_rows + rest
+    now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
+    for path, rows in ((DATA_PROS, pro_rows), (DATA_PLAYERS, rest)):
+        old = previous.get(path, {})
+        save_json(path, {"updated": now if rows != old.get("players", []) else old.get("updated"), "players": rows})
+    if LEGACY.exists():
+        LEGACY.unlink()
     save_json(STATE, state)
     if args.report:
         save_json(args.report, {**stats, **report, "total": len(players)})

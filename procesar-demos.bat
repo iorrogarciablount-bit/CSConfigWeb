@@ -46,7 +46,7 @@ echo.
 echo.
 
 echo  [4/4] Subiendo las miras a la web...
-git add site/data/crosshairs.json pipeline/state.json
+git add -A site/data pipeline/state.json
 git diff --cached --quiet
 if errorlevel 1 (
   git commit --quiet -m "Demos procesadas desde el PC"

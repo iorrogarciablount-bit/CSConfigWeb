@@ -1,0 +1,20 @@
+name: Retirar un jugador
+description: Pide que quitemos a un jugador (por ejemplo, a ti) de la web.
+title: "Retirar jugador: "
+labels: ["retirada"]
+body:
+  - type: input
+    id: steamid
+    attributes:
+      label: SteamID64 del jugador
+      description: Son 17 cifras que empiezan por 7656. Puedes verlo en steamid.io o en la ficha del jugador en la web (enlace al perfil de Steam).
+      placeholder: "7656119…"
+    validations:
+      required: true
+  - type: textarea
+    id: motivo
+    attributes:
+      label: Comentario
+      description: Opcional.
+    validations:
+      required: false

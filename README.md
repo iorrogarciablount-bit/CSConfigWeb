@@ -6,7 +6,7 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
   - `index.html` es la página de inicio, con la base de datos de miras.
   - `conversor/` es la herramienta de conversión.
   - `assets/crosshair.js` lee y escribe códigos; el formato está comprobado con 30 códigos reales exportados del juego.
-  - `data/crosshairs.json` son los datos. Los genera el pipeline; no hace falta editarlos a mano.
+  - `data/pros.json` y `data/players.json` son los datos: los pros identificados y el resto de jugadores. Los genera el pipeline; no hace falta editarlos a mano.
 - `pipeline/update.py` descarga demos, extrae la mira de cada jugador con [demoparser2](https://github.com/LaihoE/demoparser) y actualiza los datos con historial de cambios.
 - `.github/workflows/update.yml` ejecuta el pipeline cada día y guarda los cambios.
 
@@ -87,7 +87,21 @@ Cualquiera puede enviar una demo desde el botón **Enviar demo** de la web, que 
 ]
 ```
 
-El `id` es el SteamID64 del jugador, el mismo que aparece en `crosshairs.json`.
+El `id` es el SteamID64 del jugador, el mismo que aparece en los archivos de datos y en el enlace a su perfil de Steam en la web.
+
+Las peticiones de retirada llegan como *issues* con la etiqueta `retirada`: añade el SteamID a `manual.json` con `"hidden": true`.
+
+### 6. Lista de pros
+
+`pipeline/pros.json` decide quién aparece en la pestaña **Pros**, con su nombre y equipo reales. Todos los demás jugadores siguen guardados y se pueden buscar en la pestaña **Jugadores**.
+
+```json
+[
+  { "id": "76561198386265483", "name": "donk", "team": "Team Spirit" }
+]
+```
+
+Para añadir un pro, busca su SteamID64 en la ficha de la pestaña Jugadores (enlace «Perfil de Steam») y añade una línea. Al guardar el archivo se actualiza la web sola y el jugador pasa a la pestaña Pros.
 
 ## Cómo se decide cada mira
 

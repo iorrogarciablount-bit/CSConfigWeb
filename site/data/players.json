@@ -1,115 +1,122 @@
 {
- "updated": "2026-10-13T14:28:37+00:00",
+ "updated": "2026-10-13T14:32:21+00:00",
  "players": [
   {
    "id": "76561198993617372",
    "name": "-kRyTouS",
-   "team": "team_NaZooie",
+   "team": "",
    "code": "CS9kuNw2rhmFuziEHydNGPmixhpYROUosvpGpnp8ZGpaGn",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "-kRyTouS",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
    "id": "76561198019099773",
    "name": "4iRT666",
-   "team": "team_4iRT777",
+   "team": "",
    "code": "CSxqxeWfqRS5oryYaYdVtAhFc8kGjy9jZ4A99B53c74HCX",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "4iRT666",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
    "id": "76561199575445914",
    "name": "4iRT777",
-   "team": "team_4iRT777",
+   "team": "",
    "code": "CS5rU8DLX5kELC4neFKAujc66pHxnosW3JodGq2opQZPYE",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
-  },
-  {
-   "id": "76561198386265483",
-   "name": "donk666",
-   "team": "team_4iRT777",
-   "code": "CSyyzoL6p5V6viP9XbXtuCmROKZpkeYRZPY6wiOTjxnRcU",
-   "since": "2026-10-13",
-   "seen": "2026-10-13",
-   "source": "Faceit donk",
-   "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "4iRT777",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
    "id": "76561198391953529",
    "name": "fuego-",
-   "team": "team_NaZooie",
+   "team": "",
    "code": "CSb7uHXB989YebCcoiuafDiUKZntFPoXCVySN5sMcwOAYF",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "fuego-",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
    "id": "76561198259666643",
    "name": "fZero",
-   "team": "team_4iRT777",
+   "team": "",
    "code": "CSbbGc7rSS2OQ9deuAHwVPx5rcfDSJOFZ3jwFX6nVB7KNQ",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "fZero",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
    "id": "76561199489151283",
    "name": "gweenscween",
-   "team": "team_4iRT777",
+   "team": "",
    "code": "CSctcV5yZOV3TQNrDVU9iC5299HnMYNtRjH3BwJtJLtmJd",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "gweenscween",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
    "id": "76561198145785381",
    "name": "miick",
-   "team": "team_NaZooie",
+   "team": "",
    "code": "CSx7XyDZSssaMmZqJppma4zo2EaokUwMRF3rCLMSi7QQHj",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "miick",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
    "id": "76561198119050123",
    "name": "NaZooie",
-   "team": "team_NaZooie",
+   "team": "",
    "code": "CSFLJGsfofJTRMnwx5op4TRbUaWVAXDda6J6HXmyLhFd3Y",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "NaZooie",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
    "id": "76561198992378287",
    "name": "xan1--",
-   "team": "team_NaZooie",
+   "team": "",
    "code": "CSDEDdkKjbwdAvvkTd5otYY3Epd6wrqKksTvGH8yuKT4PF",
    "since": "2026-10-13",
    "seen": "2026-10-13",
    "source": "Faceit donk",
    "map": "de_dust2",
-   "history": []
+   "history": [],
+   "faceit": "xan1--",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   }
  ]
 }

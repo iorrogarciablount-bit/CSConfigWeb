@@ -1,6 +1,9 @@
 name: Actualizar miras
 
 on:
+  push:
+    branches: [main]
+    paths: ["pipeline/pros.json", "pipeline/manual.json"]   # al editar la lista de pros o las correcciones
   release:
     types: [published]     # al publicar una release con demos adjuntas
   schedule:
@@ -55,7 +58,7 @@ jobs:
         run: |
           git config user.name "csconfig-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/data/crosshairs.json pipeline/state.json
+          git add -A site/data pipeline/state.json
           if git diff --cached --quiet; then
             echo "Sin cambios."
           else
