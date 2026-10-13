@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-13T14:32:21+00:00",
+ "updated": "2026-10-13T14:47:18+00:00",
  "players": [
   {
    "id": "76561198993617372",
@@ -41,6 +41,58 @@
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
+   "id": "76561197989744167",
+   "name": "apEX",
+   "team": "",
+   "code": "CSGO-VpGLE-fWvPH-q5P6H-PO9DZ-6hzsP",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "apEX",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
+   "id": "76561198088699136",
+   "name": "Domajzer",
+   "team": "",
+   "code": "CSGO-kcCNa-aKhUu-7TtBX-9emdT-pOfBN",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "Domajzer",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
+   "id": "76561197974587647",
+   "name": "Eliwig",
+   "team": "",
+   "code": "CSGO-NPuOr-zzw65-BoYMd-pBYmK-POz9H",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "Eliwig",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
+   "id": "76561198179938246",
+   "name": "frostt_-",
+   "team": "",
+   "code": "CSGO-x7LM7-jEncQ-sRBww-3dWfy-YnkzO",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "frostt_-",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
    "id": "76561198391953529",
    "name": "fuego-",
    "team": "",
@@ -65,6 +117,19 @@
    "history": [],
    "faceit": "fZero",
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
+  },
+  {
+   "id": "76561198227162904",
+   "name": "GrOgY",
+   "team": "",
+   "code": "CSGO-2rttS-Lemby-E67JC-RTvS4-jnkzO",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "GrOgY",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
   },
   {
    "id": "76561199489151283",
@@ -106,6 +171,58 @@
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
+   "id": "76561198166220336",
+   "name": "racketa89",
+   "team": "",
+   "code": "CSGO-yYDdn-owBnk-Czt8a-tc6Cx-bcwWK",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "racketa89",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
+   "id": "76561197988768248",
+   "name": "ScreaM",
+   "team": "",
+   "code": "CSGO-cza9w-45DzL-WJKz5-YO593-RL3fF",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "ScreaM",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
+   "id": "76561198006920295",
+   "name": "shox",
+   "team": "",
+   "code": "CSGO-nvYhy-b3GHp-4vbQP-uoTxh-jTzTC",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "shox",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
+   "id": "76561198074732054",
+   "name": "Snake---",
+   "team": "",
+   "code": "CSGO-ibGNo-nOUBV-NEmcO-bnUmY-7reRF",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "Snake---",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
    "id": "76561198992378287",
    "name": "xan1--",
    "team": "",
@@ -117,6 +234,19 @@
    "history": [],
    "faceit": "xan1--",
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
+  },
+  {
+   "id": "76561198113666193",
+   "name": "ZywOo",
+   "team": "",
+   "code": "CSGO-43Xd3-akOjE-fOHmW-GoRhM-sPcAB",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "ZywOo",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
   }
  ]
 }
