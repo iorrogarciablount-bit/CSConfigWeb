@@ -1,0 +1,5 @@
+pipeline/demos/*
+!pipeline/demos/.gitkeep
+__pycache__/
+*.pyc
+.venv/

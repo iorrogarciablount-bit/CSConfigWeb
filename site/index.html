@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Miras de jugadores pro de CS2 · CSConfig</title>
+<meta name="description" content="Base de datos de miras de jugadores profesionales de CS2, sacadas de demos de partidas reales y actualizada a diario. Copia el código y pégalo en el juego.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="./"><h1>CS<span>Config</span></h1></a>
+  <nav class="topnav">
+    <a href="./" aria-current="page" data-i="navPros">Miras pro</a>
+    <a href="conversor/" data-i="navConv">Conversor</a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div>
+    <h2 class="ptitle" data-i="title">Miras de los <span>pros</span></h2>
+    <p class="lead" data-i="lead"></p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="stPlayers">–</b><span data-i="stPlayers">Jugadores</span></div>
+    <div class="stat"><b id="stTeams">–</b><span data-i="stTeams">Equipos</span></div>
+    <div class="stat"><b id="stUpdated">–</b><span data-i="stUpdated">Actualizado</span></div>
+  </div>
+
+  <section class="card">
+    <p class="step"><span data-i="find">Buscar</span></p>
+    <div class="filters">
+      <input type="search" id="q" autocomplete="off" spellcheck="false">
+      <select id="team" aria-label="Equipo"></select>
+      <select id="sort" aria-label="Orden"></select>
+    </div>
+    <div class="toolbar">
+      <div class="chips" id="bgChips"></div>
+      <span class="count" id="count"></span>
+    </div>
+  </section>
+
+  <section class="plist" id="list" aria-live="polite"></section>
+
+  <details>
+    <summary data-i="aboutTitle">Cómo funciona</summary>
+    <div class="faq" id="about" style="margin-top:14px"></div>
+  </details>
+
+  <footer data-i="footer"></footer>
+</main>
+
+<dialog class="sheet" id="sheet" aria-labelledby="sName">
+  <div class="shead">
+    <h2 id="sName"></h2>
+    <button class="xbtn" id="sClose" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="sbody">
+    <div class="codebox">
+      <p class="code" id="sCode"></p>
+      <button class="copy" id="sCopy" data-i="copy">Copiar</button>
+    </div>
+    <div class="sgrid">
+      <canvas id="sCv" width="300" height="300" aria-label="Vista previa de la mira"></canvas>
+      <table class="vtable"><tbody id="sVals"></tbody></table>
+    </div>
+    <div>
+      <p class="step" style="margin:0 0 10px;background:none;border:0;padding:0" data-i="history">Historial</p>
+      <ul class="hist" id="sHist"></ul>
+    </div>
+    <p class="src" id="sSrc"></p>
+  </div>
+</dialog>
+
+<script src="assets/crosshair.js"></script>
+<script>
+(() => {
+const T = {
+es: {
+  navPros:'Miras pro', navConv:'Conversor', title:'Miras de los <span>pros</span>',
+  lead:'Las miras que usan los jugadores profesionales, sacadas directamente de las demos de sus partidas y actualizadas cada día. Pulsa un jugador para ver los detalles y copiar su código.',
+  stPlayers:'Jugadores', stTeams:'Equipos', stUpdated:'Actualizado', find:'Buscar',
+  q:'Jugador o equipo…', allTeams:'Todos los equipos', sort:['Recientes','Nombre','Equipo'],
+  count:(n, t) => `${n} de ${t} jugadores`, copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
+  history:'Historial de miras', current:'actual', since:'desde', use:'Usar',
+  changed:'Cambió hace poco', source:(s, d) => `Visto por última vez el ${d} · ${s}`,
+  vals:{style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor', color:'Color', a:'Opacidad', dot:'Punto', t:'Estilo T', outline:'Contorno', recoil:'Sigue el retroceso', h:'Resolución del código'},
+  yes:'Sí', no:'No', outlineOpts:['No','Completo','Medio'],
+  emptyTitle:'La base de datos se está llenando', emptyText:'Las miras aparecen aquí en cuanto se procesa la primera tanda de demos. Vuelve en unas horas.',
+  noMatch:'Ningún jugador coincide con la búsqueda.', loadErr:'No se han podido cargar los datos. Recarga la página.',
+  aboutTitle:'Cómo funciona',
+  about:[['¿De dónde salen las miras?','Cada demo de CS2 guarda el código de mira de todos los jugadores. Analizamos demos de partidas profesionales y guardamos la mira que cada jugador tenía al final del partido.'],
+         ['¿Cada cuánto se actualiza?','Una vez al día. Si un jugador cambia de mira, la nueva aparece arriba y la anterior queda en su historial.'],
+         ['¿Cómo la pongo en el juego?','Copia el código y en CS2 ve a Ajustes → Juego → Mira / Miras telescópicas → Compartir o importar → pega y pulsa Importar.'],
+         ['Tengo un código antiguo (CSGO-…)','Usa el conversor de la pestaña Conversor para pasarlo al formato nuevo.']],
+  footer:'Proyecto independiente. No está afiliado ni respaldado por Valve ni por los equipos o jugadores que aparecen.',
+  styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
+  locale:'es-ES',
+},
+en: {
+  navPros:'Pro crosshairs', navConv:'Converter', title:'Pro <span>crosshairs</span>',
+  lead:'The crosshairs pro players actually use, pulled straight from their match demos and updated every day. Tap a player to see the details and copy their code.',
+  stPlayers:'Players', stTeams:'Teams', stUpdated:'Updated', find:'Search',
+  q:'Player or team…', allTeams:'All teams', sort:['Recent','Name','Team'],
+  count:(n, t) => `${n} of ${t} players`, copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
+  history:'Crosshair history', current:'current', since:'since', use:'Use',
+  changed:'Recently changed', source:(s, d) => `Last seen ${d} · ${s}`,
+  vals:{style:'Style', length:'Length', gap:'Gap', thickness:'Thickness', color:'Color', a:'Opacity', dot:'Dot', t:'T style', outline:'Outline', recoil:'Follow recoil', h:'Code resolution'},
+  yes:'Yes', no:'No', outlineOpts:['No','Full','Half'],
+  emptyTitle:'The database is filling up', emptyText:'Crosshairs show up here as soon as the first batch of demos is processed. Check back in a few hours.',
+  noMatch:'No player matches your search.', loadErr:'The data could not be loaded. Reload the page.',
+  aboutTitle:'How it works',
+  about:[['Where do the crosshairs come from?','Every CS2 demo stores each player\'s crosshair code. We parse demos from pro matches and keep the crosshair each player had at the end of the match.'],
+         ['How often is it updated?','Once a day. If a player changes crosshair, the new one moves to the top and the old one stays in their history.'],
+         ['How do I use it in game?','Copy the code, then in CS2 go to Settings → Game → Crosshair / Scopes → Share or Import → paste and press Import.'],
+         ['I have an old code (CSGO-…)','Use the Converter tab to turn it into the new format.']],
+  footer:'Independent project. Not affiliated with or endorsed by Valve or the teams and players shown.',
+  styles:['Dynamic cross','Dynamic circle','Dynamic cross (legacy)','Static circle','Static cross','Static cross with shot feedback','Dot only','Dynamic quad','Static square','Static quad'],
+  locale:'en-GB',
+}};
+const MAPN = typeof MAPS !== 'undefined' ? MAPS : [];
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
+let bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, 6);
+let data = null, rows = [], loadFailed = false, current = null;
+const t = () => T[lang];
+
+const fmtDate = iso => { try { return new Date(iso).toLocaleDateString(t().locale, { day:'numeric', month:'short', year:'numeric' }); } catch { return iso || ''; } };
+const daysAgo = iso => (Date.now() - new Date(iso).getTime()) / 864e5;
+
+function decodeSafe(code) { try { return anyCode(code); } catch { return null; } }
+
+function drawThumb(cv, n) {
+  const p = newParams(n), z = clamp(fitZoom(cv.width, p), 2, 4);
+  paint(cv, p, z, bgIdx);
+}
+
+function card(r) {
+  const n = r.n, L = t();
+  const b = document.createElement('button');
+  b.className = 'pcard'; b.type = 'button';
+  b.innerHTML = `<canvas width="96" height="96" aria-hidden="true"></canvas>
+    <span class="pbody"><span class="pname">${esc(r.name)}</span><span class="pteam">${esc(r.team || '—')}</span>
+    <span class="specs"><span>L <b>${n.length}</b></span><span>G <b>${n.gap}</b></span><span>T <b>${n.thickness}</b></span>
+    <span><i class="swatch" style="background:rgb(${n.r},${n.g},${n.b})"></i></span>${n.dot ? '<span>•</span>' : ''}</span>
+    ${r.changed ? `<span class="badge">${L.changed}</span>` : ''}</span>`;
+  b.onclick = () => openSheet(r);
+  drawThumb(b.querySelector('canvas'), n);
+  return b;
+}
+
+function list() {
+  const L = t(), box = $('list');
+  box.innerHTML = '';
+  if (loadFailed) { box.innerHTML = `<div class="card empty" style="grid-column:1/-1"><p>${L.loadErr}</p></div>`; return; }
+  if (!rows.length) { box.innerHTML = `<div class="card empty" style="grid-column:1/-1"><h3>${L.emptyTitle}</h3><p>${L.emptyText}</p></div>`; $('count').textContent = ''; return; }
+  const q = $('q').value.trim().toLowerCase(), team = $('team').value, sort = +$('sort').value;
+  let out = rows.filter(r => (!team || r.team === team) && (!q || r.name.toLowerCase().includes(q) || (r.team || '').toLowerCase().includes(q)));
+  const by = [(a, b) => (b.seen || '').localeCompare(a.seen || '') || a.name.localeCompare(b.name),
+              (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity:'base' }),
+              (a, b) => (a.team || '~').localeCompare(b.team || '~') || a.name.localeCompare(b.name)][sort] ;
+  out.sort(by);
+  $('count').textContent = L.count(out.length, rows.length);
+  if (!out.length) { box.innerHTML = `<div class="card empty" style="grid-column:1/-1"><p>${L.noMatch}</p></div>`; return; }
+  const frag = document.createDocumentFragment();
+  out.forEach(r => frag.append(card(r)));
+  box.append(frag);
+}
+
+function fillFilters() {
+  const L = t(), teamSel = $('team'), keep = teamSel.value;
+  const teams = [...new Set(rows.map(r => r.team).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  teamSel.innerHTML = `<option value="">${L.allTeams}</option>` + teams.map(x => `<option>${esc(x)}</option>`).join('');
+  teamSel.value = teams.includes(keep) ? keep : '';
+  const s = $('sort'), ks = s.value || '0';
+  s.innerHTML = L.sort.map((x, i) => `<option value="${i}">${x}</option>`).join(''); s.value = ks;
+  $('q').placeholder = L.q;
+  $('stPlayers').textContent = rows.length || (data ? 0 : '–');
+  $('stTeams').textContent = teams.length || (data ? 0 : '–');
+  $('stUpdated').textContent = data && data.updated ? fmtDate(data.updated) : '–';
+}
+
+function valsTable(n) {
+  const L = t(), V = L.vals;
+  const rowsV = [[V.style, L.styles[n.style] ?? n.style], [V.length, n.length], [V.gap, n.gap], [V.thickness, n.thickness],
+    [V.color, `<i class="swatch" style="background:rgb(${n.r},${n.g},${n.b})"></i> ${n.r} ${n.g} ${n.b}`], [V.a, n.a],
+    [V.dot, n.dot ? L.yes : L.no], [V.t, n.t ? L.yes : L.no], [V.outline, L.outlineOpts[n.outline] ?? n.outline],
+    [V.recoil, n.recoil ? L.yes : L.no], [V.h, n.h ? `${n.h}p` : '—']];
+  return rowsV.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+}
+
+function showCode(r, code) {
+  const n = decodeSafe(code); if (!n) return;
+  // los códigos antiguos ya no se pueden importar: mostramos su equivalente nuevo
+  $('sCode').textContent = /^CSGO-/.test(code) ? encodeNew(n) : code; $('sVals').innerHTML = valsTable(n);
+  const p = newParams(n); paint($('sCv'), p, fitZoom($('sCv').width, p), bgIdx);
+}
+
+function openSheet(r) {
+  const L = t(); current = r;
+  $('sName').innerHTML = `${esc(r.name)}<small>${esc(r.team || '')}</small>`;
+  showCode(r, r.code);
+  const hist = [{ code: r.code, from: r.since, now: true }, ...(r.history || []).slice().reverse()];
+  $('sHist').innerHTML = hist.map((h, i) => `<li><time>${h.from ? fmtDate(h.from) : ''}</time><code>${esc(h.code)}</code>${h.now ? `<span class="badge" style="margin:0">${L.current}</span>` : `<button class="mini" data-h="${i}">${L.use}</button>`}</li>`).join('');
+  $('sHist').querySelectorAll('[data-h]').forEach(btn => btn.onclick = () => showCode(r, hist[+btn.dataset.h].code));
+  $('sSrc').textContent = r.seen ? L.source(r.source || 'demo', fmtDate(r.seen)) : '';
+  const d = $('sheet');
+  if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
+}
+
+let copyTimer;
+$('sCopy').onclick = async () => {
+  const L = t(), btn = $('sCopy');
+  try { await navigator.clipboard.writeText($('sCode').textContent); btn.textContent = L.copied; btn.classList.add('done'); }
+  catch { const r = document.createRange(); r.selectNodeContents($('sCode')); getSelection().removeAllRanges(); getSelection().addRange(r); btn.textContent = L.selected; }
+  clearTimeout(copyTimer); copyTimer = setTimeout(() => { btn.textContent = L.copy; btn.classList.remove('done'); }, 1800);
+};
+$('sClose').onclick = () => { const d = $('sheet'); d.close ? d.close() : d.removeAttribute('open'); };
+$('sheet').addEventListener('click', e => { if (e.target === $('sheet')) $('sClose').onclick(); });
+
+function buildBg() {
+  const box = $('bgChips'); box.innerHTML = '';
+  MAPN.forEach((name, i) => {
+    const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = name;
+    b.setAttribute('aria-pressed', i === bgIdx);
+    b.onclick = () => { bgIdx = i; store.set('bg', i); buildBg(); list(); if (current && $('sheet').open) showCode(current, $('sCode').textContent); };
+    box.append(b);
+  });
+}
+
+function applyLang() {
+  const L = t();
+  document.documentElement.lang = lang;
+  document.title = (lang === 'es' ? 'Miras de jugadores pro de CS2' : 'CS2 pro player crosshairs') + ' · CSConfig';
+  document.querySelectorAll('[data-i]').forEach(el => { const v = L[el.dataset.i]; if (typeof v === 'string') el.innerHTML = v; });
+  $('about').innerHTML = L.about.map(([q, a]) => `<div><h3>${q}</h3><p>${a}</p></div>`).join('');
+  $('lang_es').setAttribute('aria-pressed', lang === 'es'); $('lang_en').setAttribute('aria-pressed', lang === 'en');
+  fillFilters(); list();
+}
+
+$('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
+$('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
+['q', 'team', 'sort'].forEach(id => $(id).addEventListener('input', list));
+
+function load(json) {
+  data = json || { players: [] };
+  rows = (data.players || []).map(p => ({ ...p, n: decodeSafe(p.code) })).filter(r => r.n && r.name);
+  rows.forEach(r => { r.changed = (r.history || []).length > 0 && r.since && daysAgo(r.since) < 14; });
+  fillFilters(); list();
+}
+
+buildBg(); applyLang();
+fetch('data/crosshairs.json', { cache: 'no-cache' })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(load)
+  .catch(() => { loadFailed = true; list(); });
+})();
+</script>
+</body>
+</html>

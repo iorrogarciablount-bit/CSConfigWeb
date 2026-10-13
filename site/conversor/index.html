@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conversor de miras CS2 · CSConfig</title>
+<meta name="description" content="Convierte tu código de mira antiguo de CS2 (CSGO-…) al nuevo formato tras la actualización Rush Hour. Gratis, en el navegador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/app.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
+  <nav class="topnav">
+    <a href="../" data-i="navPros">Miras pro</a>
+    <a href="./" aria-current="page" data-i="navConv">Conversor</a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
+    </div>
+  </nav>
+</header>
+<main>
+  <div>
+    <h2 class="ptitle" data-i="title">Conversor de miras <span>CS2</span></h2>
+    <p class="lead" data-i="lead"></p>
+  </div>
+
+  <section class="card">
+    <p class="step"><i>1</i><span data-i="s1"></span></p>
+    <textarea id="src" spellcheck="false" autocomplete="off" aria-labelledby="s1lbl"></textarea>
+    <span id="s1lbl" hidden data-i="s1"></span>
+    <div class="chips under" id="samples"><span class="lbl" data-i="try"></span></div>
+    <p id="msg" role="status"></p>
+  </section>
+
+  <section class="card">
+    <p class="step"><i>2</i><span data-i="s2"></span></p>
+    <div class="chips" id="resChips"></div>
+    <div class="chips under" id="customWrap" hidden>
+      <label for="resCustom" class="lbl" data-i="height"></label>
+      <input type="number" id="resCustom" min="240" max="4320" value="900"> <span class="lbl">px</span>
+    </div>
+    <p class="fine" data-i="s2help"></p>
+  </section>
+
+  <section class="card result" aria-live="polite">
+    <p class="step"><i>3</i><span data-i="s3"></span></p>
+    <div class="codebox">
+      <p class="code" id="newCode">—</p>
+      <button class="copy" id="copyCode" data-i="copy"></button>
+    </div>
+    <div class="howto" id="howto"></div>
+    <ul id="warns"></ul>
+  </section>
+
+  <section class="card">
+    <div class="viewhead">
+      <p class="step"><span data-i="preview"></span></p>
+      <div class="chips" id="bgChips"></div>
+    </div>
+    <div class="cmp">
+      <figure>
+        <div class="stage"><canvas class="zoom" id="cvOld" width="360" height="360"></canvas><span class="tag" data-i="before"></span></div>
+        <figcaption><canvas class="real" id="cvOld1" width="40" height="40"></canvas><span id="capOld"></span></figcaption>
+      </figure>
+      <figure>
+        <div class="stage"><canvas class="zoom" id="cvNew" width="360" height="360"></canvas><span class="tag new" data-i="after"></span></div>
+        <figcaption><canvas class="real" id="cvNew1" width="40" height="40"></canvas><span id="capNew"></span></figcaption>
+      </figure>
+    </div>
+    <p class="fine" data-i="realsize"></p>
+  </section>
+
+  <section class="card">
+    <p class="step"><span data-i="tune"></span></p>
+    <div class="grid" id="ctls"></div>
+    <div class="toggles" id="toggles"></div>
+  </section>
+
+  <details>
+    <summary data-i="cmdsTitle"></summary>
+    <p class="fine" data-i="cmdsHelp"></p>
+    <pre id="cmds"></pre>
+    <button class="link" id="copyCmds" data-i="copyCmds"></button>
+  </details>
+
+  <details>
+    <summary data-i="faqTitle"></summary>
+    <div class="faq" id="faq" style="margin-top:14px"></div>
+  </details>
+
+  <footer data-i="footer"></footer>
+</main>
+<script src="../assets/crosshair.js"></script>
+<script>
+(() => {
+
+const T = {
+es: {
+  navPros:'Miras pro', navConv:'Conversor',
+  title:'Conversor de miras <span>CS2</span>',
+  lead:'Desde la actualización Rush Hour los códigos antiguos dan «Invalid or old crosshair code». Pega el tuyo y te damos el código nuevo, con los mismos píxeles que veías.',
+  s1:'Pega tu código antiguo o tus comandos', ph:'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx\no comandos: cl_crosshairsize 2; cl_crosshairgap -3; …',
+  try:'Prueba con:', s2:'¿A qué resolución juegas?', height:'Alto', other:'Otra',
+  s2help:'Solo importa la altura. Si juegas estirado (por ejemplo 1280×960 o 1440×1080), elige esa.',
+  s3:'Copia tu código nuevo', copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
+  howto:['Ajustes','Juego','Mira / Miras telescópicas','Compartir o importar','Pegar e Importar'],
+  preview:'Vista previa', before:'Antes', after:'Después',
+  realsize:'Fondos: escenas desenfocadas con los colores y la luz de cada mapa, para ver cómo contrasta tu mira. Los cuadrados pequeños muestran la mira a tamaño real; las ampliadas comparten zoom.',
+  tune:'Ajustes finos (opcional)', was:'Antes:', style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor',
+  color:'Color', opacity:'Opacidad', outline:'Contorno', outlineOpts:['Sin contorno','Completo','Solo medio'],
+  dot:'Punto central', t:'Estilo T', recoil:'Sigue el retroceso',
+  cmdsTitle:'Comandos de consola', cmdsHelp:'Alternativa al código: pégalos en la consola (~) o en tu autoexec.cfg.', copyCmds:'Copiar comandos',
+  faqTitle:'Preguntas frecuentes',
+  faq:[['¿Por qué mi código antiguo ya no funciona?','La actualización Rush Hour (22 de septiembre de 2026) cambió la mira a un sistema en píxeles y el formato de los códigos. El juego rechaza los de antes.'],
+       ['¿Se verá exactamente igual?','Sí en tamaño, grosor y separación: calculamos los píxeles que veías a tu resolución. Algunas opciones antiguas, como el grosor de contorno o la separación por arma, ya no existen y te avisamos si las usabas.'],
+       ['¿Y si cambio de resolución?','El código guarda la resolución a la que se creó y CS2 reescala la mira automáticamente.'],
+       ['¿Se envía mi código a algún sitio?','No. Todo se calcula en tu navegador.']],
+  footer:'Herramienta no oficial. No está afiliada ni respaldada por Valve.',
+  okCode:(o)=>`Código antiguo leído: size ${o.size}, gap ${o.gap}, thickness ${o.thickness}.`,
+  okCmds:(n)=>`Leídos ${n} comando${n===1?'':'s'}; lo que falte usa el valor por defecto antiguo.`,
+  e_badchar:(c)=>`El carácter «${c}» no puede ir en un código. Revisa confusiones como 0/O o 1/l.`,
+  e_checksum:'El código no cuadra: seguramente hay un carácter mal copiado.', e_invalid:'Ese código no es válido.',
+  e_already:'Ese ya es un código nuevo: impórtalo directamente en CS2.', e_newcmds:'Esos ya son comandos del sistema nuevo: no hace falta convertirlos.',
+  e_none:'No encuentro un código CSGO-… ni comandos antiguos como cl_crosshairsize 2.', empty:'Pega un código para empezar.',
+  w_style:(a,b)=>`El estilo antiguo «${a}» no tiene equivalente exacto; usamos «${b}».`,
+  w_wgap:'«Usar separación del arma» ya no existe: tu separación fija vale para todas las armas.',
+  w_outline:(n)=>`Tu contorno era de ${n} px; el nuevo siempre es de 1 px.`,
+  capOld:(px)=>`${px.len} px largo · ${px.thick} px grosor`, capNew:(n,z)=>`${n} · zoom ${z}×`,
+  bg:['Arena','Cielo','Sombra','Hierba','Nieve'],
+  styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
+},
+en: {
+  navPros:'Pro crosshairs', navConv:'Converter',
+  title:'CS2 Crosshair <span>Converter</span>',
+  lead:'Since the Rush Hour update, old codes give "Invalid or old crosshair code". Paste yours and get the new code with the same pixels you used to see.',
+  s1:'Paste your old code or commands', ph:'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx\nor commands: cl_crosshairsize 2; cl_crosshairgap -3; …',
+  try:'Try:', s2:'What resolution do you play at?', height:'Height', other:'Other',
+  s2help:'Only the height matters. If you play stretched (e.g. 1280×960 or 1440×1080), pick that one.',
+  s3:'Copy your new code', copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
+  howto:['Settings','Game','Crosshair / Scopes','Share or Import','Paste and Import'],
+  preview:'Preview', before:'Before', after:'After',
+  realsize:'Backgrounds: out-of-focus scenes in each map\'s colors and light, to check how your crosshair stands out. The small squares show it at actual size; the large ones share the same zoom.',
+  tune:'Fine-tune (optional)', was:'Before:', style:'Style', length:'Length', gap:'Gap', thickness:'Thickness',
+  color:'Color', opacity:'Opacity', outline:'Outline', outlineOpts:['No outline','Full','Half'],
+  dot:'Center dot', t:'T style', recoil:'Follow recoil',
+  cmdsTitle:'Console commands', cmdsHelp:'An alternative to the code: paste them in the console (~) or your autoexec.cfg.', copyCmds:'Copy commands',
+  faqTitle:'FAQ',
+  faq:[['Why doesn\'t my old code work any more?','The Rush Hour update (22 September 2026) moved the crosshair to a pixel-based system with a new share-code format. The game rejects older codes.'],
+       ['Will it look exactly the same?','Yes for length, thickness and gap: we compute the pixels you saw at your resolution. A few old options, like outline thickness or per-weapon gap, no longer exist, and we tell you if you used them.'],
+       ['What if I change resolution?','The code stores the resolution it was made at, and CS2 rescales the crosshair for you.'],
+       ['Is my code sent anywhere?','No. Everything runs in your browser.']],
+  footer:'Unofficial tool. Not affiliated with or endorsed by Valve.',
+  okCode:(o)=>`Old code read: size ${o.size}, gap ${o.gap}, thickness ${o.thickness}.`,
+  okCmds:(n)=>`Read ${n} command${n===1?'':'s'}; anything missing uses the old default.`,
+  e_badchar:(c)=>`"${c}" can't appear in a code. Check for 0/O or 1/l mix-ups.`,
+  e_checksum:'The code doesn\'t add up: a character is probably mistyped.', e_invalid:'That code isn\'t valid.',
+  e_already:'That\'s already a new code: import it straight into CS2.', e_newcmds:'Those are already new-system commands: nothing to convert.',
+  e_none:'No CSGO-… code or old commands like cl_crosshairsize 2 found.', empty:'Paste a code to start.',
+  w_style:(a,b)=>`Old style "${a}" has no exact match; using "${b}".`,
+  w_wgap:'"Use weapon gap" no longer exists: your fixed gap now applies to every weapon.',
+  w_outline:(n)=>`Your outline was ${n}px; the new one is always 1px.`,
+  capOld:(px)=>`${px.len}px long · ${px.thick}px thick`, capNew:(n,z)=>`${n} · ${z}× zoom`,
+  bg:['Sand','Sky','Shadow','Grass','Snow'],
+  styles:['Dynamic cross','Dynamic circle','Dynamic cross (legacy)','Static circle','Static cross','Static cross with shot feedback','Dot only','Dynamic quad','Static square','Static quad'],
+}};
+const OLD_STYLE = ['Default','Default Static','Classic','Classic Dynamic','Classic Static','Legacy'];
+const PRESET_NAME = {es:['rojo','verde','amarillo','azul','cian'],en:['red','green','yellow','blue','cyan']};
+const SAMPLES = [['donk','CSGO-aNQn2-upV5w-M8dOd-OOwcf-2pFKO'],['s1mple','CSGO-s5Qbj-nvF89-cJjDd-mRdSG-5Yt4N'],['m0NESY','CSGO-wAD3c-ykt5L-zvZ98-vBisR-6sWPA'],['ZywOo','CSGO-hzGdv-OVFPn-OarUo-OSZCY-wwXsO']];
+const RES = [[1080,'1080p · 1920×1080 / 1440×1080'],[1440,'1440p'],[960,'1280×960'],[1050,'1680×1050'],[900,'1600×900'],[1024,'1280×1024'],[768,'1024×768'],[720,'720p'],[2160,'4K']];
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+
+let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
+let resH = +(store.get('res') || 1080), bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, 6);
+let old = null, neu = null;
+const t = () => T[lang];
+
+const CFG_KEYS = {cl_crosshairsize:'size',cl_crosshairgap:'gap',cl_crosshairthickness:'thickness',cl_crosshairstyle:'style',cl_crosshairdot:'dot',cl_crosshair_t:'t',cl_crosshair_drawoutline:'drawoutline',cl_crosshair_outlinethickness:'outlinethickness',cl_crosshaircolor:'color',cl_crosshaircolor_r:'r',cl_crosshaircolor_g:'g',cl_crosshaircolor_b:'b',cl_crosshairalpha:'alpha',cl_crosshairusealpha:'usealpha',cl_crosshair_recoil:'recoil',cl_crosshairgap_useweaponvalue:'useweapongap',cl_crosshair_dynamic_splitdist:'splitdist',cl_crosshair_dynamic_splitalpha_innermod:'innermod',cl_crosshair_dynamic_splitalpha_outermod:'outermod',cl_crosshair_dynamic_maxdist_splitratio:'splitratio'};
+const CFG_DEFAULTS = {size:5,gap:1,thickness:.5,style:4,dot:0,t:0,drawoutline:1,outlinethickness:1,color:1,r:50,g:250,b:50,alpha:200,usealpha:1,recoil:0,useweapongap:0,splitdist:3,innermod:0,outermod:1,splitratio:1};
+function parseCfg(text) {
+  const o = {...CFG_DEFAULTS}; let hits = 0, already = false;
+  for (const stmt of text.split(/[;\n\r]+/)) {
+    const m = stmt.trim().match(/^([a-z_0-9]+)\s+"?(-?[\d.]+|true|false)"?/i);
+    if (!m) continue;
+    const key = m[1].toLowerCase(); let v = m[2].toLowerCase();
+    v = v === 'true' ? 1 : v === 'false' ? 0 : parseFloat(v);
+    if (/^cl_crosshair_(length|gap|thickness)$/.test(key)) already = true;
+    if (key in CFG_KEYS) { o[CFG_KEYS[key]] = v; hits++; }
+  }
+  if (!hits) throw new Error(already ? 'newcmds' : 'none');
+  o._hits = hits; return o;
+}
+const H = () => resH === 0 ? clamp(+$('resCustom').value || 1080, 240, 4320) : resH;
+const oldColor = o => (o.color !== 5 && PRESET[o.color]) ? PRESET[o.color] : [o.r, o.g, o.b];
+const hex = (r,g,b) => '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+
+
+function render() {
+  if (!old || !neu) { [['cvOld',4],['cvNew',4],['cvOld1',1],['cvNew1',1]].forEach(([id, z]) => { const cv = $(id), x = cv.getContext('2d'); if (x) drawBg(x, cv.width, z, Math.floor(cv.width / z / 2), bgIdx); }); $('capOld').textContent = $('capNew').textContent = ''; return; }
+  const px = oldPx(old, H()), rgb = oldColor(old);
+  const pOld = { len: px.len, thick: px.thick, gap: px.gap, dot: old.dot, t: old.t, arms: true,
+    outline: old.drawoutline ? Math.max(1, bround(old.outlinethickness)) : 0, outlineColor: '#000',
+    color: `rgba(${rgb},${old.usealpha ? old.alpha / 255 : 1})` };
+  const st = neu.style, th = Math.max(1, neu.thickness);
+  const pNew = { len: neu.length, thick: th, gap: neu.gap - th % 2, dot: neu.dot || st === 6, t: neu.t,
+    outline: neu.outline ? 1 : 0, outlineColor: `rgba(${neu.or},${neu.og},${neu.ob},${neu.oa / 255})`,
+    arms: [0, 2, 4, 5, 7, 9].includes(st), circle: [1, 3].includes(st), quad: [7, 8, 9].includes(st),
+    color: `rgba(${neu.r},${neu.g},${neu.b},${neu.a / 255})` };
+  const W = $('cvOld').width, span = Math.max(extent(pOld), extent(pNew)) * 2 + 6;
+  const zoom = clamp(Math.floor(W / span), 2, 14);
+  paint($('cvOld'), pOld, zoom, bgIdx); paint($('cvNew'), pNew, zoom, bgIdx);
+  paint($('cvOld1'), pOld, 1, bgIdx); paint($('cvNew1'), pNew, 1, bgIdx);
+  $('capOld').textContent = `${OLD_STYLE[old.style] ?? ''} · ${t().capOld(px)}`;
+  $('capNew').textContent = t().capNew(t().styles[st] ?? st, zoom);
+}
+
+/* ---------- controles ---------- */
+function buildControls() {
+  const L = t(), o = old, px = o ? oldPx(o, H()) : null;
+  const wasTxt = s => o ? `<span class="old">${L.was} ${s}</span>` : '';
+  const range = (key, label, cvar, rmin, rmax, nmin, nmax, was) => `
+    <div class="ctl"><div class="name"><label for="r_${key}">${label}</label><small>${cvar}</small></div>
+      <div class="pair"><input type="range" id="r_${key}" min="${rmin}" max="${rmax}" step="1" data-k="${key}" aria-label="${label}">
+      <input type="number" id="n_${key}" min="${nmin}" max="${nmax}" step="1" data-k="${key}" aria-label="${label}"></div>${wasTxt(was)}</div>`;
+  const rgb = o ? oldColor(o) : [0,255,0];
+  const colorWas = o ? (o.color !== 5 && PRESET_NAME[lang][o.color] ? PRESET_NAME[lang][o.color] : hex(...rgb)) : '';
+  $('ctls').innerHTML =
+    `<div class="ctl"><div class="name"><label for="n_style">${L.style}</label><small>cl_crosshairstyle</small></div>
+      <select class="sel" id="n_style" data-k="style">${L.styles.map((n, i) => `<option value="${i}">${i} · ${n}</option>`).join('')}</select>${wasTxt(o ? OLD_STYLE[o.style] : '')}</div>` +
+    range('length', L.length, 'cl_crosshair_length', 0, 40, 0, 255, o ? `size ${o.size} (${px.len} px)` : '') +
+    range('gap', L.gap, 'cl_crosshair_gap', -10, 30, -3840, 3840, o ? `gap ${o.gap}` : '') +
+    range('thickness', L.thickness, 'cl_crosshair_thickness', 0, 10, 0, 31, o ? `thickness ${o.thickness} (${px.thick} px)` : '') +
+    `<div class="ctl"><div class="name"><label for="n_color">${L.color}</label><small>cl_crosshaircolor_r/g/b</small></div>
+      <div class="pair"><input type="color" id="n_color" data-k="color"><input type="range" id="r_a" min="0" max="255" step="1" data-k="a" aria-label="${L.opacity}"><input type="number" id="n_a" min="0" max="255" step="1" data-k="a" aria-label="${L.opacity}"></div>${wasTxt(colorWas + (o && o.usealpha ? ` · alpha ${o.alpha}` : ''))}</div>` +
+    `<div class="ctl"><div class="name"><label for="n_outline">${L.outline}</label><small>cl_crosshair_drawoutline</small></div>
+      <select class="sel" id="n_outline" data-k="outline">${L.outlineOpts.map((n, i) => `<option value="${i}">${n}</option>`).join('')}</select>${wasTxt(o ? (o.drawoutline ? `${o.outlinethickness} px` : L.outlineOpts[0]) : '')}</div>`;
+  $('toggles').innerHTML = [['dot', L.dot], ['t', L.t], ['recoil', L.recoil]].map(([k, n]) =>
+    `<label class="sw"><input type="checkbox" id="n_${k}" data-k="${k}"> ${n}</label>`).join('');
+  document.querySelectorAll('#ctls [data-k], #toggles [data-k]').forEach(el => el.addEventListener('input', onCtl));
+  syncControls();
+}
+function syncControls() {
+  const dis = !neu;
+  document.querySelectorAll('#ctls [data-k], #toggles [data-k]').forEach(el => el.disabled = dis);
+  if (!neu) return;
+  for (const k of ['length','gap','thickness','a']) { $('n_' + k).value = neu[k]; $('r_' + k).value = neu[k]; }
+  $('n_style').value = neu.style; $('n_outline').value = neu.outline;
+  $('n_color').value = hex(neu.r, neu.g, neu.b);
+  for (const k of ['dot','t','recoil']) $('n_' + k).checked = !!neu[k];
+}
+const LIM = {length:[0,255], gap:[-3840,3840], thickness:[0,31], a:[0,255], style:[0,9], outline:[0,2]};
+function onCtl(e) {
+  if (!neu) return;
+  const el = e.target, k = el.dataset.k;
+  if (k === 'color') { const v = el.value; neu.r = parseInt(v.slice(1,3),16); neu.g = parseInt(v.slice(3,5),16); neu.b = parseInt(v.slice(5,7),16); }
+  else if (el.type === 'checkbox') neu[k] = el.checked ? 1 : 0;
+  else { const v = parseInt(el.value, 10); if (Number.isNaN(v)) return; neu[k] = clamp(v, ...LIM[k]); if (k === 'a') neu.oa = neu.a; }
+  const other = el.id.startsWith('r_') ? $('n_' + k) : $('r_' + k);
+  if (other && other !== el) other.value = neu[k];
+  output(); render();
+}
+
+/* ---------- salida ---------- */
+function cmdList() {
+  return [['cl_crosshairstyle', neu.style], ['cl_crosshair_length', neu.length], ['cl_crosshair_gap', neu.gap], ['cl_crosshair_thickness', neu.thickness],
+    ['cl_crosshairdot', neu.dot], ['cl_crosshair_t', neu.t], ['cl_crosshair_drawoutline', neu.outline],
+    ['cl_crosshaircolor_r', neu.r], ['cl_crosshaircolor_g', neu.g], ['cl_crosshaircolor_b', neu.b], ['cl_crosshaircolor_a', neu.a],
+    ['cl_crosshair_recoil', neu.recoil]].map(([k, v]) => `${k} ${v}`).join('; ');
+}
+function output() {
+  $('newCode').textContent = neu ? encodeNew(neu) : '—';
+  $('cmds').textContent = neu ? cmdList() : '';
+  $('copyCode').disabled = !neu;
+}
+function setMsg(kind, text) { $('msg').className = kind; $('msg').textContent = text; }
+function errText(e) {
+  const m = e.message, L = t();
+  if (m.startsWith('badchar:')) return L.e_badchar(m.slice(8));
+  return { checksum: L.e_checksum, invalid: L.e_invalid, already: L.e_already, newcmds: L.e_newcmds, none: L.e_none }[m] || L.e_invalid;
+}
+function run() {
+  const txt = $('src').value.trim(), L = t();
+  old = neu = null; $('warns').innerHTML = '';
+  try {
+    if (!txt) { setMsg('', L.empty); }
+    else {
+      const code = txt.match(/CSGO(-?[A-Za-z0-9]{5}){5}/);
+      if (code) { old = decodeOld(code[0]); setMsg('ok', L.okCode(old)); }
+      else if (/^CS[A-Za-z0-9]{44}$/.test(txt)) { decodeNew(txt); throw new Error('already'); }
+      else { old = parseCfg(txt); setMsg('ok', L.okCmds(old._hits)); }
+      neu = convert(old, H());
+      const w = [];
+      if (old.style === 0 || old.style === 1) w.push(L.w_style(OLD_STYLE[old.style], L.styles[neu.style]));
+      if (old.useweapongap) w.push(L.w_wgap);
+      if (old.drawoutline && old.outlinethickness > 1) w.push(L.w_outline(old.outlinethickness));
+      $('warns').innerHTML = w.map(x => `<li>${x}</li>`).join('');
+    }
+  } catch (e) { old = neu = null; setMsg('err', errText(e)); }
+  buildControls(); output(); render();
+}
+
+/* ---------- textos e interfaz ---------- */
+function applyLang() {
+  const L = t();
+  document.documentElement.lang = lang;
+  document.title = (lang === 'es' ? 'Conversor de miras CS2' : 'CS2 Crosshair Converter') + ' · CSConfig';
+  document.querySelectorAll('[data-i]').forEach(el => { const v = L[el.dataset.i]; if (typeof v === 'string') el.innerHTML = v; });
+  $('src').placeholder = L.ph;
+  $('howto').innerHTML = L.howto.map(s => `<b>${s}</b>`).join(' → ');
+  $('faq').innerHTML = L.faq.map(([q, a]) => `<div><h3>${q}</h3><p>${a}</p></div>`).join('');
+  $('lang_es').setAttribute('aria-pressed', lang === 'es'); $('lang_en').setAttribute('aria-pressed', lang === 'en');
+  buildRes(); buildBg(); run();
+}
+function chipGroup(box, items, isOn, onPick) {
+  box.innerHTML = '';
+  items.forEach(([val, label]) => {
+    const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = label;
+    b.setAttribute('aria-pressed', isOn(val)); b.onclick = () => onPick(val); box.append(b);
+  });
+}
+function buildRes() {
+  chipGroup($('resChips'), [...RES, [0, t().other + '…']], v => v === resH, v => {
+    resH = v; store.set('res', v); $('customWrap').hidden = v !== 0; buildRes(); run();
+  });
+  $('customWrap').hidden = resH !== 0;
+}
+function buildBg() {
+  chipGroup($('bgChips'), MAPS.map((n, i) => [i, n]), v => v === bgIdx, v => { bgIdx = v; store.set('bg', v); buildBg(); render(); });
+}
+function buildSamples() {
+  SAMPLES.forEach(([name, code]) => {
+    const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = name;
+    b.onclick = () => { $('src').value = code; run(); }; $('samples').append(b);
+  });
+}
+
+let copyTimer;
+async function copy(text, el, btn, label) {
+  const L = t();
+  try { await navigator.clipboard.writeText(text); btn.textContent = L.copied; btn.classList.add('done'); }
+  catch { const r = document.createRange(); r.selectNodeContents(el); getSelection().removeAllRanges(); getSelection().addRange(r); btn.textContent = L.selected; }
+  clearTimeout(copyTimer); copyTimer = setTimeout(() => { btn.textContent = L[label]; btn.classList.remove('done'); }, 1800);
+}
+$('copyCode').onclick = () => { if (neu) copy($('newCode').textContent, $('newCode'), $('copyCode'), 'copy'); };
+$('copyCmds').onclick = () => { if (neu) copy($('cmds').textContent, $('cmds'), $('copyCmds'), 'copyCmds'); };
+$('src').addEventListener('input', run);
+$('resCustom').addEventListener('input', run);
+$('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
+$('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
+
+if (!RES.some(r => r[0] === resH) && resH !== 0) resH = 1080;
+let start = SAMPLES[0][1];
+try { const q = new URLSearchParams(location.search).get('c'); if (q) start = q; } catch {}
+$('src').value = start;
+buildSamples(); applyLang();
+})();
+</script>
+</body>
+</html>

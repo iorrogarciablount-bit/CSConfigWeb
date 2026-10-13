@@ -1,0 +1,9 @@
+{
+ "faceit": {
+  "hubs": [],
+  "championships": [],
+  "matches_per_source": 10
+ },
+ "max_demos_per_run": 30,
+ "min_players_per_demo": 8
+}

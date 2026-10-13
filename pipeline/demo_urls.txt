@@ -1,0 +1,3 @@
+# Una URL directa de demo por línea (.dem, .dem.gz, .dem.zst, .zip, .rar, .7z).
+# Opcional: después de la URL, un espacio y una etiqueta para la fuente. Ejemplo:
+# https://ejemplo.com/demos/final-major-mirage.dem.zst Major 2026 · Final
