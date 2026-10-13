@@ -5,5 +5,18 @@
   "637313508"
  ],
  "local": [],
- "liquipedia": {}
+ "liquipedia": {
+  "76561198006920295": {
+   "t": "2026-10-13",
+   "found": true,
+   "team": "",
+   "status": "active"
+  },
+  "76561197988768248": {
+   "t": "2026-10-13",
+   "found": false,
+   "team": "",
+   "status": ""
+  }
+ }
 }
