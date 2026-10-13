@@ -303,7 +303,7 @@ def liquipedia_teams(db: dict, state: dict, cfg: dict, candidates: set[str], see
     cutoff = (dt.date.today() - dt.timedelta(days=days)).isoformat()
     lp = lambda pid: db["players"][pid].get("lp_name") or db["players"][pid].get("name") or ""  # noqa: E731
     todo = [pid for pid in candidates if pid in db["players"] and (
-        pid in seen_now or cache.get(pid, {}).get("t", "") < cutoff or cache.get(pid, {}).get("name", lp(pid)) != lp(pid))]
+        pid in seen_now or cache.get(pid, {}).get("t", "") < cutoff or cache.get(pid, {}).get("name") != lp(pid))]
     done = 0
     for pid in todo[:limit]:
         p = db["players"][pid]
