@@ -106,7 +106,7 @@
 const SUBMIT = 'enviar/';
 const T = {
 es: {
-  retired:'Retirado', retiredOpt:'Retirados',
+  retired:'Retirado', retiredOpt:'Retirados', noTeam:'Sin equipo',
   navPros:'Miras', navConv:'Conversor', navSubmit:'Enviar demo', title:'Miras de <span>CS2</span>',
   lead:'Las miras que usan los profesionales y cualquier jugador, sacadas directamente de las demos de sus partidas. Pulsa un jugador para ver los detalles y copiar su código.',
   stPros:'Pros', stPlayers:'Jugadores', stUpdated:'Actualizado', tabPros:'Pros', tabPlayers:'Jugadores',
@@ -137,7 +137,7 @@ es: {
   locale:'es-ES',
 },
 en: {
-  retired:'Retired', retiredOpt:'Retired',
+  retired:'Retired', retiredOpt:'Retired', noTeam:'No team',
   navPros:'Crosshairs', navConv:'Converter', navSubmit:'Submit a demo', title:'CS2 <span>crosshairs</span>',
   lead:'The crosshairs pros and any player actually use, pulled straight from their match demos. Tap a player to see the details and copy their code.',
   stPros:'Pros', stPlayers:'Players', stUpdated:'Updated', tabPros:'Pros', tabPlayers:'Players',
@@ -190,7 +190,7 @@ const shownCode = (code, n) => /^CSGO-/.test(code) ? encodeNew(n) : code;
 function drawThumb(cv, n) { const p = newParams(n); paint(cv, p, clamp(fitZoom(cv.width, p), 2, 4), bgIdx); }
 
 function subline(r) {
-  if (r.pro) return r.status === 'retired' ? `<span class="ret">${t().retired}</span>` : esc(r.team || '—');
+  if (r.pro) return r.status === 'retired' ? `<span class="ret">${t().retired}</span>` : (r.team ? esc(r.team) : `<span class="ret">${t().noTeam}</span>`);
   if (r.faceit) return `<span class="fc">FACEIT</span> ${esc(r.faceit)}`;
   return esc(r.map ? t().seenOn(mapName(r.map), fmtDate(r.seen)) : fmtDate(r.seen));
 }
@@ -279,7 +279,7 @@ function showCode(code) {
 }
 function openSheet(r) {
   const L = t(); current = r;
-  const sub = r.pro ? (r.status === 'retired' ? t().retired : esc(r.team || '')) : (r.faceit ? `FACEIT: ${esc(r.faceit)}` : '');
+  const sub = r.pro ? (r.status === 'retired' ? t().retired : (r.team ? esc(r.team) : t().noTeam)) : (r.faceit ? `FACEIT: ${esc(r.faceit)}` : '');
   $('sName').innerHTML = `${esc(r.name)}<small>${sub}</small>`;
   showCode(r.code);
   const links = [`<a href="https://steamcommunity.com/profiles/${esc(r.id)}" target="_blank" rel="noopener">${L.steam}</a>`];

@@ -301,7 +301,9 @@ def liquipedia_teams(db: dict, state: dict, cfg: dict, candidates: set[str], see
     days = int(lc.get("recheck_days", 14))
     limit = int(lc.get("lookups_per_run", 40))
     cutoff = (dt.date.today() - dt.timedelta(days=days)).isoformat()
-    todo = [pid for pid in candidates if pid in db["players"] and (pid in seen_now or cache.get(pid, {}).get("t", "") < cutoff)]
+    lp = lambda pid: db["players"][pid].get("lp_name") or db["players"][pid].get("name") or ""  # noqa: E731
+    todo = [pid for pid in candidates if pid in db["players"] and (
+        pid in seen_now or cache.get(pid, {}).get("t", "") < cutoff or cache.get(pid, {}).get("name", lp(pid)) != lp(pid))]
     done = 0
     for pid in todo[:limit]:
         p = db["players"][pid]
@@ -317,7 +319,7 @@ def liquipedia_teams(db: dict, state: dict, cfg: dict, candidates: set[str], see
             state["liquipedia_error"] = f"{today()} {name}: {e}"[:300]
             break  # si nos limitan, mejor parar y seguir otro día
         done += 1
-        cache[pid] = {"t": today(), "found": found, "team": team, "status": status}
+        cache[pid] = {"t": today(), "name": name, "found": found, "team": team, "status": status}
     for pid, c in cache.items():
         if pid in db["players"] and c.get("found"):
             db["players"][pid]["lp_team"] = c.get("team", "")
@@ -592,9 +594,9 @@ def main():
     pros = {str(x["id"]): x for x in load_json(PROS, []) if x.get("id")}
     not_pro = {str(e["id"]) for e in load_json(MANUAL, []) if e.get("id") and e.get("pro") is False}
     is_pro = lambda p: p["id"] in pros or (p.get("auto_pro") and p["id"] not in not_pro)  # noqa: E731
-    for pid, x in pros.items():  # nombre de la lista para buscar en Liquipedia
-        if pid in db["players"] and x.get("name"):
-            db["players"][pid]["lp_name"] = x["name"]
+    for pid, x in pros.items():  # nombre de la lista (o página indicada) para buscar en Liquipedia
+        if pid in db["players"] and (x.get("liquipedia") or x.get("name")):
+            db["players"][pid]["lp_name"] = x.get("liquipedia") or x["name"]
     # Equipos: los de la lista que tengan "team" mandan; si no, Liquipedia; si no, el de la demo.
     candidates = {p["id"] for p in db["players"].values() if is_pro(p) and not pros.get(p["id"], {}).get("team")}
     if args.only != "manual":
