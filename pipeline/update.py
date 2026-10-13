@@ -314,6 +314,7 @@ def liquipedia_teams(db: dict, state: dict, cfg: dict, candidates: set[str], see
             found, team, status = liquipedia_team(name)
         except Exception as e:  # noqa: BLE001
             log(f"Liquipedia {name}: {e}")
+            state["liquipedia_error"] = f"{today()} {name}: {e}"[:300]
             break  # si nos limitan, mejor parar y seguir otro día
         done += 1
         cache[pid] = {"t": today(), "found": found, "team": team, "status": status}
@@ -323,6 +324,7 @@ def liquipedia_teams(db: dict, state: dict, cfg: dict, candidates: set[str], see
             db["players"][pid]["lp_status"] = c.get("status", "")
     if done:
         log(f"Liquipedia: {done} jugadores consultados.")
+        state.pop("liquipedia_error", None)
 
 
 def faceit_room_download(item: dict, work: Path, max_mb: int) -> Path:
