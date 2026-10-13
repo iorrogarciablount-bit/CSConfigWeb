@@ -1,6 +1,8 @@
 name: Actualizar miras
 
 on:
+  release:
+    types: [published]     # al publicar una release con demos adjuntas
   schedule:
     - cron: "17 5 * * *"   # cada día a las 05:17 UTC
   workflow_dispatch:
@@ -27,6 +29,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: actions/setup-python@v5
         with:
@@ -43,6 +47,7 @@ jobs:
         env:
           FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
           FACEIT_DOWNLOADS_TOKEN: ${{ secrets.FACEIT_DOWNLOADS_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           DEMO_URL: ${{ inputs.demo_url }} ${{ inputs.label }}
         run: python pipeline/update.py
 

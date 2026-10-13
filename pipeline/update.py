@@ -109,10 +109,28 @@ def unpack(path: Path, workdir: Path) -> list[Path]:
         with open(path, "rb") as src, open(out, "wb") as dst:
             zstandard.ZstdDecompressor().copy_stream(src, dst)
         return [out]
-    if name.endswith((".zip", ".rar", ".7z")):
+    if name.endswith(".zip"):
+        import zipfile  # noqa: PLC0415
+        dest = workdir / (path.name + "_x")
+        with zipfile.ZipFile(path) as z:
+            for info in z.infolist():
+                low = info.filename.lower()
+                if low.endswith((".dem", ".dem.gz", ".dem.zst")) and not info.is_dir():
+                    target = dest / Path(info.filename).name  # sin rutas: evita escribir fuera de la carpeta
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    with z.open(info) as src, open(target, "wb") as dst:
+                        shutil.copyfileobj(src, dst, 1 << 20)
+        dems = []
+        for f in sorted(dest.glob("*")) if dest.exists() else []:
+            dems += unpack(f, workdir) if not f.name.lower().endswith(".dem") else [f]
+        return dems
+    if name.endswith((".rar", ".7z")):
         exe = shutil.which("7z") or shutil.which("7zz")
+        for cand in (r"C:\Program Files\7-Zip\7z.exe", r"C:\Program Files (x86)\7-Zip\7z.exe"):
+            if not exe and Path(cand).exists():
+                exe = cand
         if not exe:
-            raise RuntimeError("Hace falta 7-Zip (7z) para abrir archivos .zip/.rar/.7z")
+            raise RuntimeError("Hace falta 7-Zip para abrir archivos .rar/.7z (https://www.7-zip.org)")
         dest = workdir / (path.name + "_x")
         subprocess.run([exe, "x", "-y", f"-o{dest}", str(path)], check=True, stdout=subprocess.DEVNULL)
         return sorted(dest.rglob("*.dem"))
@@ -217,6 +235,40 @@ def url_matches(state: dict):
     state["urls"] = sorted(done)
 
 
+DEMO_EXT = (".dem", ".dem.gz", ".dem.zst", ".zip", ".rar", ".7z", ".gz", ".zst")
+
+
+def release_matches(state: dict):
+    """Demos subidas como archivos a las releases del repositorio (arrastrar y soltar en GitHub)."""
+    repo = os.environ.get("GITHUB_REPOSITORY", "").strip()
+    if not repo:
+        return
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": UA}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    try:
+        req = urllib.request.Request(f"https://api.github.com/repos/{repo}/releases?per_page=30", headers=headers)
+        with urllib.request.urlopen(req, timeout=60) as r:
+            releases = json.loads(r.read().decode())
+    except Exception as e:  # noqa: BLE001
+        log(f"Releases: no se pudieron listar: {e}")
+        return
+    done = set(state.get("releases", []))
+    for rel in releases:
+        if rel.get("draft"):
+            continue
+        label = (rel.get("name") or rel.get("tag_name") or "demo").strip()
+        for a in rel.get("assets", []):
+            aid = str(a.get("id"))
+            if aid in done or not a.get("name", "").lower().endswith(DEMO_EXT):
+                continue
+            yield {"id": f"gh:{aid}", "url": a["browser_download_url"], "name": a["name"],
+                   "source": label, "date": (a.get("created_at") or today())[:10]}
+            done.add(aid)
+    state["releases"] = sorted(done)
+
+
 def local_matches(state: dict):
     if not LOCAL_DIR.exists():
         return
@@ -283,7 +335,7 @@ def apply_manual(db: dict):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--only", choices=["faceit", "urls", "local", "manual"], help="usar solo una fuente")
+    ap.add_argument("--only", choices=["faceit", "urls", "releases", "local", "manual"], help="usar solo una fuente")
     ap.add_argument("--require-teams", action="store_true", help="descartar demos sin nombres de equipo (envíos de la comunidad)")
     ap.add_argument("--report", type=Path, help="guardar un resumen JSON de la ejecución")
     args = ap.parse_args()
@@ -306,6 +358,8 @@ def main():
         sources.append(faceit_matches(cfg, state))
     if args.only in (None, "urls"):
         sources.append(url_matches(state))
+    if args.only in (None, "releases"):
+        sources.append(release_matches(state))
     if args.only in (None, "local"):
         sources.append(local_matches(state))
 

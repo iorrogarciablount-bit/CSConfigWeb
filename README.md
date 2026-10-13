@@ -43,18 +43,29 @@ Mientras falte algún secreto, el pipeline se salta FACEIT y sigue con las demá
 
 ### 3. Añadir demos a mano (funciona desde el primer día)
 
-Hay tres formas de hacerlo:
+Las demos que bajas de FACEIT vienen en un `.zip` con un archivo `.dem` dentro. No hace falta descomprimirlas: el sistema abre el zip directamente.
 
-- **Desde GitHub, sin instalar nada:** ve a **Actions → Actualizar miras → Run workflow**, pega la URL directa de la demo (`.dem`, `.dem.gz`, `.dem.zst`, `.zip`, `.rar` o `.7z`) y, si quieres, una etiqueta como `Major 2026 · Final`.
-- **Una lista de URLs:** añádelas a `pipeline/demo_urls.txt`, una por línea, y el siguiente proceso diario las procesa. Cada URL se procesa solo una vez.
-- **Desde tu PC:** copia las demos a `pipeline/demos/` y ejecuta:
+**Arrastrando archivos en GitHub (sin instalar nada)**
 
-```bash
-pip install -r pipeline/requirements.txt
-python pipeline/update.py --only local
-```
+1. Ve a **Releases → Draft a new release**, o abre el borrador «Demos» si ya existe.
+2. Ponle un nombre que sirva de fuente, por ejemplo `FPL · 13 oct`, y crea una etiqueta nueva, por ejemplo `demos-2026-10-13`.
+3. Arrastra los `.zip` al recuadro de archivos. Admite hasta 2 GB por archivo.
+4. Pulsa **Publish release**. Las demos se procesan solas y la web se actualiza en unos minutos.
 
-Después sube `site/data/crosshairs.json` y `pipeline/state.json`. Las demos no se suben al repositorio porque pesan demasiado; ya están en `.gitignore`.
+Cada archivo se procesa una sola vez. Las releases no cuentan para el tamaño del repositorio.
+
+**Desde tu PC con doble clic (Windows)**
+
+1. Instala [Git](https://git-scm.com/download/win) y [Python](https://www.python.org/downloads/), marcando «Add python.exe to PATH».
+2. Clona el repositorio una vez: `git clone https://github.com/iorrogarciablount-bit/CSConfigWeb.git`.
+3. Copia los `.zip` (o `.dem`, `.rar`, `.7z`) a `pipeline\demos\`.
+4. Haz doble clic en `procesar-demos.bat`. Actualiza, procesa y sube las miras solo.
+
+Para los `.rar` y `.7z` hace falta [7-Zip](https://www.7-zip.org), que se detecta solo. Las demos no se suben al repositorio porque pesan demasiado; ya están en `.gitignore`.
+
+**Con un enlace directo**
+
+Pega la URL en **Enviar demo**, en la web, o en **Actions → Actualizar miras → Run workflow**. También puedes añadir varias a `pipeline/demo_urls.txt`, una por línea.
 
 ### 4. Envíos de la comunidad
 
