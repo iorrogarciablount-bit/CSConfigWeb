@@ -2,7 +2,9 @@
  "faceit": {
   "hubs": [],
   "championships": [],
-  "matches_per_source": 10
+  "matches_per_source": 10,
+  "recheck_days": 30,
+  "lookups_per_run": 300
  },
  "max_demos_per_run": 30,
  "max_demo_mb": 1500,

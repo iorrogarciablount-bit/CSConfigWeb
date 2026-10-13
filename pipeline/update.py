@@ -23,6 +23,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -221,6 +222,43 @@ def faceit_matches(cfg: dict, state: dict):
     state["faceit"] = sorted(done)[-5000:]
 
 
+def faceit_verify(db: dict, state: dict, cfg: dict):
+    """Marca como pro a los jugadores con cuenta verificada en FACEIT (pros y personalidades conocidas)."""
+    key = os.environ.get("FACEIT_API_KEY", "").strip()
+    if not key:
+        log("Verificación FACEIT: falta FACEIT_API_KEY; los pros de partidas de FACEIT no se detectan solos.")
+        return
+    cache = state.setdefault("faceit_verified", {})
+    days = int(cfg.get("faceit", {}).get("recheck_days", 30))
+    limit = int(cfg.get("faceit", {}).get("lookups_per_run", 300))
+    cutoff = (dt.date.today() - dt.timedelta(days=days)).isoformat()
+    todo = [p for p in db["players"].values() if p.get("faceit") and cache.get(p["id"], {}).get("t", "") < cutoff]
+    checked = found = 0
+    for p in todo[:limit]:
+        try:
+            res = http_json(f"{FACEIT_API}/players?game=cs2&game_player_id={p['id']}", key)
+            verified = bool(res.get("verified"))
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                log(f"Verificación FACEIT {p['id']}: {e}")
+                continue
+            verified = False
+        except Exception as e:  # noqa: BLE001
+            log(f"Verificación FACEIT {p['id']}: {e}")
+            continue
+        cache[p["id"]] = {"v": verified, "t": today()}
+        checked += 1
+        found += verified
+    for p in db["players"].values():
+        v = cache.get(p["id"], {}).get("v")
+        if v:
+            p.setdefault("auto_pro", "faceit")
+        elif v is False and p.get("auto_pro") == "faceit":
+            p.pop("auto_pro")
+    if checked:
+        log(f"Verificación FACEIT: {checked} jugadores consultados, {found} verificados.")
+
+
 def url_matches(state: dict):
     lines = []
     if URLS.exists():
@@ -303,6 +341,8 @@ def merge(db: dict, sid: str, info: dict, source: str, date: str, map_name: str 
                         "since": date, "seen": date, "source": source, "map": map_name, "history": []}
         if info.get("faceit"):
             players[sid]["faceit"], players[sid]["faceit_match"] = info["faceit"], info.get("faceit_match", "")
+        if info.get("pro_auto"):
+            players[sid]["auto_pro"] = info["pro_auto"]
         return "new"
     if date < p.get("seen", ""):
         # Demo más antigua que lo que ya tenemos: solo sirve para completar el historial.
@@ -310,6 +350,8 @@ def merge(db: dict, sid: str, info: dict, source: str, date: str, map_name: str 
             p["history"].append({"code": info["code"], "from": date, "to": date})
             p["history"].sort(key=lambda h: h.get("from") or "")
         return "old"
+    if info.get("pro_auto"):
+        p["auto_pro"] = info["pro_auto"]
     if info.get("faceit"):
         p["faceit"], p["faceit_match"] = info["faceit"], info.get("faceit_match", p.get("faceit_match", ""))
     if info.get("name") and info["name"] != p.get("name"):
@@ -421,10 +463,14 @@ def main():
                             note(f"{dem.name}: no tiene nombres de equipo, así que no parece un partido profesional; se ignora.")
                             continue
                         stats["demos"] += 1
+                        real_teams = {clean_team(t) for t in teams} - {""}
+                        tournament = len(real_teams) >= 2  # dos equipos con nombre real: partido profesional
                         fm = FACEIT_FILE.search(dem.name) or FACEIT_FILE.search(item["name"]) or (FACEIT_FILE.search(item["id"]) if item["id"].startswith("faceit:") else None)
                         for sid, info in res["players"].items():
                             if fm:  # en los servidores de FACEIT el nombre del jugador es su usuario de FACEIT
                                 info = {**info, "faceit": info["name"], "faceit_match": fm.group(1)}
+                            if tournament and clean_team(info.get("team", "")):
+                                info = {**info, "pro_auto": "torneo"}
                             r = merge(db, sid, info, item["source"], item["date"], res["map"])
                             if r in ("new", "changed"):
                                 stats[r] += 1
@@ -437,13 +483,19 @@ def main():
                     shutil.rmtree(work, ignore_errors=True)
 
     apply_manual(db, only_hidden=args.only not in (None, "manual"))
+    faceit_verify(db, state, cfg)
 
+    # Pro = está en pros.json, o se ha detectado solo (partido de torneo o cuenta verificada en FACEIT),
+    # salvo que manual.json diga "pro": false.
     pros = {str(x["id"]): x for x in load_json(PROS, []) if x.get("id")}
+    not_pro = {str(e["id"]) for e in load_json(MANUAL, []) if e.get("id") and e.get("pro") is False}
     pro_rows, rest = [], []
     for p in db["players"].values():
         if p["id"] in pros:
             x = pros[p["id"]]
             pro_rows.append({**p, "pro": True, "nick": p.get("name", ""), "name": x.get("name") or p.get("name", ""), "team": x.get("team", p.get("team", ""))})
+        elif p.get("auto_pro") and p["id"] not in not_pro:
+            pro_rows.append({**p, "pro": True, "nick": p.get("name", "")})
         else:
             rest.append(p)
     key = lambda p: (p.get("name") or "").lower()  # noqa: E731

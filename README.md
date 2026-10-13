@@ -91,9 +91,15 @@ El `id` es el SteamID64 del jugador, el mismo que aparece en los archivos de dat
 
 Las peticiones de retirada llegan como *issues* con la etiqueta `retirada`: añade el SteamID a `manual.json` con `"hidden": true`.
 
-### 6. Lista de pros
+### 6. Pros
 
-`pipeline/pros.json` decide quién aparece en la pestaña **Pros**, con su nombre y equipo reales. Todos los demás jugadores siguen guardados y se pueden buscar en la pestaña **Jugadores**.
+Un jugador aparece en la pestaña **Pros** si se cumple cualquiera de estas condiciones:
+
+- **Partido de torneo:** la demo tiene dos equipos con nombre real, no los `team_xxx` de FACEIT. Sus jugadores pasan a Pros solos, con ese equipo.
+- **Cuenta verificada en FACEIT:** se comprueba con la Data API, así que necesita el secreto `FACEIT_API_KEY`, que se obtiene al momento sin aprobación. Cada jugador se revisa como mucho una vez cada 30 días.
+- **Lista manual:** está en `pipeline/pros.json`, que además fija su nombre y equipo reales.
+
+Para quitar a alguien de Pros aunque se haya detectado solo, añade a `manual.json` una línea como `{ "id": "SteamID64", "pro": false }`. Todos los demás jugadores siguen guardados y se pueden buscar en la pestaña **Jugadores**.
 
 ```json
 [
