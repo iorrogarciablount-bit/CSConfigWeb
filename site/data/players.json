@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-13T14:50:49+00:00",
+ "updated": "2026-10-14T08:07:45+00:00",
  "players": [
   {
    "id": "76561198993617372",
@@ -13,6 +13,19 @@
    "history": [],
    "faceit": "-kRyTouS",
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
+  },
+  {
+   "id": "76561198129900169",
+   "name": "1389",
+   "team": "",
+   "code": "CSUxjvBKxbaTKG5sfdufqzDvzeAiaTuveQmT6XFOvWmvAc",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "1389",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
   },
   {
    "id": "76561198019099773",
@@ -41,6 +54,45 @@
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
+   "id": "76561199478346850",
+   "name": "bael",
+   "team": "",
+   "code": "CSyyzoL6p5V6viP9XbXtuCmROKZpkeYRZPY6wiOTjxnRcU",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "bael",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
+  },
+  {
+   "id": "76561198417348056",
+   "name": "dav1g",
+   "team": "",
+   "code": "CSEisUDGqVcBCvEfw8nhF9DOiH4H4XDJAtVNnqHwfekp5Q",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "dav1g",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
+  },
+  {
+   "id": "76561199180257046",
+   "name": "djgor1lla",
+   "team": "",
+   "code": "CSqdyVHCfmbXwfATimefA3LMo9PUmPzqFZpYyXn5eWmv9A",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "djgor1lla",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
+  },
+  {
    "id": "76561198088699136",
    "name": "Domajzer",
    "team": "",
@@ -54,6 +106,19 @@
    "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
   },
   {
+   "id": "76561198309839541",
+   "name": "Elasahop",
+   "team": "",
+   "code": "CSB7LR2KRBWqjL7jxzzHmnL7zG5Rk2dGLjCGos38Cmrv6M",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "Elasahop",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
+  },
+  {
    "id": "76561197974587647",
    "name": "Eliwig",
    "team": "",
@@ -65,6 +130,19 @@
    "history": [],
    "faceit": "Eliwig",
    "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
+   "id": "76561198343052617",
+   "name": "Frexs01",
+   "team": "",
+   "code": "CSPL32Pu6NoKacUC9Uorx34937pGYe33Gz74CYxrQmEKJA",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "Frexs01",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
   },
   {
    "id": "76561198179938246",
@@ -132,6 +210,19 @@
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
+   "id": "76561198363696774",
+   "name": "jendaye",
+   "team": "",
+   "code": "CSkawG6czGnGS42nOhZP9DiyQH2zj8eJONW35bYhknzxYC",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "jendaye",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
+  },
+  {
    "id": "76561198145785381",
    "name": "miick",
    "team": "",
@@ -158,6 +249,19 @@
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff"
   },
   {
+   "id": "76561198417751247",
+   "name": "Pelle-",
+   "team": "",
+   "code": "CSEdromTGM7ij4BWeDiWRhvP5pGSYTZoO3TFLyE2uKT4PF",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "Pelle-",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
+  },
+  {
    "id": "76561198166220336",
    "name": "racketa89",
    "team": "",
@@ -182,6 +286,32 @@
    "history": [],
    "faceit": "Snake---",
    "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
+  },
+  {
+   "id": "76561198124692673",
+   "name": "W0nderL4nd",
+   "team": "",
+   "code": "CSVs8FQfxU6WJVKSVZMKNHsdJ6es5wUUteeFkwOMoLVxHh",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "W0nderL4nd",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
+  },
+  {
+   "id": "76561198380169396",
+   "name": "WANGADELREY",
+   "team": "",
+   "code": "CSEdromTGM7ij4BWeDiWRhvP5pGSYTZoO3TFLyE2uKT4PF",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "WANGADELREY",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
   },
   {
    "id": "76561198992378287",
