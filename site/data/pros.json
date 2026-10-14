@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-13T16:16:58+00:00",
+ "updated": "2026-10-14T08:13:56+00:00",
  "players": [
   {
    "id": "76561197989744167",
@@ -71,6 +71,25 @@
    "lp_status": "active",
    "pro": true,
    "nick": "shox",
+   "demo_team": ""
+  },
+  {
+   "id": "76561198309839541",
+   "name": "SunPayus",
+   "team": "FUT Esports",
+   "code": "CSB7LR2KRBWqjL7jxzzHmnL7zG5Rk2dGLjCGos38Cmrv6M",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "Elasahop",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63",
+   "lp_team": "FUT Esports",
+   "lp_status": "active",
+   "status": "active",
+   "pro": true,
+   "nick": "Elasahop",
    "demo_team": ""
   },
   {

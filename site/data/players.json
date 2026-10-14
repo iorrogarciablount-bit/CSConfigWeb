@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-14T08:07:45+00:00",
+ "updated": "2026-10-14T08:13:56+00:00",
  "players": [
   {
    "id": "76561198993617372",
@@ -104,19 +104,6 @@
    "history": [],
    "faceit": "Domajzer",
    "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b"
-  },
-  {
-   "id": "76561198309839541",
-   "name": "Elasahop",
-   "team": "",
-   "code": "CSB7LR2KRBWqjL7jxzzHmnL7zG5Rk2dGLjCGos38Cmrv6M",
-   "since": "2026-10-14",
-   "seen": "2026-10-14",
-   "source": "Sunpa faceit",
-   "map": "de_mirage",
-   "history": [],
-   "faceit": "Elasahop",
-   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63"
   },
   {
    "id": "76561197974587647",
