@@ -1,6 +1,24 @@
 {
- "updated": "2026-10-14T08:13:56+00:00",
+ "updated": "2026-10-15T05:39:48+00:00",
  "players": [
+  {
+   "id": "76561198993617372",
+   "name": "-kRyTouS",
+   "team": "",
+   "code": "CS9kuNw2rhmFuziEHydNGPmixhpYROUosvpGpnp8ZGpaGn",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "Faceit donk",
+   "map": "de_dust2",
+   "history": [],
+   "faceit": "-kRyTouS",
+   "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff",
+   "auto_pro": "faceit",
+   "status": "",
+   "pro": true,
+   "nick": "-kRyTouS",
+   "demo_team": ""
+  },
   {
    "id": "76561197989744167",
    "name": "apEX",
@@ -14,6 +32,7 @@
    "faceit": "apEX",
    "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b",
    "status": "",
+   "auto_pro": "faceit",
    "pro": true,
    "nick": "apEX",
    "demo_team": ""
@@ -31,8 +50,27 @@
    "faceit": "donk666",
    "faceit_match": "1-57827799-3eff-410f-9ce9-f3af9461dcff",
    "status": "",
+   "auto_pro": "faceit",
    "pro": true,
    "nick": "donk666",
+   "demo_team": ""
+  },
+  {
+   "id": "76561197974587647",
+   "name": "Eliwig",
+   "team": "",
+   "code": "CSGO-NPuOr-zzw65-BoYMd-pBYmK-POz9H",
+   "since": "2026-10-13",
+   "seen": "2026-10-13",
+   "source": "zywoo faceit",
+   "map": "de_nuke",
+   "history": [],
+   "faceit": "Eliwig",
+   "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b",
+   "auto_pro": "faceit",
+   "status": "",
+   "pro": true,
+   "nick": "Eliwig",
    "demo_team": ""
   },
   {
@@ -50,6 +88,7 @@
    "status": "active",
    "lp_team": "Clutchain",
    "lp_status": "active",
+   "auto_pro": "faceit",
    "pro": true,
    "nick": "ScreaM",
    "demo_team": ""
@@ -69,6 +108,7 @@
    "status": "active",
    "lp_team": "",
    "lp_status": "active",
+   "auto_pro": "faceit",
    "pro": true,
    "nick": "shox",
    "demo_team": ""
@@ -88,8 +128,27 @@
    "lp_team": "FUT Esports",
    "lp_status": "active",
    "status": "active",
+   "auto_pro": "faceit",
    "pro": true,
    "nick": "Elasahop",
+   "demo_team": ""
+  },
+  {
+   "id": "76561198124692673",
+   "name": "W0nderL4nd",
+   "team": "",
+   "code": "CSVs8FQfxU6WJVKSVZMKNHsdJ6es5wUUteeFkwOMoLVxHh",
+   "since": "2026-10-14",
+   "seen": "2026-10-14",
+   "source": "Sunpa faceit",
+   "map": "de_mirage",
+   "history": [],
+   "faceit": "W0nderL4nd",
+   "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63",
+   "auto_pro": "faceit",
+   "status": "",
+   "pro": true,
+   "nick": "W0nderL4nd",
    "demo_team": ""
   },
   {
@@ -105,6 +164,7 @@
    "faceit": "ZywOo",
    "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b",
    "status": "",
+   "auto_pro": "faceit",
    "pro": true,
    "nick": "ZywOo",
    "demo_team": ""
