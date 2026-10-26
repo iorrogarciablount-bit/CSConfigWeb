@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-15T05:39:48+00:00",
+ "updated": "2026-10-26T16:20:03+00:00",
  "players": [
   {
    "id": "76561198993617372",
@@ -38,6 +38,24 @@
    "demo_team": ""
   },
   {
+   "id": "76561198875633179",
+   "name": "dem0n",
+   "team": "FUT Esports",
+   "code": "CS8JZeN59V7PbLpLXVUs2GV4ZkXTNRfxdGF6dXsfxtqpzA",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [],
+   "auto_pro": "torneo",
+   "lp_team": "FUT Esports",
+   "lp_status": "active",
+   "status": "active",
+   "pro": true,
+   "nick": "dem0n",
+   "demo_team": "FUT Esports"
+  },
+  {
    "id": "76561198386265483",
    "name": "donk",
    "team": "Team Spirit",
@@ -56,6 +74,24 @@
    "demo_team": ""
   },
   {
+   "id": "76561199100725838",
+   "name": "dziugss",
+   "team": "FUT Esports",
+   "code": "CSOrscXLqUUwGpNt8p2NpxC2CoNqWXcRQwB8vhESkpATyF",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [],
+   "auto_pro": "torneo",
+   "lp_team": "FUT Esports",
+   "lp_status": "active",
+   "status": "active",
+   "pro": true,
+   "nick": "dziugss",
+   "demo_team": "FUT Esports"
+  },
+  {
    "id": "76561197974587647",
    "name": "Eliwig",
    "team": "",
@@ -72,6 +108,94 @@
    "pro": true,
    "nick": "Eliwig",
    "demo_team": ""
+  },
+  {
+   "id": "76561197978835160",
+   "name": "flameZ",
+   "team": "Team Vitality",
+   "code": "CSCTWJSVydL9ecJ292AFNuNd7tj4qfJTDzV34iQqryCjhj",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [],
+   "auto_pro": "torneo",
+   "lp_team": "Team Vitality",
+   "lp_status": "active",
+   "status": "active",
+   "pro": true,
+   "nick": "flameZ",
+   "demo_team": "Team Vitality"
+  },
+  {
+   "id": "76561198176878303",
+   "name": "jL",
+   "team": "",
+   "code": "CSYcovh8jvHZoVooS3G8aecdDPqUXsUaqbQh9zAHH7PxLV",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [],
+   "auto_pro": "torneo",
+   "lp_team": "",
+   "lp_status": "active",
+   "status": "active",
+   "pro": true,
+   "nick": "jL",
+   "demo_team": "Team Vitality"
+  },
+  {
+   "id": "76561198991278425",
+   "name": "Krabeni",
+   "team": "FUT Esports",
+   "code": "CS788ewGhNmaSXVTSRAO5c89mPH3CBn4mz758xJq223WmU",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [],
+   "auto_pro": "torneo",
+   "lp_team": "FUT Esports",
+   "lp_status": "active",
+   "status": "active",
+   "pro": true,
+   "nick": "Krabeni",
+   "demo_team": "FUT Esports"
+  },
+  {
+   "id": "76561197973140692",
+   "name": "mezii",
+   "team": "Team Vitality",
+   "code": "CSvfsMCShd5uL4nTGYcUtuSqy4PJRHmCU6UoT9q5FK6DHE",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [],
+   "auto_pro": "torneo",
+   "status": "",
+   "pro": true,
+   "nick": "mezii",
+   "demo_team": "Team Vitality"
+  },
+  {
+   "id": "76561197991272318",
+   "name": "ropz",
+   "team": "Team Vitality",
+   "code": "CSUxjvBKxbaTKG5sfdufqzDvzeAiaTuveQmT6XFOvWmvAc",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [],
+   "auto_pro": "torneo",
+   "lp_team": "Team Vitality",
+   "lp_status": "active",
+   "status": "active",
+   "pro": true,
+   "nick": "ropz",
+   "demo_team": "Team Vitality"
   },
   {
    "id": "76561197988768248",
@@ -117,21 +241,30 @@
    "id": "76561198309839541",
    "name": "SunPayus",
    "team": "FUT Esports",
-   "code": "CSB7LR2KRBWqjL7jxzzHmnL7zG5Rk2dGLjCGos38Cmrv6M",
-   "since": "2026-10-14",
-   "seen": "2026-10-14",
-   "source": "Sunpa faceit",
-   "map": "de_mirage",
-   "history": [],
+   "code": "CSb7uHXB989YebCcoiuafDiUKZntFPoXCVySN5sMcwOAYF",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [
+    {
+     "code": "CSB7LR2KRBWqjL7jxzzHmnL7zG5Rk2dGLjCGos38Cmrv6M",
+     "from": "2026-10-14",
+     "to": "2026-10-26"
+    }
+   ],
    "faceit": "Elasahop",
    "faceit_match": "1-3f0f17de-8b02-4679-a331-cc124e082d63",
    "lp_team": "FUT Esports",
    "lp_status": "active",
    "status": "active",
-   "auto_pro": "faceit",
+   "auto_pro": "torneo",
+   "aliases": [
+    "Elasahop"
+   ],
    "pro": true,
-   "nick": "Elasahop",
-   "demo_team": ""
+   "nick": "SunPayus",
+   "demo_team": "FUT Esports"
   },
   {
    "id": "76561198124692673",
@@ -152,22 +285,46 @@
    "demo_team": ""
   },
   {
+   "id": "76561198178209109",
+   "name": "xfl0ud",
+   "team": "FUT Esports",
+   "code": "CSXsyUTOpwQOBGW2h97Me8XQwAY5pX5oXSmpOG3bmuVbnQ",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [],
+   "auto_pro": "torneo",
+   "lp_team": "FUT Esports",
+   "lp_status": "active",
+   "status": "active",
+   "pro": true,
+   "nick": "xfl0ud",
+   "demo_team": "FUT Esports"
+  },
+  {
    "id": "76561198113666193",
    "name": "ZywOo",
    "team": "Team Vitality",
-   "code": "CSGO-43Xd3-akOjE-fOHmW-GoRhM-sPcAB",
-   "since": "2026-10-13",
-   "seen": "2026-10-13",
-   "source": "zywoo faceit",
-   "map": "de_nuke",
-   "history": [],
+   "code": "CS6bn6bJeOmmd35ur7m83TdDtmCPucSTUjz3hSNuwJMiyE",
+   "since": "2026-10-26",
+   "seen": "2026-10-26",
+   "source": "demo_4",
+   "map": "de_dust2",
+   "history": [
+    {
+     "code": "CSGO-43Xd3-akOjE-fOHmW-GoRhM-sPcAB",
+     "from": "2026-10-13",
+     "to": "2026-10-26"
+    }
+   ],
    "faceit": "ZywOo",
    "faceit_match": "1-d98dfbef-ffda-40d4-9bce-7d36de789c0b",
    "status": "",
-   "auto_pro": "faceit",
+   "auto_pro": "torneo",
    "pro": true,
    "nick": "ZywOo",
-   "demo_team": ""
+   "demo_team": "Team Vitality"
   }
  ]
 }

@@ -3,7 +3,8 @@
  "releases": [
   "637276994",
   "637313508",
-  "639690472"
+  "639690472",
+  "678717624"
  ],
  "local": [],
  "liquipedia": {
@@ -22,7 +23,7 @@
    "status": "active"
   },
   "76561198309839541": {
-   "t": "2026-10-14",
+   "t": "2026-10-26",
    "name": "SunPayus",
    "found": true,
    "team": "FUT Esports",
@@ -48,6 +49,62 @@
    "found": false,
    "team": "",
    "status": ""
+  },
+  "76561198875633179": {
+   "t": "2026-10-26",
+   "name": "dem0n",
+   "found": true,
+   "team": "FUT Esports",
+   "status": "active"
+  },
+  "76561198176878303": {
+   "t": "2026-10-26",
+   "name": "jL",
+   "found": true,
+   "team": "",
+   "status": "active"
+  },
+  "76561197973140692": {
+   "t": "2026-10-26",
+   "name": "mezii",
+   "found": false,
+   "team": "",
+   "status": ""
+  },
+  "76561197978835160": {
+   "t": "2026-10-26",
+   "name": "flameZ",
+   "found": true,
+   "team": "Team Vitality",
+   "status": "active"
+  },
+  "76561198178209109": {
+   "t": "2026-10-26",
+   "name": "xfl0ud",
+   "found": true,
+   "team": "FUT Esports",
+   "status": "active"
+  },
+  "76561197991272318": {
+   "t": "2026-10-26",
+   "name": "ropz",
+   "found": true,
+   "team": "Team Vitality",
+   "status": "active"
+  },
+  "76561198991278425": {
+   "t": "2026-10-26",
+   "name": "Krabeni",
+   "found": true,
+   "team": "FUT Esports",
+   "status": "active"
+  },
+  "76561199100725838": {
+   "t": "2026-10-26",
+   "name": "dziugss",
+   "found": true,
+   "team": "FUT Esports",
+   "status": "active"
   }
  },
  "faceit_verified": {
