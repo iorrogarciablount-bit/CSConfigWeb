@@ -1,0 +1,12 @@
+// Configuración del Worker de Cloudflare que publica la web.
+// "name" tiene que coincidir con el nombre del Worker en Cloudflare (csconfig).
+{
+  "name": "csconfig",
+  "main": "worker.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./site",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true }
+}
