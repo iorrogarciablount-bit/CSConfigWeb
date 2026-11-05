@@ -369,3 +369,7 @@ a.copy{text-decoration:none;text-align:center}
 .footcmd a{color:var(--accent);text-decoration:none;font-weight:500}
 .footcmd a:hover{text-decoration:underline}
 @media (max-width:640px){.cmd-opts{grid-template-columns:1fr}}
+
+/* "Streamers" (/comando/) solo va en el desplegable del móvil: en escritorio no cabe una 7.ª sección
+   en la línea de la cabecera; allí se llega desde el enlace de encima del pie. */
+@media (min-width:641px){ .topnav a[data-i="navStreamers"]{display:none} }

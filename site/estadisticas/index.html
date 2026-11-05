@@ -20,6 +20,7 @@
     <a href="./" aria-current="page" data-i="navStats">Estadísticas</a>
     <a href="../conversor/" data-i="navConv">Conversor</a>
     <a href="../enviar/" data-i="navSubmit">Enviar demo</a>
+    <a href="../comando/" data-i="navStreamers">Streamers</a>
     <div class="lang" role="group" aria-label="Idioma / Language">
       <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
     </div>
@@ -87,7 +88,7 @@
 (() => {
 const T = {
 es: {
-  navPros:'Miras', navCompare:'Comparar', footCmd:'¿Haces directos? Añade el comando !mira a tu chat →', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
+  navPros:'Miras', navCompare:'Comparar', footCmd:'¿Haces directos? Añade el comando !mira a tu chat →', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', navStreamers:'Streamers',
   title:'Estadísticas de <span>miras</span>', docTitle:'Estadísticas de las miras de los pros de CS2 · CSConfig',
   lead:(n, who) => `Cómo son las miras de ${n} ${who}, sacadas de las demos de sus partidas.`, whoPros:'pros', whoAll:'jugadores',
   fPros:'Pros', fAll:'Todos los jugadores',
@@ -106,7 +107,7 @@ es: {
   vals:n => `Largo <b>${n.length}</b> · Separación <b>${n.gap}</b> · Grosor <b>${n.thickness}</b>`,
 },
 en: {
-  navPros:'Crosshairs', navCompare:'Compare', footCmd:'Streaming? Add the !crosshair command to your chat →', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
+  navPros:'Crosshairs', navCompare:'Compare', footCmd:'Streaming? Add the !crosshair command to your chat →', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', navStreamers:'Streamers',
   title:'Crosshair <span>stats</span>', docTitle:'CS2 pro crosshair stats · CSConfig',
   lead:(n, who) => `What the crosshairs of ${n} ${who} look like, pulled from their match demos.`, whoPros:'pros', whoAll:'players',
   fPros:'Pros', fAll:'All players',
