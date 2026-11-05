@@ -57,3 +57,18 @@ export const html = (body, status = 200, maxAge = 300) =>
     status,
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": `public, max-age=${maxAge}` },
   });
+
+/* Cabecera y pie comunes de las páginas que se generan en el servidor.
+   active: "navPros", "navChanges"... para marcar la sección actual. */
+const NAV = [["/", "navPros", "Miras"], ["/cambios/", "navChanges", "Cambios"], ["/estadisticas/", "navStats", "Estadísticas"],
+  ["/conversor/", "navConv", "Conversor"], ["/enviar/", "navSubmit", "Enviar demo"]];
+export const siteHeader = (active = "") => `<header class="top">
+  <a class="brand" href="/"><h1>CS<span>Config</span></h1></a>
+  <nav class="topnav">
+${NAV.map(([href, key, label]) => `    <a href="${href}"${key === active ? ' aria-current="page"' : ""} data-i="${key}">${label}</a>`).join("\n")}
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
+    </div>
+  </nav>
+</header>`;
+export const siteFooter = () => `<footer><span data-i="footer">Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.</span> <a href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=retirar-jugador.yml" target="_blank" rel="noopener" data-i="remove">Pedir que retiremos un jugador</a></footer>`;

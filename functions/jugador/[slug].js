@@ -3,7 +3,7 @@
 // el nombre, el código y los valores sin ejecutar JavaScript.
 // Los pros se indexan; el resto de jugadores lleva noindex.
 
-import { esc, proSlugs, loadData, loadOg, ogImage, decode, shownCode, origin, html } from "../_site.js";
+import { esc, proSlugs, loadData, loadOg, ogImage, decode, shownCode, origin, html, siteHeader, siteFooter } from "../_site.js";
 
 const STYLES = ["Cruz dinámica", "Círculo dinámico", "Cruz dinámica (legacy)", "Círculo estático", "Cruz estática",
   "Cruz estática con retroceso", "Solo punto", "Quad dinámico", "Cuadrado estático", "Quad estático"];
@@ -75,7 +75,8 @@ export async function onRequestGet({ params, request, env }) {
     : [];
   const matesHtml = mates.length
     ? `<section class="card"><p class="step"><span><span data-i="mates">Más miras de</span> ${esc(r.team)}</span></p>
-       <div class="chips">${mates.map(p => `<a class="chip" href="/jugador/${esc(slugs.get(p.id))}">${esc(p.name)}</a>`).join("")}</div></section>`
+       <div class="chips">${mates.map(p => `<a class="chip" href="/jugador/${esc(slugs.get(p.id))}">${esc(p.name)}</a>`).join("")}</div>
+       <div class="chips under"><span class="lbl" data-i="compareWith">Comparar con</span>${mates.map(p => { const [x, y] = [slugs.get(r.id), slugs.get(p.id)].sort(); return `<a class="chip" href="/comparar/${esc(x)}-vs-${esc(y)}">${esc(p.name)}</a>`; }).join("")}</div></section>`
     : "";
 
   const seen = r.seen ? `Visto por última vez el ${fmtDate(r.seen)} · ${esc([r.source || "demo", r.map ? mapName(r.map) : ""].filter(Boolean).join(" · "))}` : "";
@@ -111,19 +112,7 @@ ${pro ? `<link rel="canonical" href="${esc(url)}">` : `<meta name="robots" conte
 ${pro ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>` : ""}
 </head>
 <body>
-<header class="top">
-  <a class="brand" href="/"><h1>CS<span>Config</span></h1></a>
-  <nav class="topnav">
-    <a href="/" data-i="navPros">Miras</a>
-    <a href="/cambios/" data-i="navChanges">Cambios</a>
-    <a href="/estadisticas/" data-i="navStats">Estadísticas</a>
-    <a href="/conversor/" data-i="navConv">Conversor</a>
-    <a href="/enviar/" data-i="navSubmit">Enviar demo</a>
-    <div class="lang" role="group" aria-label="Idioma / Language">
-      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
-    </div>
-  </nav>
-</header>
+${siteHeader()}
 
 <main>
   <nav class="crumbs" aria-label="Ruta"><a href="/${pro ? "" : "#jugadores"}" data-i="${pro ? "crumbPros" : "crumbPlayers"}">${pro ? "Pros" : "Jugadores"}</a><span aria-hidden="true">›</span><span>${esc(r.name)}</span></nav>
@@ -155,10 +144,10 @@ ${pro ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "
 
   ${matesHtml}
 
-  <div class="links">${links.join("")}</div>
+  <div class="links">${links.join("")}<a href="/comparar/${pro ? `?a=${esc(slugs.get(r.id))}` : ""}" data-i="compareAny">Comparar con otro jugador</a></div>
   <p class="src" id="src">${seen}</p>
 
-  <footer><span data-i="footer">Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.</span> <a href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=retirar-jugador.yml" target="_blank" rel="noopener" data-i="remove">Pedir que retiremos un jugador</a></footer>
+  ${siteFooter()}
 </main>
 
 <script src="/assets/crosshair.js"></script>

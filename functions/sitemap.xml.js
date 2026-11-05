@@ -14,6 +14,10 @@ export async function onRequestGet({ request, env }) {
     { loc: `${base}/conversor/` },
     { loc: `${base}/enviar/` },
     ...pros.map(p => ({ loc: `${base}/jugador/${slugs.get(p.id)}`, lastmod: day(p.since || p.seen) })),
+    { loc: `${base}/comparar/` },
+    // comparaciones entre compañeros de equipo (las que más se buscan; todas las parejas serían demasiadas)
+    ...pros.flatMap(p => pros.filter(q => q.team && q.team === p.team && q.status !== "retired" && p.status !== "retired" && slugs.get(p.id) < slugs.get(q.id))
+      .map(q => ({ loc: `${base}/comparar/${slugs.get(p.id)}-vs-${slugs.get(q.id)}` }))),
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
