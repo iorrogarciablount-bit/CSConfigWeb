@@ -109,8 +109,13 @@ Cada archivo se procesa una sola vez. Las releases no cuentan para el tamaño de
 
 1. Instala [Git](https://git-scm.com/download/win) y [Python](https://www.python.org/downloads/), marcando «Add python.exe to PATH».
 2. Clona el repositorio una vez: `git clone https://github.com/iorrogarciablount-bit/CSConfigWeb.git`.
-3. Copia los `.zip` (o `.dem`, `.rar`, `.7z`) a `pipeline\demos\`.
-4. Haz doble clic en `procesar-demos.bat`. Actualiza, procesa y sube las miras solo.
+3. Descarga las demos como siempre, desde el navegador, a tu carpeta de **Descargas**. Por ejemplo, el botón **GOTV Demo** de un partido en HLTV, o la demo de una sala de FACEIT.
+4. Haz doble clic en `procesar-demos.bat`. Él solo:
+   - recoge de Descargas las demos de los últimos 14 días (`.dem`, `.dem.gz`, `.dem.zst`, o `.zip`/`.rar`/`.7z` que contengan alguna `.dem`; el resto no lo toca),
+   - las procesa y sube las miras,
+   - y guarda las ya procesadas en `pipeline\demos\procesadas\`, que puedes vaciar cuando quieras.
+
+   Las imágenes para compartir y los avisos de Discord se generan solos en GitHub al subir los datos. También puedes seguir copiando archivos a mano a `pipeline\demos\`. Si tu carpeta de descargas es otra, indícala con la variable de entorno `CSCONFIG_DESCARGAS`.
 
 Para los `.rar` y `.7z` hace falta [7-Zip](https://www.7-zip.org), que se detecta solo. Las demos no se suben al repositorio porque pesan demasiado; ya están en `.gitignore`.
 

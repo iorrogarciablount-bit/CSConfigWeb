@@ -3,7 +3,7 @@ name: Actualizar miras
 on:
   push:
     branches: [main]
-    paths: ["pipeline/pros.json", "pipeline/manual.json", "pipeline/og/**"]   # lista de pros, correcciones o diseño de las imágenes
+    paths: ["pipeline/pros.json", "pipeline/manual.json", "pipeline/og/**", "site/data/pros.json"]   # lista de pros, correcciones o diseño de las imágenes
   release:
     types: [published]     # al publicar una release con demos adjuntas
   schedule:
@@ -70,7 +70,13 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           SITE_URL: ${{ vars.SITE_URL || 'https://csconfig.counterstrike2.workers.dev' }}
-        run: node pipeline/og/avisos.mjs
+        run: |
+          # si los datos llegaron en un push (demos procesadas desde el PC), comparar con lo de antes del push
+          BEFORE="${{ github.event.before }}"
+          if [ "${{ github.event_name }}" = "push" ] && [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            git fetch --quiet --depth=1 origin "$BEFORE" && export AVISOS_BASE="$BEFORE"
+          fi
+          node pipeline/og/avisos.mjs
 
       - name: Guardar cambios
         run: |

@@ -411,6 +411,18 @@ def release_matches(state: dict):
     state["releases"] = sorted(done)
 
 
+def demo_label(name: str) -> str:
+    """Nombre legible a partir del archivo: 'blast-final-vitality-vs-spirit.rar' -> 'blast final vitality vs spirit'."""
+    stem = name
+    for ext in (".zip", ".rar", ".7z", ".gz", ".zst", ".dem"):
+        if stem.lower().endswith(ext):
+            stem = stem[: -len(ext)]
+    if re.match(r"^1-[0-9a-f]{8}-", stem, re.I):   # demos de FACEIT: se llaman como la partida
+        return "FACEIT"
+    stem = re.sub(r"[-_.]+", " ", stem).strip()
+    return stem[:60] or "demo"
+
+
 def local_matches(state: dict):
     if not LOCAL_DIR.exists():
         return
@@ -422,7 +434,7 @@ def local_matches(state: dict):
         if hid in done:
             continue
         date = dt.datetime.fromtimestamp(f.stat().st_mtime, dt.timezone.utc).date().isoformat()
-        yield {"id": f"local:{hid}", "path": f, "name": f.name, "source": "demo", "date": date}
+        yield {"id": f"local:{hid}", "path": f, "name": f.name, "source": demo_label(f.name), "date": date}
         done.add(hid)
     state["local"] = sorted(done)
 
