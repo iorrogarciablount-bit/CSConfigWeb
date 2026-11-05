@@ -1,0 +1,92 @@
+name: Vigilar la web
+
+# Comprueba cada 6 horas que la web publicada funciona (páginas, jugador, comparar,
+# !mira, sitemap, imágenes, datos). Si algo falla abre un issue "La web tiene problemas"
+# (GitHub te avisa por correo) y, si está configurado, avisa en Discord.
+# Cuando vuelve a funcionar, cierra el issue solo.
+
+on:
+  schedule:
+    - cron: "41 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["functions/**", "worker.js", "wrangler.jsonc", "site/assets/**"]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: vigilancia
+  cancel-in-progress: true
+
+jobs:
+  vigilar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Esperar al despliegue (solo tras un cambio de código)
+        if: github.event_name == 'push'
+        run: sleep 240
+
+      - name: Comprobar la web
+        id: check
+        continue-on-error: true
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://csconfig.counterstrike2.workers.dev' }}
+          VIGILANCIA_INFORME: informe.md
+        run: |
+          # un fallo puntual de red no es una caída: se reintenta una vez al minuto
+          node pipeline/vigilar.mjs || { sleep 60; node pipeline/vigilar.mjs; }
+
+      - name: Abrir o cerrar el aviso
+        uses: actions/github-script@v7
+        env:
+          OK: ${{ steps.check.outcome == 'success' }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.existsSync('informe.md') ? fs.readFileSync('informe.md', 'utf8') : 'Sin informe.';
+            const ok = process.env.OK === 'true', title = 'La web tiene problemas';
+            try { await github.rest.issues.getLabel({ ...context.repo, name: 'vigilancia' }); }
+            catch { await github.rest.issues.createLabel({ ...context.repo, name: 'vigilancia', color: 'd73a4a', description: 'Avisos automáticos de la web caída' }); }
+            const { data: open } = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'vigilancia', per_page: 5 });
+            const issue = open[0];
+            if (!ok) {
+              const body = `${report}\n\n[Ver la ejecución](${process.env.RUN_URL})`;
+              if (issue) await github.rest.issues.createComment({ ...context.repo, issue_number: issue.number, body });
+              else await github.rest.issues.create({ ...context.repo, title, body, labels: ['vigilancia'] });
+            } else if (issue) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: issue.number, body: `✅ Vuelve a funcionar.\n\n${report}` });
+              await github.rest.issues.update({ ...context.repo, issue_number: issue.number, state: 'closed' });
+            }
+            core.summary.addRaw(report).write();
+
+      - name: Avisar en Discord
+        if: steps.check.outcome != 'success'
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          [ -z "$DISCORD_WEBHOOK_URL" ] && exit 0
+          node -e '
+            const fs = require("fs");
+            const fails = fs.readFileSync("informe.md", "utf8").split("\n").filter(l => l.startsWith("| ❌"))
+              .map(l => "• " + l.split("|")[2].trim() + ": " + l.split("|")[4].trim()).slice(0, 10).join("\n");
+            fetch(process.env.DISCORD_WEBHOOK_URL, { method: "POST", headers: { "content-type": "application/json" },
+              body: JSON.stringify({ username: "CSConfig", allowed_mentions: { parse: [] },
+                content: "⚠️ **La web tiene problemas**\n" + fails + "\n<" + process.env.RUN_URL + ">" }) })
+              .then(r => console.log("Discord", r.status));'
+
+      - name: Marcar el fallo
+        if: steps.check.outcome != 'success'
+        run: exit 1
