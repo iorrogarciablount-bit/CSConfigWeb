@@ -77,29 +77,6 @@
   <footer><span data-i="footer"></span> <a id="removeLink" target="_blank" rel="noopener" href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=retirar-jugador.yml" data-i="remove">Pedir que retiremos un jugador</a></footer>
 </main>
 
-<dialog class="sheet" id="sheet" aria-labelledby="sName">
-  <div class="shead">
-    <h2 id="sName"></h2>
-    <button class="xbtn" id="sClose" aria-label="Cerrar">✕</button>
-  </div>
-  <div class="sbody">
-    <div class="codebox">
-      <p class="code" id="sCode"></p>
-      <button class="copy" id="sCopy" data-i="copy">Copiar</button>
-    </div>
-    <div class="sgrid">
-      <canvas id="sCv" width="300" height="300" aria-label="Vista previa de la mira"></canvas>
-      <table class="vtable"><tbody id="sVals"></tbody></table>
-    </div>
-    <div class="links" id="sLinks"></div>
-    <div>
-      <p class="step" style="margin:0 0 10px;background:none;border:0;padding:0" data-i="history">Historial</p>
-      <ul class="hist" id="sHist"></ul>
-    </div>
-    <p class="src" id="sSrc"></p>
-  </div>
-</dialog>
-
 <script src="assets/crosshair.js"></script>
 <script>
 (() => {
@@ -117,12 +94,7 @@ es: {
   vanity:'Los enlaces de Steam con nombre personalizado (/id/…) no se pueden buscar. Usa el nick, el usuario de FACEIT o el SteamID64 (lo ves en steamid.io).',
   recent:'Vistos recientemente', results:'Resultados', none:'Ningún jugador coincide con la búsqueda.',
   count:(n, t) => `${n} de ${t} jugadores`, pcount:(n, t) => `${n} de ${t} jugadores`,
-  copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
-  history:'Historial de miras', current:'actual', use:'Usar', changed:'Cambió hace poco',
-  seenOn:(m, d) => `Visto en ${m} · ${d}`, source:(s, d) => `Visto por última vez el ${d} · ${s}`,
-  aka:'También jugó como', page:'Página del jugador', steam:'Perfil de Steam', faceitProfile:'Perfil de FACEIT', faceitRoom:'Partida en FACEIT',
-  vals:{style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor', color:'Color', a:'Opacidad', dot:'Punto', t:'Estilo T', outline:'Contorno', recoil:'Sigue el retroceso', h:'Resolución del código'},
-  yes:'Sí', no:'No', outlineOpts:['No','Completo','Medio'],
+  seenOn:(m, d) => `Visto en ${m} · ${d}`, changed:'Cambió hace poco',
   emptyTitle:'La base de datos se está llenando', emptyText:`Las miras aparecen aquí en cuanto se procesan demos. ¿Tienes la demo de una partida? <a href="${SUBMIT}">Envíala</a> y sus miras se añadirán solas.`,
   loadErr:'No se han podido cargar los datos. Recarga la página.',
   aboutTitle:'Cómo funciona',
@@ -133,7 +105,6 @@ es: {
          ['No quiero aparecer','Pulsa «Pedir que retiremos un jugador» al final de la página e indica tu SteamID64.'],
          ['Tengo un código antiguo (CSGO-…)','Usa la pestaña Conversor para pasarlo al formato nuevo.']],
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen. Equipos: <a href="https://liquipedia.net/counterstrike/" target="_blank" rel="noopener">Liquipedia</a> (CC BY-SA 3.0).', remove:'Pedir que retiremos un jugador',
-  styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
   locale:'es-ES',
 },
 en: {
@@ -148,12 +119,7 @@ en: {
   vanity:'Steam links with a custom name (/id/…) can\'t be searched. Use the nickname, FACEIT username or SteamID64 (find it on steamid.io).',
   recent:'Recently seen', results:'Results', none:'No player matches your search.',
   count:(n, t) => `${n} of ${t} players`, pcount:(n, t) => `${n} of ${t} players`,
-  copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
-  history:'Crosshair history', current:'current', use:'Use', changed:'Recently changed',
-  seenOn:(m, d) => `Seen on ${m} · ${d}`, source:(s, d) => `Last seen ${d} · ${s}`,
-  aka:'Also played as', page:'Player page', steam:'Steam profile', faceitProfile:'FACEIT profile', faceitRoom:'FACEIT match',
-  vals:{style:'Style', length:'Length', gap:'Gap', thickness:'Thickness', color:'Color', a:'Opacity', dot:'Dot', t:'T style', outline:'Outline', recoil:'Follow recoil', h:'Code resolution'},
-  yes:'Yes', no:'No', outlineOpts:['No','Full','Half'],
+  seenOn:(m, d) => `Seen on ${m} · ${d}`, changed:'Recently changed',
   emptyTitle:'The database is filling up', emptyText:`Crosshairs show up here as soon as demos are processed. Have a match demo? <a href="${SUBMIT}">Submit it</a> and its crosshairs are added automatically.`,
   loadErr:'The data could not be loaded. Reload the page.',
   aboutTitle:'How it works',
@@ -164,7 +130,6 @@ en: {
          ['I don\'t want to be listed','Press "Ask us to remove a player" at the bottom of the page and give your SteamID64.'],
          ['I have an old code (CSGO-…)','Use the Converter tab to turn it into the new format.']],
   footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown. Teams: <a href="https://liquipedia.net/counterstrike/" target="_blank" rel="noopener">Liquipedia</a> (CC BY-SA 3.0).', remove:'Ask us to remove a player',
-  styles:['Dynamic cross','Dynamic circle','Dynamic cross (legacy)','Static circle','Static cross','Static cross with shot feedback','Dot only','Dynamic quad','Static square','Static quad'],
   locale:'en-GB',
 }};
 const MAPN = typeof MAPS !== 'undefined' ? MAPS : [];
@@ -175,7 +140,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
 let bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, 6);
 const ds = { pros: { rows: [], loaded: false, failed: false, updated: null }, players: { rows: [], loaded: false, failed: false, updated: null } };
-let tab = location.hash === '#jugadores' || location.hash === '#players' ? 'players' : 'pros', current = null;
+let tab = location.hash === '#jugadores' || location.hash === '#players' ? 'players' : 'pros';
 let startQuery = '';
 try { startQuery = (new URLSearchParams(location.search).get('jugador') || '').slice(0, 80); } catch {}
 if (startQuery) tab = 'players';
@@ -194,7 +159,6 @@ function buildSlugs(pros) {
 }
 const pageUrl = r => `jugador/${encodeURIComponent(proSlugs.get(r.id) || r.id)}`;
 function decodeSafe(code) { try { return anyCode(code); } catch { return null; } }
-const shownCode = (code, n) => /^CSGO-/.test(code) ? encodeNew(n) : code;
 
 function drawThumb(cv, n) { const p = newParams(n); paint(cv, p, clamp(fitZoom(cv.width, p), 2, 4), bgIdx); }
 
@@ -206,14 +170,13 @@ function subline(r) {
 
 function card(r) {
   const n = r.n, L = t();
-  const b = document.createElement('button');
-  b.className = 'pcard'; b.type = 'button';
+  const b = document.createElement('a');
+  b.className = 'pcard'; b.href = pageUrl(r);
   b.innerHTML = `<canvas width="96" height="96" aria-hidden="true"></canvas>
     <span class="pbody"><span class="pname">${esc(r.name)}</span><span class="pteam">${subline(r)}</span>
     <span class="specs"><span>L <b>${n.length}</b></span><span>G <b>${n.gap}</b></span><span>T <b>${n.thickness}</b></span>
     <span><i class="swatch" style="background:rgb(${n.r},${n.g},${n.b})"></i></span>${n.dot ? '<span>•</span>' : ''}</span>
     ${r.changed ? `<span class="badge">${L.changed}</span>` : ''}</span>`;
-  b.onclick = () => openSheet(r);
   drawThumb(b.querySelector('canvas'), n);
   return b;
 }
@@ -273,46 +236,6 @@ function listPlayers() {
   fill(box, out);
 }
 
-/* ---------- ficha ---------- */
-function valsTable(n) {
-  const L = t(), V = L.vals;
-  return [[V.style, L.styles[n.style] ?? n.style], [V.length, n.length], [V.gap, n.gap], [V.thickness, n.thickness],
-    [V.color, `<i class="swatch" style="background:rgb(${n.r},${n.g},${n.b})"></i> ${n.r} ${n.g} ${n.b}`], [V.a, n.a],
-    [V.dot, n.dot ? L.yes : L.no], [V.t, n.t ? L.yes : L.no], [V.outline, L.outlineOpts[n.outline] ?? n.outline],
-    [V.recoil, n.recoil ? L.yes : L.no], [V.h, n.h ? `${n.h}p` : '—']].map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
-}
-function showCode(code) {
-  const n = decodeSafe(code); if (!n) return;
-  $('sCode').textContent = shownCode(code, n); $('sVals').innerHTML = valsTable(n);
-  const p = newParams(n); paint($('sCv'), p, fitZoom($('sCv').width, p), bgIdx);
-}
-function openSheet(r) {
-  const L = t(); current = r;
-  const sub = r.pro ? (r.status === 'retired' ? t().retired : (r.team ? esc(r.team) : t().noTeam)) : (r.faceit ? `FACEIT: ${esc(r.faceit)}` : '');
-  $('sName').innerHTML = `${esc(r.name)}<small>${sub}</small>`;
-  showCode(r.code);
-  const links = [`<a href="${pageUrl(r)}" data-page>${L.page}</a>`, `<a href="https://steamcommunity.com/profiles/${esc(r.id)}" target="_blank" rel="noopener">${L.steam}</a>`];
-  if (r.faceit) links.push(`<a href="https://www.faceit.com/${lang}/players/${encodeURIComponent(r.faceit)}" target="_blank" rel="noopener">${L.faceitProfile}</a>`);
-  if (r.faceit_match) links.push(`<a href="https://www.faceit.com/${lang}/cs2/room/${encodeURIComponent(r.faceit_match)}" target="_blank" rel="noopener">${L.faceitRoom}</a>`);
-  const aka = [...new Set([...(r.aliases || []), ...(r.pro && r.nick && r.nick !== r.name ? [r.nick] : [])])];
-  $('sLinks').innerHTML = links.join('') + (aka.length ? `<span class="aka">${L.aka}: ${aka.map(esc).join(', ')}</span>` : '');
-  const hist = [{ code: r.code, from: r.since, now: true }, ...(r.history || []).slice().reverse()];
-  $('sHist').innerHTML = hist.map((h, i) => { const n = decodeSafe(h.code); return `<li><time>${h.from ? fmtDate(h.from) : ''}</time><code>${esc(n ? shownCode(h.code, n) : h.code)}</code>${h.now ? `<span class="badge" style="margin:0">${L.current}</span>` : `<button class="mini" data-h="${i}">${L.use}</button>`}</li>`; }).join('');
-  $('sHist').querySelectorAll('[data-h]').forEach(btn => btn.onclick = () => showCode(hist[+btn.dataset.h].code));
-  $('sSrc').textContent = r.seen ? L.source([r.source || 'demo', r.map ? mapName(r.map) : ''].filter(Boolean).join(' · '), fmtDate(r.seen)) : '';
-  const d = $('sheet');
-  if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
-}
-let copyTimer;
-$('sCopy').onclick = async () => {
-  const L = t(), btn = $('sCopy');
-  try { await navigator.clipboard.writeText($('sCode').textContent); btn.textContent = L.copied; btn.classList.add('done'); }
-  catch { const r = document.createRange(); r.selectNodeContents($('sCode')); getSelection().removeAllRanges(); getSelection().addRange(r); btn.textContent = L.selected; }
-  clearTimeout(copyTimer); copyTimer = setTimeout(() => { btn.textContent = L.copy; btn.classList.remove('done'); }, 1800);
-};
-$('sClose').onclick = () => { const d = $('sheet'); d.close ? d.close() : d.removeAttribute('open'); };
-$('sheet').addEventListener('click', e => { if (e.target === $('sheet')) $('sClose').onclick(); });
-
 /* ---------- interfaz ---------- */
 function buildBg() {
   document.querySelectorAll('.bgChips').forEach(box => {
@@ -320,7 +243,7 @@ function buildBg() {
     MAPN.forEach((name, i) => {
       const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = name;
       b.setAttribute('aria-pressed', i === bgIdx);
-      b.onclick = () => { bgIdx = i; store.set('bg', i); buildBg(); render(); if (current && $('sheet').open) showCode(current.code); };
+      b.onclick = () => { bgIdx = i; store.set('bg', i); buildBg(); render(); };
       box.append(b);
     });
   });

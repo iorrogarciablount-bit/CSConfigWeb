@@ -135,7 +135,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
 .count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.pcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);display:grid;grid-template-columns:96px minmax(0,1fr);overflow:hidden;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:0;transition:border-color .12s}
+.pcard{text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);display:grid;grid-template-columns:96px minmax(0,1fr);overflow:hidden;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:0;transition:border-color .12s}
 .pcard:hover{border-color:var(--accent)}
 .pcard canvas{width:96px;height:96px;display:block;image-rendering:pixelated;border-right:1px solid var(--line)}
 .pbody{padding:9px 12px;display:grid;gap:3px;align-content:start;min-width:0}
@@ -149,13 +149,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
 .empty h3{font:700 18px var(--display);text-transform:uppercase;color:var(--ink);margin:0 0 6px}
 .empty p{max-width:52ch;margin:0 auto}
 
-/* ficha de jugador (diálogo) */
-dialog.sheet{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);color:var(--ink);padding:0;width:min(640px,calc(100% - 24px));max-height:calc(100% - 24px)}
-dialog.sheet::backdrop{background:#05080bcc}
-.sheet .shead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px;background:var(--panel2);border-bottom:1px solid var(--line)}
-.sheet .shead h2{font:700 20px var(--display);margin:0;text-transform:uppercase;letter-spacing:.02em}
-.sheet .shead small{display:block;font:12px var(--sans);color:var(--muted);text-transform:none;letter-spacing:0}
-.xbtn{background:none;border:1px solid var(--line);color:var(--ink);border-radius:var(--r);width:32px;height:32px;cursor:pointer;font:16px var(--sans)}
+/* ficha de jugador */
 .sbody{padding:16px;display:grid;gap:14px}
 .sgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
 .sgrid canvas{width:100%;max-width:100%;aspect-ratio:1;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:2px}
