@@ -65,6 +65,14 @@ Cuando un pro cambia de mira o entra uno nuevo, el workflow lo publica en un can
 
 Publica como máximo 10 avisos por ejecución. Para ver qué publicaría sin enviarlo: `node pipeline/og/avisos.mjs --dry-run carpeta`.
 
+### Vigilancia de la web
+
+`.github/workflows/vigilancia.yml` ejecuta `pipeline/vigilar.mjs` cada 6 horas, y 4 minutos después de cada cambio de código. Comprueba 19 cosas de la web publicada: todas las páginas, una página de jugador, una comparación, `!mira`, el sitemap, las imágenes y los datos.
+- Si algo falla, abre el issue **«La web tiene problemas»**, con la tabla de lo que falla (GitHub te avisa por correo), y avisa en Discord si está configurado `DISCORD_WEBHOOK_URL`.
+- Cuando vuelve a funcionar, comenta y cierra el issue solo.
+- La dirección sale de la variable `SITE_URL` (por defecto `https://csconfig.counterstrike2.workers.dev`).
+- Para lanzarlo a mano: **Actions → Vigilar la web → Run workflow**. En local: `SITE_URL=... node pipeline/vigilar.mjs`.
+
 ### 2. Activar la actualización automática (FACEIT)
 
 1. Crea una cuenta de desarrollador en [developers.faceit.com](https://developers.faceit.com), crea una app y genera una **Server-side API key**.
