@@ -64,6 +64,7 @@ const NAV = [["/", "navPros", "Miras"], ["/comparar/", "navCompare", "Comparar"]
   ["/conversor/", "navConv", "Conversor"], ["/enviar/", "navSubmit", "Enviar demo"]];
 export const siteHeader = (active = "") => `<header class="top">
   <a class="brand" href="/"><h1>CS<span>Config</span></h1></a>
+  <input type="checkbox" id="navt" class="navt"><label for="navt" class="navbtn" aria-label="Menú / Menu"><span></span></label>
   <nav class="topnav">
 ${NAV.map(([href, key, label]) => `    <a href="${href}"${key === active ? ' aria-current="page"' : ""} data-i="${key}">${label}</a>`).join("\n")}
     <div class="lang" role="group" aria-label="Idioma / Language">
