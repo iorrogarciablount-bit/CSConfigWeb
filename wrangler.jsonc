@@ -8,7 +8,7 @@
     "directory": "./site",
     "binding": "ASSETS",
     // Estas páginas pasan por worker.js para añadirles la imagen de vista previa (og:image)
-    "run_worker_first": ["/", "/cambios*", "/estadisticas*", "/conversor*", "/enviar*"]
+    "run_worker_first": ["/", "/cambios*", "/estadisticas*", "/conversor*", "/enviar*", "/parecido*"]
   },
   "observability": { "enabled": true }
 }

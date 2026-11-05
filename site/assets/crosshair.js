@@ -245,6 +245,29 @@ function proSlugs(pros) {
   return new Map(pros.map(p => { const s = slugify(p.name); return [p.id, s && count.get(s) === 1 && !/^\d+$/.test(s) ? s : p.id]; }));
 }
 
+/* ---------- parecido entre dos miras (decodificadas) ---------- */
+const styleFamily = s => [4, 5].includes(s) ? 'static' : [0, 2].includes(s) ? 'dynamic' : [1, 3].includes(s) ? 'circle' : s === 6 ? 'dot' : 'quad';
+/* Distancia: 0 = iguales. Pesa más lo que más se nota en pantalla (grosor, separación, color, estilo) */
+function crosshairDistance(a, b) {
+  const lim = (x, y) => Math.min(Math.abs(x - y), 10);
+  let d = a.style === b.style ? 0 : styleFamily(a.style) === styleFamily(b.style) ? 1 : 4;
+  d += lim(a.length, b.length) * 0.6 + lim(a.gap, b.gap) * 0.8 + lim(a.thickness, b.thickness) * 1.0;
+  d += Math.hypot(a.r - b.r, a.g - b.g, a.b - b.b) / 441.7 * 5 + Math.abs(a.a - b.a) / 255;
+  d += (!!a.dot !== !!b.dot) * 2 + (!!a.t !== !!b.t) * 3 + (!!a.outline !== !!b.outline) * 1;
+  return d;
+}
+/* Parecido en % (100 = misma mira) */
+const crosshairSimilarity = (a, b) => Math.round(100 * Math.exp(-crosshairDistance(a, b) / 10));
+/* Qué campos visibles cambian: [{ k, a, b }] con k en style, length, gap, thickness, color, a, dot, t, outline, recoil */
+function crosshairDiff(a, b) {
+  const out = [];
+  for (const k of ['style', 'length', 'gap', 'thickness']) if (a[k] !== b[k]) out.push({ k, a: a[k], b: b[k] });
+  if (a.r !== b.r || a.g !== b.g || a.b !== b.b) out.push({ k: 'color', a: [a.r, a.g, a.b], b: [b.r, b.g, b.b] });
+  if (a.a !== b.a) out.push({ k: 'a', a: a.a, b: b.a });
+  for (const k of ['dot', 't', 'outline', 'recoil']) if (!!a[k] !== !!b[k]) out.push({ k, a: a[k], b: b[k] });
+  return out;
+}
+
 /* Para las funciones de Cloudflare (functions/) y el generador de imágenes (pipeline/og/),
    que importan este archivo como módulo */
-globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode, newParams, paint, fitZoom, MAPS, slugify, proSlugs };
+globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode, newParams, paint, fitZoom, MAPS, slugify, proSlugs, crosshairSimilarity, crosshairDiff };

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿A qué pro se parece tu mira de CS2? · CSConfig</title>
+<meta name="description" content="Pega tu código de mira de CS2 y descubre qué jugador profesional tiene la mira más parecida a la tuya, y en qué se diferencian.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/app.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
+  <nav class="topnav">
+    <a href="../" data-i="navPros">Miras</a>
+    <a href="../cambios/" data-i="navChanges">Cambios</a>
+    <a href="../estadisticas/" data-i="navStats">Estadísticas</a>
+    <a href="../conversor/" data-i="navConv">Conversor</a>
+    <a href="../enviar/" data-i="navSubmit">Enviar demo</a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div>
+    <h2 class="ptitle" data-i="title">¿A qué pro se parece <span>tu mira</span>?</h2>
+    <p class="lead" data-i="lead"></p>
+  </div>
+
+  <section class="card">
+    <p class="step"><span data-i="pasteTitle">Pega tu código</span></p>
+    <textarea id="src" spellcheck="false" autocomplete="off" rows="2"></textarea>
+    <p class="fine" data-i="where"></p>
+    <p id="msg"></p>
+  </section>
+
+  <section class="card result" id="best" hidden>
+    <p class="step"><span id="bestTitle"></span></p>
+    <div class="vs">
+      <figure><canvas id="cvMe" width="240" height="240"></canvas><figcaption data-i="you">Tu mira</figcaption></figure>
+      <div class="vs-pct"><b id="pct"></b><span data-i="similar">parecido</span></div>
+      <figure><canvas id="cvPro" width="240" height="240"></canvas><figcaption id="proCap"></figcaption></figure>
+    </div>
+    <ul class="vs-diff" id="diff"></ul>
+    <div class="vs-actions">
+      <a class="copy" id="proLink" href="#" data-i="seePro">Ver su mira</a>
+      <button class="chip" id="share" type="button" data-i="share">Copiar enlace al resultado</button>
+    </div>
+  </section>
+
+  <section class="card" id="others" hidden>
+    <p class="step"><span data-i="othersTitle">También se parece a</span></p>
+    <div class="plist" id="olist"></div>
+  </section>
+
+  <footer><span data-i="footer"></span></footer>
+</main>
+
+<script src="../assets/crosshair.js"></script>
+<script>
+(() => {
+const T = {
+es: {
+  navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
+  title:'¿A qué pro se parece <span>tu mira</span>?', docTitle:'¿A qué pro se parece tu mira de CS2? · CSConfig',
+  lead:'Pega el código de tu mira y te decimos qué profesional tiene la más parecida y en qué se diferencian.',
+  pasteTitle:'Pega tu código', ph:'CS… o CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx',
+  where:'En CS2: Ajustes → Juego → Mira → Compartir o importar → Copiar. Sirven los códigos nuevos (CS…) y los antiguos (CSGO-…).',
+  bad:'Ese código no es válido. Cópialo otra vez desde el juego.', loading:'Cargando pros…', loadErr:'No se han podido cargar los datos. Recarga la página.',
+  you:'Tu mira', similar:'parecido', seePro:'Ver su mira', share:'Copiar enlace al resultado', shared:'¡Enlace copiado!',
+  best:names => `Tu mira se parece a la de ${names}`, closest:names => `Ningún pro la tiene igual: la más parecida es la de ${names}`, same:names => `¡Tienes la misma mira que ${names}!`, and:' y ',
+  othersTitle:'También se parece a',
+  diffYou:(k, a, b, name) => `${k}: tú <b>${a}</b>, ${name} <b>${b}</b>`, noDiff:'No hay ninguna diferencia.',
+  f:{style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor', color:'Color', a:'Opacidad', dot:'Punto', t:'Estilo T', outline:'Contorno', recoil:'Retroceso'},
+  on:'sí', off:'no',
+  styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
+  footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
+},
+en: {
+  navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
+  title:'Which pro has <span>your crosshair</span>?', docTitle:'Which pro has your CS2 crosshair? · CSConfig',
+  lead:'Paste your crosshair code and we will tell you which pro has the closest one and what is different.',
+  pasteTitle:'Paste your code', ph:'CS… or CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx',
+  where:'In CS2: Settings → Game → Crosshair → Share or Import → Copy. New (CS…) and old (CSGO-…) codes both work.',
+  bad:'That code is not valid. Copy it again from the game.', loading:'Loading pros…', loadErr:'The data could not be loaded. Reload the page.',
+  you:'Your crosshair', similar:'similar', seePro:'See their crosshair', share:'Copy link to the result', shared:'Link copied!',
+  best:names => `Your crosshair is closest to ${names}'s`, closest:names => `No pro uses anything like it: the closest is ${names}'s`, same:names => `You have the exact same crosshair as ${names}!`, and:' and ',
+  othersTitle:'Also close to',
+  diffYou:(k, a, b, name) => `${k}: you <b>${a}</b>, ${name} <b>${b}</b>`, noDiff:'There are no differences.',
+  f:{style:'Style', length:'Length', gap:'Gap', thickness:'Thickness', color:'Color', a:'Opacity', dot:'Dot', t:'T style', outline:'Outline', recoil:'Recoil'},
+  on:'on', off:'off',
+  styles:['Dynamic cross','Dynamic circle','Dynamic cross (legacy)','Static circle','Static cross','Static cross with shot feedback','Dot only','Dynamic quad','Static square','Static quad'],
+  footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.',
+}};
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
+const bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, MAPS.length - 1);
+const t = () => T[lang];
+let pros = null, failed = false, slugMap = new Map(), current = '';
+
+/* Saca el código del texto pegado (puede venir con más cosas alrededor) */
+function readCode(txt) {
+  const old = txt.match(/CSGO(-?[A-Za-z0-9]{5}){5}/);
+  if (old) { const c = old[0].replace(/-/g, '').slice(4); return 'CSGO-' + c.match(/.{5}/g).join('-'); }
+  const neu = txt.match(/CS[A-Za-z0-9]{44}/);
+  return neu ? neu[0] : null;
+}
+const decodeSafe = c => { try { return anyCode(c); } catch { return null; } };
+const pageUrl = r => `../jugador/${encodeURIComponent(slugMap.get(r.id) || r.id)}`;
+/* Las dos miras con el mismo zoom, para que se puedan comparar a ojo */
+function drawPair(cvA, a, cvB, b) {
+  const pa = newParams(a), pb = newParams(b), z = Math.min(fitZoom(cvA.width, pa), fitZoom(cvB.width, pb));
+  paint(cvA, pa, z, bgIdx); paint(cvB, pb, z, bgIdx);
+}
+
+function fmtVal(k, v) {
+  const L = t();
+  if (k === 'style') return esc(L.styles[v] ?? v);
+  if (k === 'color') return `<i class="swatch" style="background:rgb(${v.join(',')})"></i>`;
+  if (['dot', 't', 'outline', 'recoil'].includes(k)) return v ? L.on : L.off;
+  return esc(v);
+}
+const names = list => { const L = t(), ns = list.map(x => `<b>${esc(x.r.name)}</b>`); return ns.length > 1 ? ns.slice(0, -1).join(', ') + L.and + ns.at(-1) : ns[0]; };
+
+function render() {
+  const L = t(), txt = $('src').value.trim(), msg = $('msg');
+  $('best').hidden = $('others').hidden = true; msg.className = ''; msg.textContent = '';
+  if (!txt) return;
+  if (failed) { msg.className = 'err'; msg.textContent = L.loadErr; return; }
+  const code = readCode(txt), me = code && decodeSafe(code);
+  if (!me) { msg.className = 'err'; msg.textContent = L.bad; return; }
+  if (!pros) { msg.textContent = L.loading; return; }
+  current = code;
+
+  const ranked = pros.map(x => ({ ...x, pct: crosshairSimilarity(me, x.n) })).sort((a, b) => b.pct - a.pct || a.r.name.localeCompare(b.r.name));
+  const top = ranked.filter(x => x.pct === ranked[0].pct), best = top[0];
+  $('bestTitle').innerHTML = best.pct === 100 ? L.same(names(top)) : best.pct >= 50 ? L.best(names(top)) : L.closest(names(top));
+  $('pct').textContent = `${best.pct}%`;
+  $('proCap').textContent = best.r.name;
+  drawPair($('cvMe'), me, $('cvPro'), best.n);
+  const d = crosshairDiff(me, best.n);
+  $('diff').innerHTML = d.length ? d.map(x => `<li>${L.diffYou(L.f[x.k], fmtVal(x.k, x.a), fmtVal(x.k, x.b), esc(best.r.name))}</li>`).join('') : `<li>${L.noDiff}</li>`;
+  $('proLink').href = pageUrl(best.r);
+  $('best').hidden = false;
+
+  const rest = ranked.filter(x => !top.includes(x)).slice(0, 3);
+  $('olist').innerHTML = '';
+  rest.forEach(x => {
+    const a = document.createElement('a'); a.className = 'pcard'; a.href = pageUrl(x.r);
+    a.innerHTML = `<canvas width="96" height="96" aria-hidden="true"></canvas><span class="pbody"><span class="pname">${esc(x.r.name)}</span>
+      <span class="pteam">${esc(x.r.team || '')}</span><span class="pct-big">${x.pct}%</span></span>`;
+    const cv = a.querySelector('canvas'), p = newParams(x.n); paint(cv, p, clamp(fitZoom(96, p), 2, 4), bgIdx);
+    $('olist').append(a);
+  });
+  $('others').hidden = !rest.length;
+
+  try { history.replaceState(null, '', `?c=${encodeURIComponent(code)}`); } catch {}
+}
+
+function applyLang() {
+  const L = t();
+  document.documentElement.lang = lang; document.title = L.docTitle;
+  document.querySelectorAll('[data-i]').forEach(el => { const v = L[el.dataset.i]; if (typeof v === 'string') el.innerHTML = v; });
+  $('src').placeholder = L.ph;
+  $('lang_es').setAttribute('aria-pressed', lang === 'es'); $('lang_en').setAttribute('aria-pressed', lang === 'en');
+  render();
+}
+$('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
+$('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
+$('src').addEventListener('input', render);
+let timer;
+$('share').onclick = async () => {
+  const btn = $('share'), url = `${location.origin}${location.pathname}?c=${encodeURIComponent(current)}`;
+  try { await navigator.clipboard.writeText(url); btn.textContent = t().shared; } catch { prompt('', url); }
+  clearTimeout(timer); timer = setTimeout(() => { btn.textContent = t().share; }, 1800);
+};
+
+try { const c = new URLSearchParams(location.search).get('c'); if (c) $('src').value = c.slice(0, 200); } catch {}
+applyLang();
+fetch('../data/pros.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(j => {
+    const list = (j.players || []).filter(r => r.name && r.code);
+    slugMap = proSlugs(j.players || []);
+    pros = list.map(r => ({ r, n: decodeSafe(r.code) })).filter(x => x.n);
+  })
+  .catch(() => { failed = true; })
+  .finally(render);
+})();
+</script>
+</body>
+</html>

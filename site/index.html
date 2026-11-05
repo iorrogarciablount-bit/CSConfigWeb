@@ -36,6 +36,11 @@
     <div class="stat"><b id="stUpdated">–</b><span data-i="stUpdated">Actualizado</span></div>
   </div>
 
+  <a class="card promo" href="parecido/" style="text-decoration:none;color:inherit">
+    <div><h3 data-i="promoTitle">¿A qué pro se parece tu mira?</h3><p data-i="promoText">Pega tu código y descubre qué profesional tiene la mira más parecida.</p></div>
+    <span class="copy" data-i="promoBtn">Probar</span>
+  </a>
+
   <div class="tabs" role="tablist">
     <button role="tab" id="tab_pros" aria-controls="panel_pros" aria-selected="true"><span data-i="tabPros">Pros</span> <small id="nPros"></small></button>
     <button role="tab" id="tab_players" aria-controls="panel_players" aria-selected="false"><span data-i="tabPlayers">Jugadores</span> <small id="nPlayers"></small></button>
@@ -86,6 +91,7 @@ const SUBMIT = 'enviar/';
 const T = {
 es: {
   retired:'Retirado', retiredOpt:'Retirados', noTeam:'Sin equipo',
+  promoTitle:'¿A qué pro se parece tu mira?', promoText:'Pega tu código y descubre qué profesional tiene la mira más parecida.', promoBtn:'Probar',
   navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', title:'Miras de <span>CS2</span>',
   lead:'Las miras que usan los profesionales y cualquier jugador, sacadas directamente de las demos de sus partidas. Pulsa un jugador para ver los detalles y copiar su código.',
   stPros:'Pros', stPlayers:'Jugadores', stUpdated:'Actualizado', tabPros:'Pros', tabPlayers:'Jugadores',
@@ -111,6 +117,7 @@ es: {
 },
 en: {
   retired:'Retired', retiredOpt:'Retired', noTeam:'No team',
+  promoTitle:'Which pro has your crosshair?', promoText:'Paste your code and find the pro with the closest crosshair.', promoBtn:'Try it',
   navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', title:'CS2 <span>crosshairs</span>',
   lead:'The crosshairs pros and any player actually use, pulled straight from their match demos. Tap a player to see the details and copy their code.',
   stPros:'Pros', stPlayers:'Players', stUpdated:'Updated', tabPros:'Pros', tabPlayers:'Players',
