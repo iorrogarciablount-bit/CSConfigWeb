@@ -7,6 +7,7 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
   - `cambios/` muestra los últimos cambios de mira (antes → ahora y qué valores han cambiado) y los jugadores nuevos, a partir del historial de los datos.
   - `estadisticas/` resume cómo son las miras de los pros: la mira típica (con su código), estilos, colores, largo, separación y grosor más usados.
   - `parecido/` compara tu código de mira con los de los pros y te dice a cuál se parece más (`?c=<código>` para compartir el resultado).
+  - `/comparar/<a>-vs-<b>` compara las miras de dos jugadores (la genera `functions/comparar/[pair].js`; `/comparar/` es el selector). Las comparaciones entre compañeros de equipo entran en el sitemap.
   - `conversor/` es la herramienta de conversión.
   - `/jugador/<nombre>` es la página de cada pro (y `/jugador/<SteamID64>` la de cualquier jugador). La genera `functions/jugador/[slug].js` en el servidor (a través de `worker.js`) a partir de los datos, igual que `sitemap.xml` y `robots.txt`. Solo los pros se indexan en Google.
   - `assets/crosshair.js` lee y escribe códigos; el formato está comprobado con 30 códigos reales exportados del juego.

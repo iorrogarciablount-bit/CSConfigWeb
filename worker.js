@@ -10,6 +10,7 @@ import * as apiStatus from "./functions/api/status.js";
 import * as apiSubmit from "./functions/api/submit.js";
 import * as apiMira from "./functions/api/mira.js";
 import * as jugador from "./functions/jugador/[slug].js";
+import * as comparar from "./functions/comparar/[pair].js";
 import * as sitemap from "./functions/sitemap.xml.js";
 import * as robots from "./functions/robots.txt.js";
 import { loadOg, ogImage, origin } from "./functions/_site.js";
@@ -21,6 +22,8 @@ const ROUTES = [
   ["/api/submit", apiSubmit],
   ["/api/mira", apiMira],
   ["/jugador/:slug", jugador],
+  ["/comparar", comparar],
+  ["/comparar/:pair", comparar],
   ["/sitemap.xml", sitemap],
   ["/robots.txt", robots],
 ];
