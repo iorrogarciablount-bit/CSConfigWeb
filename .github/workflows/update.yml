@@ -65,6 +65,13 @@ jobs:
           npm ci --prefix pipeline/og --no-audit --no-fund
           node pipeline/og/og.mjs
 
+      - name: Avisos en Discord (cambios de mira y pros nuevos)
+        continue-on-error: true   # si Discord falla, los datos se guardan igual
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://csconfig.counterstrike2.workers.dev' }}
+        run: node pipeline/og/avisos.mjs
+
       - name: Guardar cambios
         run: |
           git config user.name "csconfig-bot"

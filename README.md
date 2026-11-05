@@ -55,6 +55,15 @@ Con Cloudflare Web Analytics, gratis:
 
 `worker.js` añade el script a todas las páginas solo. Si borras la variable, deja de añadirlo.
 
+### Avisos en Discord (opcional)
+
+Cuando un pro cambia de mira o entra uno nuevo, el workflow lo publica en un canal de Discord con una imagen del antes → ahora (`pipeline/og/avisos.mjs`).
+1. En Discord: **Ajustes del canal → Integraciones → Webhooks → Nuevo webhook → Copiar URL del webhook**.
+2. En GitHub: **Settings → Secrets and variables → Actions → New repository secret**, con nombre `DISCORD_WEBHOOK_URL` y la URL como valor.
+3. Opcional: en la pestaña **Variables**, crea `SITE_URL` con la dirección de la web (si no, usa `https://csconfig.counterstrike2.workers.dev`).
+
+Publica como máximo 10 avisos por ejecución. Para ver qué publicaría sin enviarlo: `node pipeline/og/avisos.mjs --dry-run carpeta`.
+
 ### 2. Activar la actualización automática (FACEIT)
 
 1. Crea una cuenta de desarrollador en [developers.faceit.com](https://developers.faceit.com), crea una app y genera una **Server-side API key**.
