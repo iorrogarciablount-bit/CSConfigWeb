@@ -11,6 +11,7 @@ import * as apiSubmit from "./functions/api/submit.js";
 import * as jugador from "./functions/jugador/[slug].js";
 import * as sitemap from "./functions/sitemap.xml.js";
 import * as robots from "./functions/robots.txt.js";
+import { loadOg, ogImage, origin } from "./functions/_site.js";
 
 // [patrón, módulo]. Los parámetros del patrón (:slug) llegan en ctx.params, como en Pages.
 const ROUTES = [
@@ -35,6 +36,30 @@ function match(pattern, path) {
   return params;
 }
 
+// Páginas estáticas (portada, conversor, enviar): se les añade la imagen de vista previa
+// genérica. Va aquí porque la etiqueta necesita la dirección completa de la web.
+async function withOg(res, request, env) {
+  if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
+  const og = await loadOg(env, request);
+  const img = ogImage(origin(request), og, null);
+  const tags = `<meta property="og:type" content="website"><meta property="og:site_name" content="CSConfig">` +
+    `<meta property="og:image" content="${img}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">` +
+    `<meta name="twitter:card" content="summary_large_image">`;
+  let title = "", desc = "";
+  return new HTMLRewriter()
+    .on("title", { text(t) { title += t.text; } })
+    .on('meta[name="description"]', { element(e) { desc = e.getAttribute("content") || ""; } })
+    .on("head", {
+      element(e) {
+        e.onEndTag(end => {
+          const esc = s => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+          end.before(`${tags}<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}">`, { html: true });
+        });
+      },
+    })
+    .transform(res);
+}
+
 const HANDLER = { GET: "onRequestGet", HEAD: "onRequestGet", POST: "onRequestPost" };
 
 export default {
@@ -53,6 +78,7 @@ export default {
         return new Response("Error interno", { status: 500 });
       }
     }
-    return env.ASSETS.fetch(request);
+    const res = await env.ASSETS.fetch(request);
+    return withOg(res, request, env);
   },
 };

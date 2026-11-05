@@ -3,7 +3,7 @@
 // el nombre, el código y los valores sin ejecutar JavaScript.
 // Los pros se indexan; el resto de jugadores lleva noindex.
 
-import { esc, proSlugs, loadData, decode, shownCode, origin, html } from "../_site.js";
+import { esc, proSlugs, loadData, loadOg, ogImage, decode, shownCode, origin, html } from "../_site.js";
 
 const STYLES = ["Cruz dinámica", "Círculo dinámico", "Cruz dinámica (legacy)", "Círculo estático", "Cruz estática",
   "Cruz estática con retroceso", "Solo punto", "Quad dinámico", "Cuadrado estático", "Quad estático"];
@@ -36,7 +36,7 @@ function notFound(base) {
 export async function onRequestGet({ params, request, env }) {
   const key = String(params.slug || "").toLowerCase();
   const isId = /^7656\d{13}$/.test(key);
-  const data = await loadData(env, request, { players: isId });
+  const [data, og] = await Promise.all([loadData(env, request, { players: isId }), loadOg(env, request)]);
   const slugs = proSlugs(data.pros);
   const base = origin(request);
 
@@ -100,7 +100,11 @@ ${pro ? `<link rel="canonical" href="${esc(url)}">` : `<meta name="robots" conte
 <meta property="og:title" content="${esc(`Mira de ${who}`)}">
 <meta property="og:description" content="${esc(code)}">
 <meta property="og:url" content="${esc(url)}">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="${esc(ogImage(base, og, pro ? slugs.get(r.id) : null))}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(`Vista previa de la mira de ${r.name}`)}">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
 <link rel="stylesheet" href="/assets/app.css">

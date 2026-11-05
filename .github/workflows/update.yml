@@ -3,7 +3,7 @@ name: Actualizar miras
 on:
   push:
     branches: [main]
-    paths: ["pipeline/pros.json", "pipeline/manual.json"]   # al editar la lista de pros o las correcciones
+    paths: ["pipeline/pros.json", "pipeline/manual.json", "pipeline/og/**"]   # lista de pros, correcciones o diseño de las imágenes
   release:
     types: [published]     # al publicar una release con demos adjuntas
   schedule:
@@ -54,11 +54,22 @@ jobs:
           DEMO_URL: ${{ inputs.demo_url }} ${{ inputs.label }}
         run: python pipeline/update.py
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: pipeline/og/package-lock.json
+
+      - name: Imágenes de vista previa (og:image)
+        run: |
+          npm ci --prefix pipeline/og --no-audit --no-fund
+          node pipeline/og/og.mjs
+
       - name: Guardar cambios
         run: |
           git config user.name "csconfig-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A site/data pipeline/state.json
+          git add -A site/data site/og pipeline/state.json
           if git diff --cached --quiet; then
             echo "Sin cambios."
           else
