@@ -5,6 +5,7 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
 - `site/` contiene la web estática. Se publica tal cual, sin compilar nada.
   - `index.html` es la página de inicio, con la base de datos de miras.
   - `cambios/` muestra los últimos cambios de mira (antes → ahora y qué valores han cambiado) y los jugadores nuevos, a partir del historial de los datos.
+  - `estadisticas/` resume cómo son las miras de los pros: la mira típica (con su código), estilos, colores, largo, separación y grosor más usados.
   - `conversor/` es la herramienta de conversión.
   - `/jugador/<nombre>` es la página de cada pro (y `/jugador/<SteamID64>` la de cualquier jugador). La genera `functions/jugador/[slug].js` en el servidor (a través de `worker.js`) a partir de los datos, igual que `sitemap.xml` y `robots.txt`. Solo los pros se indexan en Google.
   - `assets/crosshair.js` lee y escribe códigos; el formato está comprobado con 30 códigos reales exportados del juego.
