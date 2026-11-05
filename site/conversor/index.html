@@ -37,7 +37,7 @@
     <p id="msg" role="status"></p>
   </section>
 
-  <section class="card">
+  <section class="card" id="resCard">
     <p class="step"><i>2</i><span data-i="s2"></span></p>
     <div class="chips" id="resChips"></div>
     <div class="chips under" id="customWrap" hidden>
@@ -105,7 +105,7 @@ es: {
   likePro:'¿A qué pro se parece esta mira? →', navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
   title:'Conversor de miras <span>CS2</span>',
   lead:'Desde la actualización Rush Hour los códigos antiguos dan «Invalid or old crosshair code». Pega el tuyo y te damos el código nuevo, con los mismos píxeles que veías.',
-  s1:'Pega tu código antiguo o tus comandos', ph:'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx\no comandos: cl_crosshairsize 2; cl_crosshairgap -3; …',
+  s1:'Pega tu código (antiguo o nuevo) o tus comandos', ph:'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx\no comandos: cl_crosshairsize 2; cl_crosshairgap -3; …',
   try:'Prueba con:', s2:'¿A qué resolución juegas?', height:'Alto', other:'Otra',
   s2help:'Solo importa la altura. Si juegas estirado (por ejemplo 1280×960 o 1440×1080), elige esa.',
   s3:'Copia tu código nuevo', copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
@@ -123,10 +123,11 @@ es: {
        ['¿Se envía mi código a algún sitio?','No. Todo se calcula en tu navegador.']],
   footer:'Herramienta no oficial. No está afiliada ni respaldada por Valve.',
   okCode:(o)=>`Código antiguo leído: size ${o.size}, gap ${o.gap}, thickness ${o.thickness}.`,
+  okNew:(name)=>`${name ? `Mira de ${name} cargada` : 'Código nuevo cargado'}: retócala abajo y copia tu versión.`, capOrig:(st)=>`Original · ${st}`,
   okCmds:(n)=>`Leídos ${n} comando${n===1?'':'s'}; lo que falte usa el valor por defecto antiguo.`,
   e_badchar:(c)=>`El carácter «${c}» no puede ir en un código. Revisa confusiones como 0/O o 1/l.`,
   e_checksum:'El código no cuadra: seguramente hay un carácter mal copiado.', e_invalid:'Ese código no es válido.',
-  e_already:'Ese ya es un código nuevo: impórtalo directamente en CS2.', e_newcmds:'Esos ya son comandos del sistema nuevo: no hace falta convertirlos.',
+  e_newcmds:'Esos ya son comandos del sistema nuevo: no hace falta convertirlos.',
   e_none:'No encuentro un código CSGO-… ni comandos antiguos como cl_crosshairsize 2.', empty:'Pega un código para empezar.',
   w_style:(a,b)=>`El estilo antiguo «${a}» no tiene equivalente exacto; usamos «${b}».`,
   w_wgap:'«Usar separación del arma» ya no existe: tu separación fija vale para todas las armas.',
@@ -139,7 +140,7 @@ en: {
   likePro:'Which pro has this crosshair? →', navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
   title:'CS2 Crosshair <span>Converter</span>',
   lead:'Since the Rush Hour update, old codes give "Invalid or old crosshair code". Paste yours and get the new code with the same pixels you used to see.',
-  s1:'Paste your old code or commands', ph:'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx\nor commands: cl_crosshairsize 2; cl_crosshairgap -3; …',
+  s1:'Paste your code (old or new) or commands', ph:'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx\nor commands: cl_crosshairsize 2; cl_crosshairgap -3; …',
   try:'Try:', s2:'What resolution do you play at?', height:'Height', other:'Other',
   s2help:'Only the height matters. If you play stretched (e.g. 1280×960 or 1440×1080), pick that one.',
   s3:'Copy your new code', copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
@@ -157,10 +158,11 @@ en: {
        ['Is my code sent anywhere?','No. Everything runs in your browser.']],
   footer:'Unofficial tool. Not affiliated with or endorsed by Valve.',
   okCode:(o)=>`Old code read: size ${o.size}, gap ${o.gap}, thickness ${o.thickness}.`,
+  okNew:(name)=>`${name ? `${name}'s crosshair loaded` : 'New code loaded'}: tweak it below and copy your version.`, capOrig:(st)=>`Original · ${st}`,
   okCmds:(n)=>`Read ${n} command${n===1?'':'s'}; anything missing uses the old default.`,
   e_badchar:(c)=>`"${c}" can't appear in a code. Check for 0/O or 1/l mix-ups.`,
   e_checksum:'The code doesn\'t add up: a character is probably mistyped.', e_invalid:'That code isn\'t valid.',
-  e_already:'That\'s already a new code: import it straight into CS2.', e_newcmds:'Those are already new-system commands: nothing to convert.',
+  e_newcmds:'Those are already new-system commands: nothing to convert.',
   e_none:'No CSGO-… code or old commands like cl_crosshairsize 2 found.', empty:'Paste a code to start.',
   w_style:(a,b)=>`Old style "${a}" has no exact match; using "${b}".`,
   w_wgap:'"Use weapon gap" no longer exists: your fixed gap now applies to every weapon.',
@@ -178,7 +180,7 @@ const store = { get(k){ try { return localStorage.getItem(k); } catch { return n
 
 let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
 let resH = +(store.get('res') || 1080), bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, 6);
-let old = null, neu = null;
+let old = null, neu = null, orig = null, editName = '';   // orig: código nuevo cargado para editar
 const t = () => T[lang];
 
 const CFG_KEYS = {cl_crosshairsize:'size',cl_crosshairgap:'gap',cl_crosshairthickness:'thickness',cl_crosshairstyle:'style',cl_crosshairdot:'dot',cl_crosshair_t:'t',cl_crosshair_drawoutline:'drawoutline',cl_crosshair_outlinethickness:'outlinethickness',cl_crosshaircolor:'color',cl_crosshaircolor_r:'r',cl_crosshaircolor_g:'g',cl_crosshaircolor_b:'b',cl_crosshairalpha:'alpha',cl_crosshairusealpha:'usealpha',cl_crosshair_recoil:'recoil',cl_crosshairgap_useweaponvalue:'useweapongap',cl_crosshair_dynamic_splitdist:'splitdist',cl_crosshair_dynamic_splitalpha_innermod:'innermod',cl_crosshair_dynamic_splitalpha_outermod:'outermod',cl_crosshair_dynamic_maxdist_splitratio:'splitratio'};
@@ -202,6 +204,15 @@ const hex = (r,g,b) => '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).jo
 
 
 function render() {
+  if (orig && neu) {
+    const pa = newParams(orig), pb = newParams(neu), W = $('cvOld').width;
+    const zoom = clamp(Math.floor(W / (Math.max(extent(pa), extent(pb)) * 2 + 6)), 2, 14);
+    paint($('cvOld'), pa, zoom, bgIdx); paint($('cvNew'), pb, zoom, bgIdx);
+    paint($('cvOld1'), pa, 1, bgIdx); paint($('cvNew1'), pb, 1, bgIdx);
+    $('capOld').textContent = t().capOrig(t().styles[orig.style] ?? orig.style);
+    $('capNew').textContent = t().capNew(t().styles[neu.style] ?? neu.style, zoom);
+    return;
+  }
   if (!old || !neu) { [['cvOld',4],['cvNew',4],['cvOld1',1],['cvNew1',1]].forEach(([id, z]) => { const cv = $(id), x = cv.getContext('2d'); if (x) drawBg(x, cv.width, z, Math.floor(cv.width / z / 2), bgIdx); }); $('capOld').textContent = $('capNew').textContent = ''; return; }
   const px = oldPx(old, H()), rgb = oldColor(old);
   const pOld = { len: px.len, thick: px.thick, gap: px.gap, dot: old.dot, t: old.t, arms: true,
@@ -284,26 +295,30 @@ function setMsg(kind, text) { $('msg').className = kind; $('msg').textContent = 
 function errText(e) {
   const m = e.message, L = t();
   if (m.startsWith('badchar:')) return L.e_badchar(m.slice(8));
-  return { checksum: L.e_checksum, invalid: L.e_invalid, already: L.e_already, newcmds: L.e_newcmds, none: L.e_none }[m] || L.e_invalid;
+  return { checksum: L.e_checksum, invalid: L.e_invalid, newcmds: L.e_newcmds, none: L.e_none }[m] || L.e_invalid;
 }
 function run() {
   const txt = $('src').value.trim(), L = t();
-  old = neu = null; $('warns').innerHTML = '';
+  old = neu = orig = null; $('warns').innerHTML = '';
   try {
     if (!txt) { setMsg('', L.empty); }
     else {
       const code = txt.match(/CSGO(-?[A-Za-z0-9]{5}){5}/);
+      const newCode = txt.match(/\bCS[A-Za-z0-9]{44}\b/);
       if (code) { old = decodeOld(code[0]); setMsg('ok', L.okCode(old)); }
-      else if (/^CS[A-Za-z0-9]{44}$/.test(txt)) { decodeNew(txt); throw new Error('already'); }
+      else if (newCode) { orig = decodeNew(newCode[0]); setMsg('ok', L.okNew(editName)); }
       else { old = parseCfg(txt); setMsg('ok', L.okCmds(old._hits)); }
-      neu = convert(old, H());
+      if (orig) neu = { ...orig };
+      else neu = convert(old, H());
       const w = [];
-      if (old.style === 0 || old.style === 1) w.push(L.w_style(OLD_STYLE[old.style], L.styles[neu.style]));
-      if (old.useweapongap) w.push(L.w_wgap);
-      if (old.drawoutline && old.outlinethickness > 1) w.push(L.w_outline(old.outlinethickness));
+      if (old && (old.style === 0 || old.style === 1)) w.push(L.w_style(OLD_STYLE[old.style], L.styles[neu.style]));
+      if (old && old.useweapongap) w.push(L.w_wgap);
+      if (old && old.drawoutline && old.outlinethickness > 1) w.push(L.w_outline(old.outlinethickness));
       $('warns').innerHTML = w.map(x => `<li>${x}</li>`).join('');
     }
-  } catch (e) { old = neu = null; setMsg('err', errText(e)); }
+  } catch (e) { old = neu = orig = null; setMsg('err', errText(e)); }
+  $('resCard').hidden = !!orig;   // un código nuevo ya lleva su resolución
+  document.querySelector('.result .step i').textContent = orig ? '2' : '3';
   buildControls(); output(); render();
 }
 
@@ -338,7 +353,7 @@ function buildBg() {
 function buildSamples() {
   SAMPLES.forEach(([name, code]) => {
     const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = name;
-    b.onclick = () => { $('src').value = code; run(); }; $('samples').append(b);
+    b.onclick = () => { $('src').value = code; editName = ''; run(); }; $('samples').append(b);
   });
 }
 
@@ -351,14 +366,14 @@ async function copy(text, el, btn, label) {
 }
 $('copyCode').onclick = () => { if (neu) copy($('newCode').textContent, $('newCode'), $('copyCode'), 'copy'); };
 $('copyCmds').onclick = () => { if (neu) copy($('cmds').textContent, $('cmds'), $('copyCmds'), 'copyCmds'); };
-$('src').addEventListener('input', run);
+$('src').addEventListener('input', () => { editName = ''; run(); });   // si pegas otra cosa, ya no es la mira del jugador
 $('resCustom').addEventListener('input', run);
 $('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
 $('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
 
 if (!RES.some(r => r[0] === resH) && resH !== 0) resH = 1080;
 let start = SAMPLES[0][1];
-try { const q = new URLSearchParams(location.search).get('c'); if (q) start = q; } catch {}
+try { const q = new URLSearchParams(location.search); if (q.get('c')) start = q.get('c'); editName = (q.get('n') || '').slice(0, 40); } catch {}
 $('src').value = start;
 buildSamples(); applyLang();
 })();
