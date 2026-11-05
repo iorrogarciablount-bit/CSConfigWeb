@@ -55,6 +55,7 @@
     </div>
     <div class="howto" id="howto"></div>
     <ul id="warns"></ul>
+    <a class="link" id="likeLink" href="../parecido/" hidden data-i="likePro">¿A qué pro se parece esta mira? →</a>
   </section>
 
   <section class="card">
@@ -101,7 +102,7 @@
 
 const T = {
 es: {
-  navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
+  likePro:'¿A qué pro se parece esta mira? →', navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
   title:'Conversor de miras <span>CS2</span>',
   lead:'Desde la actualización Rush Hour los códigos antiguos dan «Invalid or old crosshair code». Pega el tuyo y te damos el código nuevo, con los mismos píxeles que veías.',
   s1:'Pega tu código antiguo o tus comandos', ph:'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx\no comandos: cl_crosshairsize 2; cl_crosshairgap -3; …',
@@ -135,7 +136,7 @@ es: {
   styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
 },
 en: {
-  navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
+  likePro:'Which pro has this crosshair? →', navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
   title:'CS2 Crosshair <span>Converter</span>',
   lead:'Since the Rush Hour update, old codes give "Invalid or old crosshair code". Paste yours and get the new code with the same pixels you used to see.',
   s1:'Paste your old code or commands', ph:'CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx\nor commands: cl_crosshairsize 2; cl_crosshairgap -3; …',
@@ -276,6 +277,8 @@ function output() {
   $('newCode').textContent = neu ? encodeNew(neu) : '—';
   $('cmds').textContent = neu ? cmdList() : '';
   $('copyCode').disabled = !neu;
+  $('likeLink').hidden = !neu;
+  if (neu) $('likeLink').href = `../parecido/?c=${encodeURIComponent(encodeNew(neu))}`;
 }
 function setMsg(kind, text) { $('msg').className = kind; $('msg').textContent = text; }
 function errText(e) {

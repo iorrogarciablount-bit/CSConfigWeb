@@ -250,3 +250,22 @@ a.chip{text-decoration:none}
 .dtable td:nth-child(n+4):nth-child(-n+6){font-family:var(--mono);text-align:right}
 .dtable a{color:var(--accent);text-decoration:none}
 @media (max-width:640px){.stats4{grid-template-columns:repeat(2,minmax(0,1fr))}.typ{grid-template-columns:1fr}.typ canvas{width:100%;height:auto;aspect-ratio:1;max-width:260px}.hgrid{grid-template-columns:1fr;gap:4px}.hplot{height:110px}.hgrid2{grid-template-columns:1fr}}
+
+/* ¿a qué pro se parece tu mira? (/parecido/) */
+.vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px;align-items:center}
+.vs figure{margin:0;min-width:0}
+.vs canvas{width:100%;max-width:240px;aspect-ratio:1;display:block;margin:0 auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:2px}
+.vs figcaption{justify-content:center;font:700 14px var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--ink)}
+.vs-pct{text-align:center}
+.vs-pct b{display:block;font:700 44px/1 var(--display);color:var(--accent);font-variant-numeric:tabular-nums}
+.vs-pct span{font:700 11px var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.vs-diff{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
+.vs-diff b{font:500 13px var(--mono)}
+.vs-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+a.copy{text-decoration:none;text-align:center}
+.pct-big{font:700 20px var(--display);color:var(--accent);font-variant-numeric:tabular-nums}
+.promo{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.promo h3{font:700 18px var(--display);text-transform:uppercase;letter-spacing:.02em;margin:0}
+.promo p{margin:2px 0 0;color:var(--muted);font-size:13px}
+@media (max-width:560px){.vs{grid-template-columns:1fr 1fr}.vs-pct{grid-column:1/-1;order:-1}}
+#msg:empty{display:none}
