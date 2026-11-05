@@ -310,9 +310,14 @@ a.copy{text-decoration:none;text-align:center}
   .navt:checked + .navbtn span{background:transparent}
   .navt:checked + .navbtn span::before{transform:translateY(6px) rotate(45deg)}
   .navt:checked + .navbtn span::after{transform:translateY(-6px) rotate(-45deg)}
-  .topnav{display:block;margin:0}
+  /* menú cerrado: las 4 primeras secciones (Miras, Comparar, Cambios, Estadísticas) en una fila
+     de accesos rápidos; Conversor y Enviar demo quedan en el desplegable */
+  .topnav{display:flex;flex-wrap:nowrap;justify-content:space-between;margin:10px -4px 0;gap:0}
   .topnav a{display:none}
-  .navt:checked ~ .topnav{margin-top:10px;border-top:1px solid #ffffff1f}
+  .topnav a:nth-of-type(-n+4){display:block;padding:9px 4px 10px;font-size:12px;letter-spacing:.035em;white-space:nowrap;border-radius:0}
+  .topnav a:nth-of-type(-n+4)[aria-current="page"]{box-shadow:inset 0 -2px 0 var(--accent)}
+  /* menú abierto: todas las secciones en lista */
+  .navt:checked ~ .topnav{display:block;margin:10px 0 0;border-top:1px solid #ffffff1f}
   .navt:checked ~ .topnav a{display:block;padding:13px 4px;font-size:15px;letter-spacing:.05em;border-bottom:1px solid #ffffff14;border-radius:0}
   .navt:checked ~ .topnav a[aria-current="page"]{box-shadow:inset 3px 0 0 var(--accent);padding-left:14px;color:#fff}
   .topnav .lang{position:absolute;top:13px;right:60px;margin:0}
@@ -339,3 +344,4 @@ a.copy{text-decoration:none;text-align:center}
   .pair input[type=number]{width:62px}
 }
 .promo .copy{text-align:center}
+@media (max-width:360px){.topnav a:nth-of-type(-n+4){font-size:11px;letter-spacing:.02em;padding-left:3px;padding-right:3px}}
