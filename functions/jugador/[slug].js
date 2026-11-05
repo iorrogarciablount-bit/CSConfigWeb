@@ -139,6 +139,7 @@ ${pro ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "
       <button class="copy" id="copy" data-i="copy">Copiar</button>
     </div>
     <p class="howto" data-i="howto">En CS2: Ajustes → Juego → Mira → Compartir o importar → pega el código → Importar.</p>
+    <a class="link" id="edit" href="/conversor/?c=${encodeURIComponent(code)}&amp;n=${encodeURIComponent(r.name)}" data-i="edit">Editar esta mira →</a>
   </section>
 
   <section class="card">

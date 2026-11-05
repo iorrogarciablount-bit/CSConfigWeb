@@ -11,7 +11,7 @@ es: {
   navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', crumbPros:'Pros', crumbPlayers:'Jugadores',
   titlePre:'Mira de', retired:'Retirado', codeTitle:'Código de mira', copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
   howto:'En CS2: Ajustes → Juego → Mira → Compartir o importar → pega el código → Importar.',
-  preview:'Vista previa y valores', history:'Historial de miras', current:'actual', use:'Usar', mates:'Más miras de',
+  edit:'Editar esta mira →', preview:'Vista previa y valores', history:'Historial de miras', current:'actual', use:'Usar', mates:'Más miras de',
   steam:'Perfil de Steam', faceitProfile:'Perfil de FACEIT',
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
   remove:'Pedir que retiremos un jugador',
@@ -24,7 +24,7 @@ en: {
   navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', crumbPros:'Pros', crumbPlayers:'Players',
   titlePre:'Crosshair of', retired:'Retired', codeTitle:'Crosshair code', copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
   howto:'In CS2: Settings → Game → Crosshair → Share or Import → paste the code → Import.',
-  preview:'Preview and values', history:'Crosshair history', current:'current', use:'Use', mates:'More crosshairs from',
+  edit:'Edit this crosshair →', preview:'Preview and values', history:'Crosshair history', current:'current', use:'Use', mates:'More crosshairs from',
   steam:'Steam profile', faceitProfile:'FACEIT profile',
   footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.',
   remove:'Ask us to remove a player',
@@ -53,6 +53,7 @@ function show(code) {
   const n = decodeSafe(code); if (!n) return;
   shown = code;
   $('code').textContent = shownCode(code, n);
+  $('edit').href = `/conversor/?c=${encodeURIComponent(shownCode(code, n))}&n=${encodeURIComponent(P.name)}`;
   $('vals').innerHTML = vals(n);
   const p = newParams(n); paint($('cv'), p, fitZoom($('cv').width, p), bgIdx);
   document.querySelectorAll('#hist [data-h]').forEach(b => b.setAttribute('aria-pressed', P.hist[+b.dataset.h] === code));
