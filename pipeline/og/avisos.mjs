@@ -6,6 +6,8 @@
 //
 //   DISCORD_WEBHOOK_URL   webhook del canal (secreto de GitHub). Sin él no hace nada.
 //   SITE_URL              dirección de la web, para los enlaces.
+//   AVISOS_BASE           commit con el que comparar (por defecto HEAD; el workflow pone el de
+//                         antes del push cuando las demos se procesan desde el PC).
 //   node pipeline/og/avisos.mjs --dry-run <carpeta>   guarda imágenes y mensajes sin publicar
 //   node pipeline/og/avisos.mjs --old <pros.json>     compara con otro archivo en vez del commit
 
@@ -32,7 +34,7 @@ const now = readPros(readFileSync(join(ROOT, "site", "data", "pros.json"), "utf8
 let before;
 try {
   before = readPros(opt("--old") ? readFileSync(opt("--old"), "utf8")
-    : execFileSync("git", ["show", "HEAD:site/data/pros.json"], { cwd: ROOT, encoding: "utf8", maxBuffer: 64 << 20 }));
+    : execFileSync("git", ["show", `${process.env.AVISOS_BASE || "HEAD"}:site/data/pros.json`], { cwd: ROOT, encoding: "utf8", maxBuffer: 64 << 20 }));
 } catch (e) {
   console.log("avisos: no hay versión anterior de pros.json para comparar", e.message);
   process.exit(0);
