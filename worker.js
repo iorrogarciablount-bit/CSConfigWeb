@@ -8,6 +8,7 @@
 import * as apiConfig from "./functions/api/config.js";
 import * as apiStatus from "./functions/api/status.js";
 import * as apiSubmit from "./functions/api/submit.js";
+import * as apiMira from "./functions/api/mira.js";
 import * as jugador from "./functions/jugador/[slug].js";
 import * as sitemap from "./functions/sitemap.xml.js";
 import * as robots from "./functions/robots.txt.js";
@@ -18,6 +19,7 @@ const ROUTES = [
   ["/api/config", apiConfig],
   ["/api/status", apiStatus],
   ["/api/submit", apiSubmit],
+  ["/api/mira", apiMira],
   ["/jugador/:slug", jugador],
   ["/sitemap.xml", sitemap],
   ["/robots.txt", robots],

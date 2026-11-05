@@ -13,6 +13,21 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
 - `pipeline/og/og.mjs` genera en `site/og/` la imagen que sale al compartir el enlace de cada pro (Discord, Twitter, WhatsApp…), con el mismo dibujo de `crosshair.js`. Solo rehace las que cambian.
 - `.github/workflows/update.yml` ejecuta el pipeline cada día y guarda los cambios.
 
+## Comando `!mira` para Twitch
+
+`/api/mira?q=<jugador>` responde en una línea de texto con el código de mira y el enlace a la página del jugador:
+
+```
+donk (Team Spirit): CSyyzoL6p5V6viP9XbXtuCmROKZpkeYRZPY6wiOTjxnRcU · https://<tu-web>/jugador/donk
+```
+
+Busca por nombre (también incompleto o con `@`), usuario de FACEIT, SteamID64 o enlace de Steam. Con `&lang=en` responde en inglés, y con `&def=<jugador>` usa ese jugador cuando el comando va sin nombre (por ejemplo, tu propia mira).
+
+- **Nightbot**: en el chat escribe
+  `!commands add !mira $(urlfetch https://<tu-web>/api/mira?q=$(querystring))`
+- **StreamElements**: crea un comando `mira` con la respuesta
+  `${customapi.https://<tu-web>/api/mira?q=${queryescape ${1:}}}`
+
 ## Puesta en marcha
 
 ### 1. Publicar la web en Cloudflare (Worker)
