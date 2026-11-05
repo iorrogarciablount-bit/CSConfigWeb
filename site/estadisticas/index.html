@@ -127,7 +127,6 @@ const $ = id => document.getElementById(id);
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
-const bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, MAPS.length - 1);
 const t = () => T[lang];
 const decodeSafe = c => { try { return anyCode(c); } catch { return null; } };
 const RES = { 768:'1024×768', 864:'1152×864', 960:'1280×960', 1050:'1680×1050', 1080:'1920×1080', 1440:'2560×1440' };
@@ -180,7 +179,7 @@ function typical(rows) {
   const back = decodeNew(typCode);                     // lo que verá el juego
   $('typCode').textContent = typCode;
   $('typVals').innerHTML = t().vals(back) + ` · <i class="swatch" style="background:rgb(${back.r},${back.g},${back.b})"></i> · ${resName(back.h)}`;
-  const p = newParams(back); paint($('typCv'), p, fitZoom($('typCv').width, p), bgIdx);
+  const p = newParams(back); paint($('typCv'), p, fitZoom($('typCv').width, p));
 }
 
 function tiles(rows) {

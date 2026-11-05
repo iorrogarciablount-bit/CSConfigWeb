@@ -49,10 +49,10 @@ export function brand(ctx, x, y) {
 }
 
 /* Vista previa de la mira (misma función paint() de la web) en un cuadrado */
-export function preview(ctx, n, x, y, size, bg = 0, zoom = null) {
+export function preview(ctx, n, x, y, size, zoom = null) {
   const cv = createCanvas(size, size);
   const p = XH.newParams(n);
-  XH.paint(cv, p, zoom || XH.fitZoom(size, p), bg);
+  XH.paint(cv, p, zoom || XH.fitZoom(size, p));
   ctx.drawImage(cv, x, y);
   ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, size - 2, size - 2);
 }

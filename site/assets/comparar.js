@@ -38,7 +38,6 @@ en: {
 }};
 
 let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
-let bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, MAPS.length - 1);
 const t = () => T[lang];
 const decodeSafe = c => { try { return anyCode(c); } catch { return null; } };
 const nL = D.mode === 'pair' ? decodeSafe(D.L.code) : null, nR = D.mode === 'pair' ? decodeSafe(D.R.code) : null;
@@ -47,7 +46,7 @@ function draw() {
   if (!nL || !nR) return;
   const pa = newParams(nL), pb = newParams(nR), cvL = $('cvL'), cvR = $('cvR');
   const z = Math.min(fitZoom(cvL.width, pa), fitZoom(cvR.width, pb));   // mismo zoom: se comparan a ojo
-  paint(cvL, pa, z, bgIdx); paint(cvR, pb, z, bgIdx);
+  paint(cvL, pa, z); paint(cvR, pb, z);
 }
 
 function rowValue(k, n) {
@@ -62,17 +61,6 @@ function rowValue(k, n) {
   }
 }
 
-function buildBg() {
-  document.querySelectorAll('.bgChips').forEach(box => {
-    box.innerHTML = '';
-    MAPS.forEach((name, i) => {
-      const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = name;
-      b.setAttribute('aria-pressed', i === bgIdx);
-      b.onclick = () => { bgIdx = i; store.set('bg', i); buildBg(); draw(); };
-      box.append(b);
-    });
-  });
-}
 
 function applyLang() {
   const L = t();
@@ -108,5 +96,5 @@ if (pick) {
 
 $('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
 $('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
-buildBg(); draw(); applyLang();
+draw(); applyLang();
 })();

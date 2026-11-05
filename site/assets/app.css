@@ -327,7 +327,6 @@ a.copy{text-decoration:none;text-align:center}
   .stat b{font-size:17px}
   .stat span{font-size:10px;letter-spacing:.05em}
   .filters{grid-template-columns:1fr}
-  .bgChips .chip,#bgChips .chip{font-size:12px;padding:4px 9px}
   .pcard{grid-template-columns:76px minmax(0,1fr)}
   .pcard canvas{width:76px;height:76px}
   .pname{font-size:16px}

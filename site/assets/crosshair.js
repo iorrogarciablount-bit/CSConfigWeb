@@ -81,106 +81,26 @@ function convert(o, h) {
 }
 
 
-/* ---------- escenas ilustradas (en píxeles de pantalla; la mira va en el centro 110,110) ---------- */
-const MAPS = ['Dust II','Mirage','Inferno','Nuke','Ancient','Anubis','Overpass'];
-const SC = 220, SCC = 110, sceneCache = {};
-function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-function scene(i) {
-  if (sceneCache[i]) return sceneCache[i];
-  const cv = document.createElement('canvas'); cv.width = cv.height = SC;
-  const x = cv.getContext('2d'); if (!x) return null;
-  const rnd = mulberry(1234 + i * 77);
-  const R = (a, b, w, h, c) => { x.fillStyle = c; x.fillRect(a, b, w, h); };
-  const bricks = (a, b, w, h, bw, bh, c, m, jit) => {
-    R(a, b, w, h, m);
-    for (let yy = b, row = 0; yy < b + h; yy += bh, row++) {
-      for (let xx = a - (row % 2 ? bw / 2 : 0); xx < a + w; xx += bw) {
-        const x0 = Math.max(a, xx), x1 = Math.min(a + w, xx + bw - 1), y1 = Math.min(b + h, yy + bh - 1);
-        const k = jit ? (rnd() - .5) * jit : 0;
-        x.fillStyle = shade(c, k); x.fillRect(x0, yy, x1 - x0, y1 - yy);
-      }
-    }
-  };
-  const sky = (h, top, bot) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, top); g.addColorStop(1, bot); x.fillStyle = g; x.fillRect(0, 0, SC, h); };
-  const blobs = (n, a, b, w, h, rmax, c) => { x.fillStyle = c; for (let k = 0; k < n; k++) { x.beginPath(); x.arc(a + rnd() * w, b + rnd() * h, 2 + rnd() * rmax, 0, 7); x.fill(); } };
-  switch (i) {
-    case 0: // Dust II: cielo, muro de arenisca y portón oscuro
-      sky(84, '#8fbbe0', '#cfe0ea');
-      bricks(0, 84, SC, SC - 84, 30, 15, '#c9a46c', '#a98552', 18);
-      R(56, 88, 52, 132, '#7e5f3a'); R(60, 92, 46, 128, '#32261a');
-      R(60, 92, 46, 3, '#5a4329'); blobs(14, 0, 180, SC, 40, 5, '#b8935e');
-      break;
-    case 1: // Mirage: yeso crema, tejado de terracota y ventana en arco
-      sky(40, '#a8cde8', '#d6e6ef');
-      R(0, 40, SC, 20, '#a9532f'); for (let k = 0; k < SC; k += 6) R(k, 40, 2, 20, '#8e4225');
-      R(0, 60, SC, 4, '#7a3a20'); bricks(0, 64, SC, SC - 64, 44, 22, '#e2d1ac', '#d3c096', 10);
-      x.fillStyle = '#6b5a44'; x.beginPath(); x.moveTo(108, 160); x.lineTo(108, 92); x.arc(136, 92, 28, Math.PI, 0); x.lineTo(164, 160); x.fill();
-      x.fillStyle = '#231d18'; x.beginPath(); x.moveTo(112, 158); x.lineTo(112, 94); x.arc(136, 94, 24, Math.PI, 0); x.lineTo(160, 158); x.fill();
-      break;
-    case 2: // Inferno: ladrillo rojizo, puerta verde de madera y hiedra
-      bricks(0, 0, SC, SC, 16, 8, '#a6553a', '#7c3c29', 22);
-      R(108, 58, 66, 162, '#4a3322'); R(112, 62, 58, 158, '#3d6b3c');
-      for (let k = 112; k < 170; k += 10) R(k, 62, 2, 158, '#2e5530');
-      R(112, 120, 58, 3, '#2e5530'); R(160, 140, 4, 6, '#c8a24a');
-      blobs(60, 0, 0, 90, 70, 6, '#4f7a32'); blobs(30, 0, 0, 70, 50, 4, '#6a9440');
-      break;
-    case 3: // Nuke: paneles metálicos, franja de peligro y zona oscura con luz
-      R(0, 0, SC, 66, '#26323d'); R(70, 18, 80, 8, '#f3efcf'); R(66, 26, 88, 3, '#55606a');
-      for (let yy = 66; yy < SC; yy += 40) for (let xx = 0; xx < SC; xx += 30) { R(xx, yy, 30, 40, '#6d7c87'); R(xx + 1, yy + 1, 28, 38, shade('#8b9ba6', (rnd() - .5) * 14)); }
-      R(0, 112, SC, 14, '#141414'); x.fillStyle = '#e8bf2a';
-      for (let k = -14; k < SC; k += 14) { x.beginPath(); x.moveTo(k, 126); x.lineTo(k + 7, 112); x.lineTo(k + 14, 112); x.lineTo(k + 7, 126); x.fill(); }
-      break;
-    case 4: // Ancient: piedra con musgo, hueco de jungla y friso turquesa
-      bricks(0, 0, SC, SC, 24, 18, '#727b5c', '#4e5741', 26);
-      R(0, 150, SC, 8, '#3c8c84'); for (let k = 0; k < SC; k += 8) R(k, 152, 4, 4, '#2a6a64');
-      blobs(40, 120, 0, 100, 90, 5, '#5d7f3a');
-      R(40, 0, 66, SC, '#18231a'); blobs(70, 40, 0, 66, SC, 4, '#2c4a26'); blobs(25, 40, 0, 66, SC, 3, '#41693a');
-      break;
-    case 5: // Anubis: cielo, arenisca, columna tallada y agua turquesa
-      sky(70, '#7fbbe6', '#c3def0');
-      bricks(0, 70, SC, 80, 40, 20, '#d9ba8b', '#bc9a6b', 12);
-      R(112, 30, 22, 120, '#b8946a'); for (let k = 40; k < 150; k += 12) R(112, k, 22, 2, '#9c7a52');
-      R(0, 150, SC, 70, '#2a9ea4'); for (let k = 0; k < 14; k++) R(rnd() * SC, 154 + rnd() * 62, 10 + rnd() * 20, 2, '#63c8ca');
-      break;
-    case 6: // Overpass: cielo, hormigón con manchas, pilar y césped
-      sky(60, '#9fc2db', '#d7e5ec');
-      R(0, 60, SC, 92, '#9d9e98'); for (let k = 0; k < 6; k++) R(0, 60 + k * 16, SC, 1, '#8c8d87');
-      blobs(20, 0, 64, SC, 80, 7, '#8f908a'); R(100, 40, 26, 112, '#7d7e79'); R(100, 40, 26, 6, '#6b6c67');
-      R(0, 152, SC, 68, '#5d893b'); blobs(80, 0, 152, SC, 68, 3, '#6f9b47');
-      break;
+/* ---------- fondo de la vista previa: neutro y siempre igual ----------
+   Gris grafito, para que las miras de colores vivos (cian, verde, amarillo, blanco...) se vean bien.
+   Si la mira es oscura (azul, negro...) y no se distinguiría sobre él, se usa la versión clara. */
+const BG = { dark: ['#3a4048', '#262b31', 'rgba(255,255,255,.035)'], light: ['#c9cfd6', '#aab1ba', 'rgba(0,0,0,.06)'] };
+const luminance = ([r, g, b]) => {
+  const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+};
+const rgbOf = color => (String(color).match(/\d+(\.\d+)?/g) || [0, 255, 0]).slice(0, 3).map(Number);
+/* 'light' si la mira contrasta poco con el gris oscuro (ratio de contraste WCAG < 2.5) */
+const bgTone = color => ((luminance(rgbOf(color)) + 0.05) / (luminance([48, 54, 61]) + 0.05) < 2.5 ? 'light' : 'dark');
+function drawBg(ctx, W, zoom, color) {
+  const [mid, edge, grid] = BG[color ? bgTone(color) : 'dark'];
+  const g = ctx.createRadialGradient(W / 2, W / 2, W * 0.05, W / 2, W / 2, W * 0.75);
+  g.addColorStop(0, mid); g.addColorStop(1, edge);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, W);
+  if (zoom > 3) {   // rejilla de píxeles muy tenue: ayuda a contar píxeles al ampliar
+    ctx.fillStyle = grid;
+    for (let x = 0; x < W; x += zoom) { ctx.fillRect(x, 0, 1, W); ctx.fillRect(0, x, W, 1); }
   }
-  // desenfoque: reducir y volver a ampliar suavizado, dos pasadas
-  const soft = (cvs, f) => {
-    const m = document.createElement('canvas'); m.width = m.height = Math.round(SC / f);
-    const mx = m.getContext('2d'); mx.imageSmoothingEnabled = true; mx.imageSmoothingQuality = 'high';
-    mx.drawImage(cvs, 0, 0, m.width, m.height);
-    x.clearRect(0, 0, SC, SC); x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
-    x.drawImage(m, 0, 0, SC, SC);
-  };
-  soft(cv, 4); soft(cv, 11); soft(cv, 5);
-  // luz: brillo suave arriba y viñeta en los bordes
-  const lg = x.createRadialGradient(SCC, 40, 10, SCC, 90, 200);
-  lg.addColorStop(0, 'rgba(255,245,225,.18)'); lg.addColorStop(.5, 'rgba(255,245,225,0)'); lg.addColorStop(1, 'rgba(0,0,0,.28)');
-  x.fillStyle = lg; x.fillRect(0, 0, SC, SC);
-  // grano sutil para que no parezca plano
-  try {
-    const img = x.getImageData(0, 0, SC, SC), d = img.data;
-    for (let p = 0; p < d.length; p += 4) { const n = (rnd() - .5) * 6; d[p] += n; d[p + 1] += n; d[p + 2] += n; }
-    x.putImageData(img, 0, 0);
-  } catch {}
-  return sceneCache[i] = cv;
-}
-function shade(hexc, k) {
-  const n = parseInt(hexc.slice(1), 16), f = v => clamp(Math.round(v + k), 0, 255);
-  return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`;
-}
-function drawBg(ctx, W, zoom, c, idx = 0) {
-  const sc = scene(idx);
-  ctx.fillStyle = '#9a8a6a'; ctx.fillRect(0, 0, W, W);
-  if (!sc) return;
-  ctx.imageSmoothingEnabled = false;
-  const n = Math.ceil(W / zoom) + 1, s = SCC - c;
-  ctx.drawImage(sc, s, s, n, n, 0, 0, n * zoom, n * zoom);
 }
 
 /* ---------- dibujo ---------- */
@@ -201,13 +121,9 @@ function shapes(p, c) {
   return r;
 }
 const extent = p => Math.abs(p.gap) + p.len + p.thick + (p.quad ? 8 : 0) + 2;
-function paint(cv, p, zoom, idx = 0) {
+function paint(cv, p, zoom) {
   const ctx = cv.getContext('2d'), W = cv.width, c = Math.floor(W / zoom / 2);
-  drawBg(ctx, W, zoom, c, idx);
-  if (zoom > 3) { // rejilla de píxeles tenue
-    ctx.fillStyle = 'rgba(0,0,0,.07)';
-    for (let x = 0; x < W; x += zoom) { ctx.fillRect(x, 0, 1, W); ctx.fillRect(0, x, W, 1); }
-  }
+  drawBg(ctx, W, zoom, p.color);
   const R = ([x, y, w, h], pad, fill) => { if (w > 0 && h > 0) { ctx.fillStyle = fill; ctx.fillRect((x - pad) * zoom, (y - pad) * zoom, (w + 2 * pad) * zoom, (h + 2 * pad) * zoom); } };
   if (p.circle) {
     const rad = (Math.abs(p.gap) + p.len) * zoom, cx = (c + .5) * zoom;
@@ -270,4 +186,4 @@ function crosshairDiff(a, b) {
 
 /* Para las funciones de Cloudflare (functions/) y el generador de imágenes (pipeline/og/),
    que importan este archivo como módulo */
-globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode, newParams, paint, fitZoom, MAPS, slugify, proSlugs, crosshairSimilarity, crosshairDiff };
+globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode, newParams, paint, fitZoom, slugify, proSlugs, crosshairSimilarity, crosshairDiff };

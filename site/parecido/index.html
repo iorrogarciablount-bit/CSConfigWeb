@@ -101,7 +101,6 @@ const $ = id => document.getElementById(id);
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
-const bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, MAPS.length - 1);
 const t = () => T[lang];
 let pros = null, failed = false, slugMap = new Map(), current = '';
 
@@ -117,7 +116,7 @@ const pageUrl = r => `../jugador/${encodeURIComponent(slugMap.get(r.id) || r.id)
 /* Las dos miras con el mismo zoom, para que se puedan comparar a ojo */
 function drawPair(cvA, a, cvB, b) {
   const pa = newParams(a), pb = newParams(b), z = Math.min(fitZoom(cvA.width, pa), fitZoom(cvB.width, pb));
-  paint(cvA, pa, z, bgIdx); paint(cvB, pb, z, bgIdx);
+  paint(cvA, pa, z); paint(cvB, pb, z);
 }
 
 function fmtVal(k, v) {
@@ -156,7 +155,7 @@ function render() {
     const a = document.createElement('a'); a.className = 'pcard'; a.href = pageUrl(x.r);
     a.innerHTML = `<canvas width="96" height="96" aria-hidden="true"></canvas><span class="pbody"><span class="pname">${esc(x.r.name)}</span>
       <span class="pteam">${esc(x.r.team || '')}</span><span class="pct-big">${x.pct}%</span></span>`;
-    const cv = a.querySelector('canvas'), p = newParams(x.n); paint(cv, p, clamp(fitZoom(96, p), 2, 4), bgIdx);
+    const cv = a.querySelector('canvas'), p = newParams(x.n); paint(cv, p, clamp(fitZoom(96, p), 2, 4));
     $('olist').append(a);
   });
   $('others').hidden = !rest.length;
