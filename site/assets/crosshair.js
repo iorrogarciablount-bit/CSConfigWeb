@@ -235,6 +235,16 @@ function anyCode(code) {
 }
 
 
+/* ---------- URL de la página de cada jugador ---------- */
+/* Slug de un nombre: "-kRyTouS" -> "krytous" */
+const slugify = name => String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+/* Map SteamID -> slug de cada pro; si el slug falta, es un número o lo comparten dos pros, se usa su SteamID */
+function proSlugs(pros) {
+  const count = new Map();
+  pros.forEach(p => { const s = slugify(p.name); count.set(s, (count.get(s) || 0) + 1); });
+  return new Map(pros.map(p => { const s = slugify(p.name); return [p.id, s && count.get(s) === 1 && !/^\d+$/.test(s) ? s : p.id]; }));
+}
+
 /* Para las funciones de Cloudflare (functions/) y el generador de imágenes (pipeline/og/),
    que importan este archivo como módulo */
-globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode, newParams, paint, fitZoom, MAPS };
+globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode, newParams, paint, fitZoom, MAPS, slugify, proSlugs };

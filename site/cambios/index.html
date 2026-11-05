@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Últimos cambios de mira de los pros de CS2 · CSConfig</title>
+<meta name="description" content="Qué pros de CS2 han cambiado de mira y qué han cambiado exactamente: largo, separación, grosor, color... Sacado de las demos de sus partidas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/app.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
+  <nav class="topnav">
+    <a href="../" data-i="navPros">Miras</a>
+    <a href="./" aria-current="page" data-i="navChanges">Cambios</a>
+    <a href="../conversor/" data-i="navConv">Conversor</a>
+    <a href="../enviar/" data-i="navSubmit">Enviar demo</a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div>
+    <h2 class="ptitle" data-i="title">Últimos <span>cambios</span></h2>
+    <p class="lead" data-i="lead"></p>
+  </div>
+
+  <section class="card">
+    <div class="toolbar" style="margin-top:0">
+      <div class="chips" role="group" aria-label="Quién">
+        <button class="chip" id="f_pros" aria-pressed="true" data-i="fPros">Pros</button>
+        <button class="chip" id="f_all" aria-pressed="false" data-i="fAll">Todos los jugadores</button>
+      </div>
+      <div class="chips" role="group" aria-label="Qué">
+        <button class="chip" id="k_all" aria-pressed="true" data-i="kAll">Todo</button>
+        <button class="chip" id="k_change" aria-pressed="false" data-i="kChange">Cambios de mira</button>
+        <button class="chip" id="k_new" aria-pressed="false" data-i="kNew">Nuevos</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="feed" id="feed" aria-live="polite"></section>
+
+  <footer><span data-i="footer"></span></footer>
+</main>
+
+<script src="../assets/crosshair.js"></script>
+<script>
+(() => {
+const T = {
+es: {
+  navPros:'Miras', navChanges:'Cambios', navConv:'Conversor', navSubmit:'Enviar demo', title:'Últimos <span>cambios</span>',
+  lead:'Qué jugadores han cambiado de mira y qué han tocado exactamente, sacado de las demos de sus partidas. También los que acaban de entrar en la base de datos.',
+  fPros:'Pros', fAll:'Todos los jugadores', kAll:'Todo', kChange:'Cambios de mira', kNew:'Nuevos',
+  changed:'Cambio de mira', isNew:'Nuevo', before:'Antes', after:'Ahora', noTeam:'Sin equipo', retired:'Retirado',
+  onlyCode:'Mismo aspecto (solo cambia el código)',
+  f:{style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor', color:'Color', a:'Opacidad', dot:'Punto', t:'Estilo T', outline:'Contorno', recoil:'Retroceso', h:'Resolución'},
+  on:'sí', off:'no',
+  styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
+  empty:'Todavía no hay cambios registrados. Aparecerán aquí en cuanto un jugador cambie de mira entre dos demos.',
+  loadErr:'No se han podido cargar los datos. Recarga la página.',
+  footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
+  locale:'es-ES', docTitle:'Últimos cambios de mira de los pros de CS2 · CSConfig',
+},
+en: {
+  navPros:'Crosshairs', navChanges:'Changes', navConv:'Converter', navSubmit:'Submit a demo', title:'Latest <span>changes</span>',
+  lead:'Which players changed their crosshair and exactly what they tweaked, pulled from their match demos. Plus the ones who just joined the database.',
+  fPros:'Pros', fAll:'All players', kAll:'All', kChange:'Crosshair changes', kNew:'New',
+  changed:'Crosshair change', isNew:'New', before:'Before', after:'Now', noTeam:'No team', retired:'Retired',
+  onlyCode:'Same look (only the code changed)',
+  f:{style:'Style', length:'Length', gap:'Gap', thickness:'Thickness', color:'Color', a:'Opacity', dot:'Dot', t:'T style', outline:'Outline', recoil:'Recoil', h:'Resolution'},
+  on:'on', off:'off',
+  styles:['Dynamic cross','Dynamic circle','Dynamic cross (legacy)','Static circle','Static cross','Static cross with shot feedback','Dot only','Dynamic quad','Static square','Static quad'],
+  empty:'No changes recorded yet. They will show up here as soon as a player switches crosshair between two demos.',
+  loadErr:'The data could not be loaded. Reload the page.',
+  footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.',
+  locale:'en-GB', docTitle:'Latest CS2 pro crosshair changes · CSConfig',
+}};
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
+const bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, MAPS.length - 1);
+const t = () => T[lang];
+const decodeSafe = c => { try { return anyCode(c); } catch { return null; } };
+const fmtDate = iso => { try { return new Date(iso).toLocaleDateString(t().locale, { weekday:'short', day:'numeric', month:'short', year:'numeric', timeZone:'UTC' }); } catch { return iso; } };
+
+let who = 'pros', kind = 'all';
+const data = { pros: null, players: null, failed: false };
+let slugMap = new Map();
+const pageUrl = r => `../jugador/${encodeURIComponent(slugMap.get(r.id) || r.id)}`;
+
+/* Eventos de un jugador: su secuencia de miras (historial + actual) ordenada por fecha */
+function events(r, pro) {
+  const seq = [...(r.history || []).map(h => ({ code: h.code, from: h.from })), { code: r.code, from: r.since }]
+    .filter(x => x.from).sort((a, b) => a.from.localeCompare(b.from));
+  if (!seq.length) return [];
+  const out = [{ type: 'new', date: seq[0].from, r, pro, after: seq[0].code }];
+  for (let i = 1; i < seq.length; i++) out.push({ type: 'change', date: seq[i].from, r, pro, before: seq[i - 1].code, after: seq[i].code });
+  return out;
+}
+
+/* Qué ha cambiado entre dos miras (valores visibles) */
+function diff(a, b) {
+  const L = t(), F = L.f, out = [];
+  const num = k => { if (a[k] !== b[k]) out.push([F[k], a[k], b[k]]); };
+  const yn = k => { if (!!a[k] !== !!b[k]) out.push([F[k], a[k] ? L.on : L.off, b[k] ? L.on : L.off]); };
+  if (a.style !== b.style) out.push([F.style, L.styles[a.style] ?? a.style, L.styles[b.style] ?? b.style]);
+  ['length', 'gap', 'thickness'].forEach(num);
+  if (a.r !== b.r || a.g !== b.g || a.b !== b.b) out.push([F.color, `<i class="swatch" style="background:rgb(${a.r},${a.g},${a.b})"></i>`, `<i class="swatch" style="background:rgb(${b.r},${b.g},${b.b})"></i>`, true]);
+  num('a'); yn('dot'); yn('t'); num('outline'); yn('recoil');
+  if (out.length && a.h && b.h && a.h !== b.h) out.push([F.h, `${a.h}p`, `${b.h}p`]);
+  return out;
+}
+
+function thumb(code, label) {
+  const n = decodeSafe(code), cv = document.createElement('canvas');
+  cv.width = cv.height = 96; cv.setAttribute('aria-hidden', 'true');
+  if (n) { const p = newParams(n); paint(cv, p, clamp(fitZoom(96, p), 2, 4), bgIdx); }
+  const f = document.createElement('figure'); f.append(cv);
+  if (label) { const c = document.createElement('figcaption'); c.textContent = label; f.append(c); }
+  return f;
+}
+
+function render() {
+  const L = t(), box = $('feed');
+  box.innerHTML = '';
+  if (data.failed) { box.innerHTML = `<div class="card empty"><p>${L.loadErr}</p></div>`; return; }
+  if (!data.pros || (who === 'all' && !data.players)) return;
+  const rows = [...data.pros.map(r => [r, true]), ...(who === 'all' ? data.players.map(r => [r, !!r.pro]) : [])];
+  let ev = rows.flatMap(([r, pro]) => events(r, pro));
+  if (kind !== 'all') ev = ev.filter(e => e.type === kind);
+  ev = ev.map(e => {
+    if (e.type !== 'change') return e;
+    const a = decodeSafe(e.before), b = decodeSafe(e.after);
+    return { ...e, changes: a && b ? diff(a, b) : [] };
+  });
+  ev.sort((x, y) => y.date.localeCompare(x.date) || (y.type === 'change') - (x.type === 'change') || x.r.name.localeCompare(y.r.name));
+  ev = ev.slice(0, 150);
+  if (!ev.length) { box.innerHTML = `<div class="card empty"><p>${L.empty}</p></div>`; return; }
+
+  let day = '';
+  for (const e of ev) {
+    if (e.date !== day) {
+      day = e.date;
+      const h = document.createElement('p'); h.className = 'sublabel'; h.textContent = fmtDate(day); box.append(h);
+    }
+    const r = e.r, row = document.createElement('article');
+    row.className = 'ev' + (e.type === 'change' ? ' ev-change' : '');
+    const sub = e.pro ? (r.status === 'retired' ? L.retired : (r.team || L.noTeam)) : (r.faceit ? `FACEIT ${r.faceit}` : '');
+    row.innerHTML = `<div class="ev-head"><a class="pname" href="${pageUrl(r)}">${esc(r.name)}</a><span class="pteam">${esc(sub)}</span>
+      <span class="badge">${e.type === 'change' ? L.changed : L.isNew}</span></div>
+      <div class="ev-body"><div class="ev-thumbs"></div><ul class="ev-diff"></ul></div>`;
+    const th = row.querySelector('.ev-thumbs');
+    if (e.type === 'change') {
+      th.append(thumb(e.before, L.before));
+      const arrow = document.createElement('span'); arrow.className = 'ev-arrow'; arrow.textContent = '→'; th.append(arrow);
+      th.append(thumb(e.after, L.after));
+      row.querySelector('.ev-diff').innerHTML = e.changes.length
+        ? e.changes.map(([k, a, b, raw]) => `<li><span>${k}</span> <b>${raw ? a : esc(a)}</b> → <b>${raw ? b : esc(b)}</b></li>`).join('')
+        : `<li class="muted">${L.onlyCode}</li>`;
+    } else {
+      th.append(thumb(e.after));
+      const n = decodeSafe(e.after);
+      if (n) row.querySelector('.ev-diff').innerHTML = [[L.f.length, n.length], [L.f.gap, n.gap], [L.f.thickness, n.thickness]]
+        .map(([k, v]) => `<li><span>${k}</span> <b>${v}</b></li>`).join('') +
+        `<li><span>${L.f.color}</span> <i class="swatch" style="background:rgb(${n.r},${n.g},${n.b})"></i></li>`;
+    }
+    box.append(row);
+  }
+}
+
+function press(ids, on) { ids.forEach(id => $(id).setAttribute('aria-pressed', id === on)); }
+function setWho(w) { who = w; press(['f_pros', 'f_all'], w === 'pros' ? 'f_pros' : 'f_all'); if (w === 'all') loadPlayers(); render(); }
+function setKind(k) { kind = k; press(['k_all', 'k_change', 'k_new'], `k_${k}`); render(); }
+$('f_pros').onclick = () => setWho('pros'); $('f_all').onclick = () => setWho('all');
+$('k_all').onclick = () => setKind('all'); $('k_change').onclick = () => setKind('change'); $('k_new').onclick = () => setKind('new');
+
+function applyLang() {
+  const L = t();
+  document.documentElement.lang = lang; document.title = L.docTitle;
+  document.querySelectorAll('[data-i]').forEach(el => { const v = L[el.dataset.i]; if (typeof v === 'string') el.innerHTML = v; });
+  $('lang_es').setAttribute('aria-pressed', lang === 'es'); $('lang_en').setAttribute('aria-pressed', lang === 'en');
+  render();
+}
+$('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
+$('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
+
+const get = url => fetch(url, { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+let playersPromise = null;
+function loadPlayers() {
+  if (!playersPromise) playersPromise = get('../data/players.json')
+    .then(j => { data.players = (j.players || []).filter(r => r.name && r.code); })
+    .catch(() => { data.failed = true; }).finally(render);
+  return playersPromise;
+}
+applyLang();
+get('../data/pros.json')
+  .then(j => { data.pros = (j.players || []).filter(r => r.name && r.code); slugMap = proSlugs(data.pros); })
+  .catch(() => { data.failed = true; })
+  .finally(render);
+})();
+</script>
+</body>
+</html>
