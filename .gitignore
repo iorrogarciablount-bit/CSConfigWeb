@@ -3,3 +3,5 @@ pipeline/demos/*
 __pycache__/
 *.pyc
 .venv/
+.wrangler/
+node_modules/

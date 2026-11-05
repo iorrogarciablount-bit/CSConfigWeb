@@ -5,6 +5,7 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
 - `site/` contiene la web estática. Se publica tal cual, sin compilar nada.
   - `index.html` es la página de inicio, con la base de datos de miras.
   - `conversor/` es la herramienta de conversión.
+  - `/jugador/<nombre>` es la página de cada pro (y `/jugador/<SteamID64>` la de cualquier jugador). La genera `functions/jugador/[slug].js` en el servidor a partir de los datos, igual que `sitemap.xml` y `robots.txt`. Solo los pros se indexan en Google.
   - `assets/crosshair.js` lee y escribe códigos; el formato está comprobado con 30 códigos reales exportados del juego.
   - `data/pros.json` y `data/players.json` son los datos: los pros identificados y el resto de jugadores. Los genera el pipeline; no hace falta editarlos a mano.
 - `pipeline/update.py` descarga demos, extrae la mira de cada jugador con [demoparser2](https://github.com/LaihoE/demoparser) y actualiza los datos con historial de cambios.

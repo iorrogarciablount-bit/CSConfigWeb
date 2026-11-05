@@ -192,3 +192,10 @@ dialog.sheet::backdrop{background:#05080bcc}
 .links .aka{color:var(--muted);flex-basis:100%}
 footer a{color:var(--muted)}
 .ret{color:var(--muted);font-style:italic}
+
+/* página de jugador (/jugador/...) */
+.crumbs{display:flex;gap:8px;align-items:center;font:700 12px var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:-8px}
+.crumbs a{color:var(--accent);text-decoration:none}
+.crumbs a:hover{text-decoration:underline}
+.ptitle b{font-weight:inherit}
+a.chip{text-decoration:none}

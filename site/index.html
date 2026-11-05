@@ -120,7 +120,7 @@ es: {
   copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
   history:'Historial de miras', current:'actual', use:'Usar', changed:'Cambió hace poco',
   seenOn:(m, d) => `Visto en ${m} · ${d}`, source:(s, d) => `Visto por última vez el ${d} · ${s}`,
-  aka:'También jugó como', steam:'Perfil de Steam', faceitProfile:'Perfil de FACEIT', faceitRoom:'Partida en FACEIT',
+  aka:'También jugó como', page:'Página del jugador', steam:'Perfil de Steam', faceitProfile:'Perfil de FACEIT', faceitRoom:'Partida en FACEIT',
   vals:{style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor', color:'Color', a:'Opacidad', dot:'Punto', t:'Estilo T', outline:'Contorno', recoil:'Sigue el retroceso', h:'Resolución del código'},
   yes:'Sí', no:'No', outlineOpts:['No','Completo','Medio'],
   emptyTitle:'La base de datos se está llenando', emptyText:`Las miras aparecen aquí en cuanto se procesan demos. ¿Tienes la demo de una partida? <a href="${SUBMIT}">Envíala</a> y sus miras se añadirán solas.`,
@@ -151,7 +151,7 @@ en: {
   copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
   history:'Crosshair history', current:'current', use:'Use', changed:'Recently changed',
   seenOn:(m, d) => `Seen on ${m} · ${d}`, source:(s, d) => `Last seen ${d} · ${s}`,
-  aka:'Also played as', steam:'Steam profile', faceitProfile:'FACEIT profile', faceitRoom:'FACEIT match',
+  aka:'Also played as', page:'Player page', steam:'Steam profile', faceitProfile:'FACEIT profile', faceitRoom:'FACEIT match',
   vals:{style:'Style', length:'Length', gap:'Gap', thickness:'Thickness', color:'Color', a:'Opacity', dot:'Dot', t:'T style', outline:'Outline', recoil:'Follow recoil', h:'Code resolution'},
   yes:'Yes', no:'No', outlineOpts:['No','Full','Half'],
   emptyTitle:'The database is filling up', emptyText:`Crosshairs show up here as soon as demos are processed. Have a match demo? <a href="${SUBMIT}">Submit it</a> and its crosshairs are added automatically.`,
@@ -184,6 +184,15 @@ const t = () => T[lang];
 const fmtDate = iso => { try { return new Date(iso).toLocaleDateString(t().locale, { day:'numeric', month:'short', year:'numeric' }); } catch { return iso || ''; } };
 const mapName = m => MAP_NAMES[m] || (m || '').replace(/^de_/, '').replace(/^\w/, c => c.toUpperCase());
 const daysAgo = iso => (Date.now() - new Date(iso).getTime()) / 864e5;
+/* URL de la página de cada jugador. La misma regla está en functions/_site.js (slugify y proSlugs). */
+const slugify = name => String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+let proSlugs = new Map();
+function buildSlugs(pros) {
+  const count = new Map();
+  pros.forEach(p => { const s = slugify(p.name); count.set(s, (count.get(s) || 0) + 1); });
+  proSlugs = new Map(pros.map(p => { const s = slugify(p.name); return [p.id, s && count.get(s) === 1 && !/^\d+$/.test(s) ? s : p.id]; }));
+}
+const pageUrl = r => `jugador/${encodeURIComponent(proSlugs.get(r.id) || r.id)}`;
 function decodeSafe(code) { try { return anyCode(code); } catch { return null; } }
 const shownCode = (code, n) => /^CSGO-/.test(code) ? encodeNew(n) : code;
 
@@ -282,7 +291,7 @@ function openSheet(r) {
   const sub = r.pro ? (r.status === 'retired' ? t().retired : (r.team ? esc(r.team) : t().noTeam)) : (r.faceit ? `FACEIT: ${esc(r.faceit)}` : '');
   $('sName').innerHTML = `${esc(r.name)}<small>${sub}</small>`;
   showCode(r.code);
-  const links = [`<a href="https://steamcommunity.com/profiles/${esc(r.id)}" target="_blank" rel="noopener">${L.steam}</a>`];
+  const links = [`<a href="${pageUrl(r)}" data-page>${L.page}</a>`, `<a href="https://steamcommunity.com/profiles/${esc(r.id)}" target="_blank" rel="noopener">${L.steam}</a>`];
   if (r.faceit) links.push(`<a href="https://www.faceit.com/${lang}/players/${encodeURIComponent(r.faceit)}" target="_blank" rel="noopener">${L.faceitProfile}</a>`);
   if (r.faceit_match) links.push(`<a href="https://www.faceit.com/${lang}/cs2/room/${encodeURIComponent(r.faceit_match)}" target="_blank" rel="noopener">${L.faceitRoom}</a>`);
   const aka = [...new Set([...(r.aliases || []), ...(r.pro && r.nick && r.nick !== r.name ? [r.nick] : [])])];
@@ -378,7 +387,7 @@ function loadPlayers() {
 if (startQuery) $('pq').value = startQuery;
 buildBg(); applyLang(); setTab(tab, false);
 get('data/pros.json')
-  .then(j => { ds.pros.rows = prep(j, true); ds.pros.updated = j.updated; ds.pros.loaded = true; })
+  .then(j => { buildSlugs(j.players || []); ds.pros.rows = prep(j, true); ds.pros.updated = j.updated; ds.pros.loaded = true; })
   .catch(() => { ds.pros.failed = true; })
   .finally(() => { fillFilters(); render(); loadPlayers(); });
 })();
