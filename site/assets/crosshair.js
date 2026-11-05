@@ -234,3 +234,6 @@ function anyCode(code) {
   return decodeNew(code);
 }
 
+
+/* Para las funciones de Cloudflare (functions/), que importan este archivo como módulo */
+globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode };

@@ -1,0 +1,21 @@
+// sitemap.xml: las páginas fijas y una por cada pro. Google lo lee para descubrir todas las páginas.
+import { loadData, proSlugs, origin } from "./_site.js";
+
+export async function onRequestGet({ request, env }) {
+  const base = origin(request);
+  const { pros, prosUpdated } = await loadData(env, request);
+  const slugs = proSlugs(pros);
+  const day = d => (d ? String(d).slice(0, 10) : null);
+  const urls = [
+    { loc: `${base}/`, lastmod: day(prosUpdated) },
+    { loc: `${base}/conversor/` },
+    { loc: `${base}/enviar/` },
+    ...pros.map(p => ({ loc: `${base}/jugador/${slugs.get(p.id)}`, lastmod: day(p.since || p.seen) })),
+  ];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ""}</url>`).join("\n")}
+</urlset>
+`;
+  return new Response(xml, { headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" } });
+}
