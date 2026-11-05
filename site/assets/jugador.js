@@ -8,7 +8,7 @@ const P = JSON.parse($('pdata').textContent);
 
 const T = {
 es: {
-  navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', crumbPros:'Pros', crumbPlayers:'Jugadores',
+  navPros:'Miras', navCompare:'Comparar', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', crumbPros:'Pros', crumbPlayers:'Jugadores',
   titlePre:'Mira de', retired:'Retirado', codeTitle:'Código de mira', copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
   howto:'En CS2: Ajustes → Juego → Mira → Compartir o importar → pega el código → Importar.',
   edit:'Editar esta mira →', compareWith:'Comparar con', compareAny:'Comparar con otro jugador', preview:'Vista previa y valores', history:'Historial de miras', current:'actual', use:'Usar', mates:'Más miras de',
@@ -21,7 +21,7 @@ es: {
   title: who => `Mira de ${who} en CS2 · CSConfig`, source: (s, d) => `Visto por última vez el ${d} · ${s}`, locale: 'es-ES',
 },
 en: {
-  navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', crumbPros:'Pros', crumbPlayers:'Players',
+  navPros:'Crosshairs', navCompare:'Compare', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', crumbPros:'Pros', crumbPlayers:'Players',
   titlePre:'Crosshair of', retired:'Retired', codeTitle:'Crosshair code', copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
   howto:'In CS2: Settings → Game → Crosshair → Share or Import → paste the code → Import.',
   edit:'Edit this crosshair →', compareWith:'Compare with', compareAny:'Compare with another player', preview:'Preview and values', history:'Crosshair history', current:'current', use:'Use', mates:'More crosshairs from',
