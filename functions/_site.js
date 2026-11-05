@@ -7,16 +7,9 @@ export const XH = globalThis.XH;
 
 export const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-/* Slug de un nombre: "-kRyTouS" -> "krytous". La misma regla está en site/index.html (playerSlug). */
-export const slugify = name =>
-  String(name || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-
-/* URL de cada pro: su slug, o su SteamID si el slug falta o lo comparte con otro pro. */
-export function proSlugs(pros) {
-  const count = new Map();
-  pros.forEach(p => { const s = slugify(p.name); count.set(s, (count.get(s) || 0) + 1); });
-  return new Map(pros.map(p => { const s = slugify(p.name); return [p.id, s && count.get(s) === 1 && !/^\d+$/.test(s) ? s : p.id]; }));
-}
+/* URL de cada pro (la regla está en crosshair.js, compartida con la web) */
+export const slugify = XH.slugify;
+export const proSlugs = XH.proSlugs;
 
 async function getJson(env, request, path) {
   const res = await env.ASSETS.fetch(new URL(path, request.url));

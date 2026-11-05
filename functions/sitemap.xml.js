@@ -8,6 +8,7 @@ export async function onRequestGet({ request, env }) {
   const day = d => (d ? String(d).slice(0, 10) : null);
   const urls = [
     { loc: `${base}/`, lastmod: day(prosUpdated) },
+    { loc: `${base}/cambios/`, lastmod: day(prosUpdated) },
     { loc: `${base}/conversor/` },
     { loc: `${base}/enviar/` },
     ...pros.map(p => ({ loc: `${base}/jugador/${slugs.get(p.id)}`, lastmod: day(p.since || p.seen) })),

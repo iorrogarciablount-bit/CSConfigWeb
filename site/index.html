@@ -14,6 +14,7 @@
   <a class="brand" href="./"><h1>CS<span>Config</span></h1></a>
   <nav class="topnav">
     <a href="./" aria-current="page" data-i="navPros">Miras</a>
+    <a href="cambios/" data-i="navChanges">Cambios</a>
     <a href="conversor/" data-i="navConv">Conversor</a>
     <a href="enviar/" data-i="navSubmit">Enviar demo</a>
     <div class="lang" role="group" aria-label="Idioma / Language">
@@ -84,7 +85,7 @@ const SUBMIT = 'enviar/';
 const T = {
 es: {
   retired:'Retirado', retiredOpt:'Retirados', noTeam:'Sin equipo',
-  navPros:'Miras', navConv:'Conversor', navSubmit:'Enviar demo', title:'Miras de <span>CS2</span>',
+  navPros:'Miras', navChanges:'Cambios', navConv:'Conversor', navSubmit:'Enviar demo', title:'Miras de <span>CS2</span>',
   lead:'Las miras que usan los profesionales y cualquier jugador, sacadas directamente de las demos de sus partidas. Pulsa un jugador para ver los detalles y copiar su código.',
   stPros:'Pros', stPlayers:'Jugadores', stUpdated:'Actualizado', tabPros:'Pros', tabPlayers:'Jugadores',
   findPros:'Buscar pros', findPlayers:'Buscar jugador',
@@ -109,7 +110,7 @@ es: {
 },
 en: {
   retired:'Retired', retiredOpt:'Retired', noTeam:'No team',
-  navPros:'Crosshairs', navConv:'Converter', navSubmit:'Submit a demo', title:'CS2 <span>crosshairs</span>',
+  navPros:'Crosshairs', navChanges:'Changes', navConv:'Converter', navSubmit:'Submit a demo', title:'CS2 <span>crosshairs</span>',
   lead:'The crosshairs pros and any player actually use, pulled straight from their match demos. Tap a player to see the details and copy their code.',
   stPros:'Pros', stPlayers:'Players', stUpdated:'Updated', tabPros:'Pros', tabPlayers:'Players',
   findPros:'Search pros', findPlayers:'Find a player',
@@ -149,15 +150,8 @@ const t = () => T[lang];
 const fmtDate = iso => { try { return new Date(iso).toLocaleDateString(t().locale, { day:'numeric', month:'short', year:'numeric' }); } catch { return iso || ''; } };
 const mapName = m => MAP_NAMES[m] || (m || '').replace(/^de_/, '').replace(/^\w/, c => c.toUpperCase());
 const daysAgo = iso => (Date.now() - new Date(iso).getTime()) / 864e5;
-/* URL de la página de cada jugador. La misma regla está en functions/_site.js (slugify y proSlugs). */
-const slugify = name => String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-let proSlugs = new Map();
-function buildSlugs(pros) {
-  const count = new Map();
-  pros.forEach(p => { const s = slugify(p.name); count.set(s, (count.get(s) || 0) + 1); });
-  proSlugs = new Map(pros.map(p => { const s = slugify(p.name); return [p.id, s && count.get(s) === 1 && !/^\d+$/.test(s) ? s : p.id]; }));
-}
-const pageUrl = r => `jugador/${encodeURIComponent(proSlugs.get(r.id) || r.id)}`;
+let slugMap = new Map();
+const pageUrl = r => `jugador/${encodeURIComponent(slugMap.get(r.id) || r.id)}`;
 function decodeSafe(code) { try { return anyCode(code); } catch { return null; } }
 
 function drawThumb(cv, n) { const p = newParams(n); paint(cv, p, clamp(fitZoom(cv.width, p), 2, 4), bgIdx); }
@@ -310,7 +304,7 @@ function loadPlayers() {
 if (startQuery) $('pq').value = startQuery;
 buildBg(); applyLang(); setTab(tab, false);
 get('data/pros.json')
-  .then(j => { buildSlugs(j.players || []); ds.pros.rows = prep(j, true); ds.pros.updated = j.updated; ds.pros.loaded = true; })
+  .then(j => { slugMap = proSlugs(j.players || []); ds.pros.rows = prep(j, true); ds.pros.updated = j.updated; ds.pros.loaded = true; })
   .catch(() => { ds.pros.failed = true; })
   .finally(() => { fillFilters(); render(); loadPlayers(); });
 })();

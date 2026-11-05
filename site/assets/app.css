@@ -193,3 +193,23 @@ footer a{color:var(--muted)}
 .crumbs a:hover{text-decoration:underline}
 .ptitle b{font-weight:inherit}
 a.chip{text-decoration:none}
+
+/* últimos cambios (/cambios/) */
+.feed{display:grid;gap:10px}
+.feed .sublabel{margin:10px 0 0}
+.ev{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;gap:10px;min-width:0}
+.ev-change{box-shadow:inset 3px 0 0 var(--accent)}
+.ev-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0}
+.ev-head .pname{color:var(--ink);text-decoration:none}
+.ev-head .pname:hover{color:var(--accent)}
+.ev-head .badge{margin:0 0 0 auto}
+.ev-body{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.ev-thumbs{display:flex;align-items:center;gap:8px}
+.ev-thumbs figure{margin:0}
+.ev-thumbs canvas{width:72px;height:72px;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:2px}
+.ev-thumbs figcaption{margin-top:4px;font:700 10px var(--display);text-transform:uppercase;letter-spacing:.08em;justify-content:center}
+.ev-arrow{color:var(--muted);font-size:18px}
+.ev-diff{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;font-variant-numeric:tabular-nums}
+.ev-diff span{color:var(--muted)}
+.ev-diff b{font:500 13px var(--mono)}
+.ev-diff .muted{color:var(--muted)}

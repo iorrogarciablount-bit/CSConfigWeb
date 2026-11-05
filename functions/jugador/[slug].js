@@ -115,6 +115,7 @@ ${pro ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "
   <a class="brand" href="/"><h1>CS<span>Config</span></h1></a>
   <nav class="topnav">
     <a href="/" data-i="navPros">Miras</a>
+    <a href="/cambios/" data-i="navChanges">Cambios</a>
     <a href="/conversor/" data-i="navConv">Conversor</a>
     <a href="/enviar/" data-i="navSubmit">Enviar demo</a>
     <div class="lang" role="group" aria-label="Idioma / Language">
