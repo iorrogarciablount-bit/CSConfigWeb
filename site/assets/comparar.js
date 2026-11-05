@@ -9,7 +9,7 @@ const D = JSON.parse($('cdata').textContent);
 
 const T = {
 es: {
-  navPros:'Miras', navCompare:'Comparar', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
+  navPros:'Miras', navCompare:'Comparar', footCmd:'¿Haces directos? Añade el comando !mira a tu chat →', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
   remove:'Pedir que retiremos un jugador',
   titleIdx:'Comparar', titleIdx2:'miras', leadIdx:'Elige dos jugadores para ver sus miras lado a lado y en qué se diferencian.',
@@ -23,7 +23,7 @@ es: {
   title:(a, b) => `${a} vs ${b}: comparación de miras de CS2 · CSConfig`, titleIndex:'Comparar miras de jugadores de CS2 · CSConfig',
 },
 en: {
-  navPros:'Crosshairs', navCompare:'Compare', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
+  navPros:'Crosshairs', navCompare:'Compare', footCmd:'Streaming? Add the !crosshair command to your chat →', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
   footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.',
   remove:'Ask us to remove a player',
   titleIdx:'Compare', titleIdx2:'crosshairs', leadIdx:'Pick two players to see their crosshairs side by side and what is different.',

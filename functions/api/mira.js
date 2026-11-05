@@ -46,7 +46,7 @@ export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const L = TXT[url.searchParams.get("lang") === "en" ? "en" : "es"];
   const base = origin(request);
-  const reply = (text, maxAge = 120) => new Response(text.slice(0, 400), {
+  const reply = (text, maxAge = 120) => new Response(text.slice(0, 380), {   // Nightbot exige menos de 400 caracteres
     headers: { "content-type": "text/plain; charset=utf-8", "cache-control": `public, max-age=${maxAge}`, "access-control-allow-origin": "*" },
   });
 

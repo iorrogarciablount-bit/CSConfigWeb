@@ -72,5 +72,6 @@ ${NAV.map(([href, key, label]) => `    <a href="${href}"${key === active ? ' ari
     </div>
   </nav>
 </header>`;
-export const siteFooter = () => `<footer><span data-i="footer">Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.</span> <a href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=retirar-jugador.yml" target="_blank" rel="noopener" data-i="remove">Pedir que retiremos un jugador</a></footer>
+export const siteFooter = () => `<p class="footcmd"><a href="/comando/" data-i="footCmd">¿Haces directos? Añade el comando !mira a tu chat →</a></p>
+  <footer><span data-i="footer">Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.</span> <a href="https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=retirar-jugador.yml" target="_blank" rel="noopener" data-i="remove">Pedir que retiremos un jugador</a></footer>
   <script src="/assets/nav.js" defer></script>`;

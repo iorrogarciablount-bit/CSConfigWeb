@@ -45,6 +45,7 @@ await check("Estadísticas", "/estadisticas/", html);
 await check("¿A qué pro se parece?", "/parecido/", html);
 await check("Conversor", "/conversor/", html);
 await check("Enviar demo", "/enviar/", html);
+await check("Comando para streamers", "/comando/", html);
 await check("Script de miras", "/assets/crosshair.js", { contains: ["function decodeNew"] });
 
 const pros = await check("Datos de pros", "/data/pros.json", { json: d => (Array.isArray(d.players) && d.players.length ? null : "sin jugadores") });

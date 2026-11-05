@@ -18,6 +18,8 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
 
 ## Comando `!mira` para Twitch
 
+La página **`/comando/`** lo explica para otros streamers: tiene un probador en vivo y genera el comando listo para copiar en Nightbot, StreamElements u otros bots, con su idioma y su jugador por defecto. Todas las páginas enlazan a ella desde el pie.
+
 `/api/mira?q=<jugador>` responde en una línea de texto con el código de mira y el enlace a la página del jugador:
 
 ```
