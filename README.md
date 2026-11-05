@@ -45,6 +45,15 @@ Pasos:
 
 Para probarla en tu PC: `npx wrangler dev` y abre `http://localhost:8787`.
 
+### Analítica de visitas (opcional)
+
+Con Cloudflare Web Analytics, gratis:
+1. En Cloudflare, ve a **Analytics & Logs → Web Analytics → Add a site** y escribe la dirección de la web (por ejemplo `csconfig.<subdominio>.workers.dev`).
+2. En **Manage site** copia el token: es el valor de `"token"` dentro del código que te enseña, 32 letras y números.
+3. En **Workers & Pages → csconfig → Settings → Variables and Secrets** crea la variable `CF_BEACON_TOKEN` con ese token.
+
+`worker.js` añade el script a todas las páginas solo. Si borras la variable, deja de añadirlo.
+
 ### 2. Activar la actualización automática (FACEIT)
 
 1. Crea una cuenta de desarrollador en [developers.faceit.com](https://developers.faceit.com), crea una app y genera una **Server-side API key**.

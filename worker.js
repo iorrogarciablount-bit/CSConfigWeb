@@ -62,6 +62,15 @@ async function withOg(res, request, env) {
     .transform(res);
 }
 
+// Cloudflare Web Analytics: si existe la variable CF_BEACON_TOKEN en el Worker
+// (Settings → Variables and Secrets), se añade su script a todas las páginas HTML.
+function withAnalytics(res, env) {
+  const token = String(env.CF_BEACON_TOKEN || "").trim();
+  if (!/^[a-f0-9]{32}$/i.test(token) || !(res.headers.get("content-type") || "").includes("text/html")) return res;
+  const tag = `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${token}"}'></script>`;
+  return new HTMLRewriter().on("body", { element(e) { e.append(tag, { html: true }); } }).transform(res);
+}
+
 const HANDLER = { GET: "onRequestGet", HEAD: "onRequestGet", POST: "onRequestPost" };
 
 export default {
@@ -74,13 +83,13 @@ export default {
       if (!fn) return new Response("Método no permitido", { status: 405, headers: { allow: Object.keys(HANDLER).filter(m => mod[HANDLER[m]]).join(", ") } });
       try {
         const res = await fn({ request, env, params, waitUntil: ctx.waitUntil.bind(ctx) });
-        return request.method === "HEAD" ? new Response(null, res) : res;
+        return request.method === "HEAD" ? new Response(null, res) : withAnalytics(res, env);
       } catch (err) {
         console.error(pathname, err);
         return new Response("Error interno", { status: 500 });
       }
     }
     const res = await env.ASSETS.fetch(request);
-    return withOg(res, request, env);
+    return withAnalytics(await withOg(res, request, env), env);
   },
 };
