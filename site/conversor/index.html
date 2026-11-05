@@ -63,7 +63,6 @@
   <section class="card">
     <div class="viewhead">
       <p class="step"><span data-i="preview"></span></p>
-      <div class="chips" id="bgChips"></div>
     </div>
     <div class="cmp">
       <figure>
@@ -113,7 +112,7 @@ es: {
   s3:'Copia tu código nuevo', copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
   howto:['Ajustes','Juego','Mira / Miras telescópicas','Compartir o importar','Pegar e Importar'],
   preview:'Vista previa', before:'Antes', after:'Después',
-  realsize:'Fondos: escenas desenfocadas con los colores y la luz de cada mapa, para ver cómo contrasta tu mira. Los cuadrados pequeños muestran la mira a tamaño real; las ampliadas comparten zoom.',
+  realsize:'Los cuadrados pequeños muestran la mira a tamaño real; las ampliadas comparten el mismo zoom para compararlas.',
   tune:'Ajustes finos (opcional)', was:'Antes:', style:'Estilo', length:'Largo', gap:'Separación', thickness:'Grosor',
   color:'Color', opacity:'Opacidad', outline:'Contorno', outlineOpts:['Sin contorno','Completo','Solo medio'],
   dot:'Punto central', t:'Estilo T', recoil:'Sigue el retroceso',
@@ -148,7 +147,7 @@ en: {
   s3:'Copy your new code', copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
   howto:['Settings','Game','Crosshair / Scopes','Share or Import','Paste and Import'],
   preview:'Preview', before:'Before', after:'After',
-  realsize:'Backgrounds: out-of-focus scenes in each map\'s colors and light, to check how your crosshair stands out. The small squares show it at actual size; the large ones share the same zoom.',
+  realsize:'The small squares show the crosshair at actual size; the large ones share the same zoom so you can compare them.',
   tune:'Fine-tune (optional)', was:'Before:', style:'Style', length:'Length', gap:'Gap', thickness:'Thickness',
   color:'Color', opacity:'Opacity', outline:'Outline', outlineOpts:['No outline','Full','Half'],
   dot:'Center dot', t:'T style', recoil:'Follow recoil',
@@ -181,7 +180,7 @@ const $ = id => document.getElementById(id);
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 
 let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
-let resH = +(store.get('res') || 1080), bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, 6);
+let resH = +(store.get('res') || 1080);
 let old = null, neu = null, orig = null, editName = '';   // orig: código nuevo cargado para editar
 const t = () => T[lang];
 
@@ -209,13 +208,13 @@ function render() {
   if (orig && neu) {
     const pa = newParams(orig), pb = newParams(neu), W = $('cvOld').width;
     const zoom = clamp(Math.floor(W / (Math.max(extent(pa), extent(pb)) * 2 + 6)), 2, 14);
-    paint($('cvOld'), pa, zoom, bgIdx); paint($('cvNew'), pb, zoom, bgIdx);
-    paint($('cvOld1'), pa, 1, bgIdx); paint($('cvNew1'), pb, 1, bgIdx);
+    paint($('cvOld'), pa, zoom); paint($('cvNew'), pb, zoom);
+    paint($('cvOld1'), pa, 1); paint($('cvNew1'), pb, 1);
     $('capOld').textContent = t().capOrig(t().styles[orig.style] ?? orig.style);
     $('capNew').textContent = t().capNew(t().styles[neu.style] ?? neu.style, zoom);
     return;
   }
-  if (!old || !neu) { [['cvOld',4],['cvNew',4],['cvOld1',1],['cvNew1',1]].forEach(([id, z]) => { const cv = $(id), x = cv.getContext('2d'); if (x) drawBg(x, cv.width, z, Math.floor(cv.width / z / 2), bgIdx); }); $('capOld').textContent = $('capNew').textContent = ''; return; }
+  if (!old || !neu) { [['cvOld',4],['cvNew',4],['cvOld1',1],['cvNew1',1]].forEach(([id, z]) => { const cv = $(id), x = cv.getContext('2d'); if (x) drawBg(x, cv.width, z); }); $('capOld').textContent = $('capNew').textContent = ''; return; }
   const px = oldPx(old, H()), rgb = oldColor(old);
   const pOld = { len: px.len, thick: px.thick, gap: px.gap, dot: old.dot, t: old.t, arms: true,
     outline: old.drawoutline ? Math.max(1, bround(old.outlinethickness)) : 0, outlineColor: '#000',
@@ -227,8 +226,8 @@ function render() {
     color: `rgba(${neu.r},${neu.g},${neu.b},${neu.a / 255})` };
   const W = $('cvOld').width, span = Math.max(extent(pOld), extent(pNew)) * 2 + 6;
   const zoom = clamp(Math.floor(W / span), 2, 14);
-  paint($('cvOld'), pOld, zoom, bgIdx); paint($('cvNew'), pNew, zoom, bgIdx);
-  paint($('cvOld1'), pOld, 1, bgIdx); paint($('cvNew1'), pNew, 1, bgIdx);
+  paint($('cvOld'), pOld, zoom); paint($('cvNew'), pNew, zoom);
+  paint($('cvOld1'), pOld, 1); paint($('cvNew1'), pNew, 1);
   $('capOld').textContent = `${OLD_STYLE[old.style] ?? ''} · ${t().capOld(px)}`;
   $('capNew').textContent = t().capNew(t().styles[st] ?? st, zoom);
 }
@@ -334,7 +333,7 @@ function applyLang() {
   $('howto').innerHTML = L.howto.map(s => `<b>${s}</b>`).join(' → ');
   $('faq').innerHTML = L.faq.map(([q, a]) => `<div><h3>${q}</h3><p>${a}</p></div>`).join('');
   $('lang_es').setAttribute('aria-pressed', lang === 'es'); $('lang_en').setAttribute('aria-pressed', lang === 'en');
-  buildRes(); buildBg(); run();
+  buildRes(); run();
 }
 function chipGroup(box, items, isOn, onPick) {
   box.innerHTML = '';
@@ -348,9 +347,6 @@ function buildRes() {
     resH = v; store.set('res', v); $('customWrap').hidden = v !== 0; buildRes(); run();
   });
   $('customWrap').hidden = resH !== 0;
-}
-function buildBg() {
-  chipGroup($('bgChips'), MAPS.map((n, i) => [i, n]), v => v === bgIdx, v => { bgIdx = v; store.set('bg', v); buildBg(); render(); });
 }
 function buildSamples() {
   SAMPLES.forEach(([name, code]) => {

@@ -146,7 +146,6 @@ export async function onRequestGet({ params, request, env }) {
   ${picker(pros, slugs, isPro(L) ? keyOf(L) : "", isPro(R) ? keyOf(R) : "")}
   <section class="card">
     <div class="cgrid">${col(L, nL, "L")}${col(R, nR, "R")}</div>
-    <div class="chips bgChips under"></div>
   </section>
   <section class="card">
     <p class="step"><span data-i="valsTitle">Valores</span></p>

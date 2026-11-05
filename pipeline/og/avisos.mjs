@@ -79,8 +79,8 @@ function changeImage(e) {
   const S = 360, y = 140, x1 = 40, x2 = 40 + S + 70;
   const pa = XH.newParams(e.o), pb = XH.newParams(e.n);
   const z = Math.min(XH.fitZoom(S, pa), XH.fitZoom(S, pb));
-  preview(ctx, e.o, x1, y, S, 0, z);
-  preview(ctx, e.n, x2, y, S, 0, z);
+  preview(ctx, e.o, x1, y, S, z);
+  preview(ctx, e.n, x2, y, S, z);
   ctx.fillStyle = C.muted; ctx.font = "700 40px RobotoCondensed"; ctx.textAlign = "center";
   ctx.fillText("→", x1 + S + 35, y + S / 2 + 14);
   ctx.font = "700 20px RobotoCondensed";

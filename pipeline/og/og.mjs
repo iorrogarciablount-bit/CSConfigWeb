@@ -15,7 +15,7 @@ import { join } from "node:path";
 import { XH, proSlugs, createCanvas, ROOT, W, H, C, STYLES, decode, shown, fitText, brand, preview } from "./draw.mjs";
 
 const OUT = join(ROOT, "site", "og");
-const STYLE_VERSION = "1";   // súbelo si cambias el diseño, para regenerar todas
+const STYLE_VERSION = "2";   // súbelo si cambias el diseño, para regenerar todas
 
 function card(r, n) {
   const cv = createCanvas(W, H), ctx = cv.getContext("2d");
@@ -63,7 +63,7 @@ function defaultCard(sample) {
   ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
   ctx.fillStyle = C.accent; ctx.fillRect(0, H - 8, W, 8);
   const P = 40, S = H - 2 * P - 8;
-  if (sample) preview(ctx, sample, P, P, S, 1);
+  if (sample) preview(ctx, sample, P, P, S);
   const x = sample ? P + S + 48 : 90, maxW = W - x - P;
   brand(ctx, x, 120);
   ctx.fillStyle = C.ink;

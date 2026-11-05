@@ -137,7 +137,6 @@ ${siteHeader()}
       <canvas id="cv" width="300" height="300" aria-label="Vista previa de la mira"></canvas>
       <table class="vtable"><tbody id="vals">${valsRows(n)}</tbody></table>
     </div>
-    <div class="chips bgChips under"></div>
   </section>
 
   ${hist.length > 1 ? `<section class="card"><p class="step"><span data-i="history">Historial de miras</span></p><ul class="hist" id="hist">${histHtml}</ul></section>` : ""}

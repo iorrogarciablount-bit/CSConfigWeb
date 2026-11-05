@@ -57,7 +57,6 @@
         <select id="sort" aria-label="Orden"></select>
       </div>
       <div class="toolbar">
-        <div class="chips bgChips"></div>
         <span class="count" id="count"></span>
       </div>
     </section>
@@ -70,7 +69,6 @@
       <input type="search" id="pq" class="bigsearch" autocomplete="off" spellcheck="false">
       <p class="fine" id="pHint" data-i="pHint"></p>
       <div class="toolbar">
-        <div class="chips bgChips"></div>
         <span class="count" id="pcount"></span>
       </div>
     </section>
@@ -143,13 +141,11 @@ en: {
   footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown. Teams: <a href="https://liquipedia.net/counterstrike/" target="_blank" rel="noopener">Liquipedia</a> (CC BY-SA 3.0).', remove:'Ask us to remove a player',
   locale:'en-GB',
 }};
-const MAPN = typeof MAPS !== 'undefined' ? MAPS : [];
 const MAP_NAMES = { de_dust2:'Dust II', de_mirage:'Mirage', de_inferno:'Inferno', de_nuke:'Nuke', de_ancient:'Ancient', de_anubis:'Anubis', de_overpass:'Overpass', de_train:'Train', de_vertigo:'Vertigo', de_train_cs2:'Train' };
 const $ = id => document.getElementById(id);
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
-let bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, 6);
 const ds = { pros: { rows: [], loaded: false, failed: false, updated: null }, players: { rows: [], loaded: false, failed: false, updated: null } };
 let tab = location.hash === '#jugadores' || location.hash === '#players' ? 'players' : 'pros';
 let startQuery = '';
@@ -164,7 +160,7 @@ let slugMap = new Map();
 const pageUrl = r => `jugador/${encodeURIComponent(slugMap.get(r.id) || r.id)}`;
 function decodeSafe(code) { try { return anyCode(code); } catch { return null; } }
 
-function drawThumb(cv, n) { const p = newParams(n); paint(cv, p, clamp(fitZoom(cv.width, p), 2, 4), bgIdx); }
+function drawThumb(cv, n) { const p = newParams(n); paint(cv, p, clamp(fitZoom(cv.width, p), 2, 4)); }
 
 function subline(r) {
   if (r.pro) return r.status === 'retired' ? `<span class="ret">${t().retired}</span>` : (r.team ? esc(r.team) : `<span class="ret">${t().noTeam}</span>`);
@@ -241,17 +237,6 @@ function listPlayers() {
 }
 
 /* ---------- interfaz ---------- */
-function buildBg() {
-  document.querySelectorAll('.bgChips').forEach(box => {
-    box.innerHTML = '';
-    MAPN.forEach((name, i) => {
-      const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = name;
-      b.setAttribute('aria-pressed', i === bgIdx);
-      b.onclick = () => { bgIdx = i; store.set('bg', i); buildBg(); render(); };
-      box.append(b);
-    });
-  });
-}
 function stats() {
   const fmt = n => n.toLocaleString(t().locale);
   $('stPros').textContent = ds.pros.loaded ? fmt(ds.pros.rows.length) : '–';
@@ -312,7 +297,7 @@ function loadPlayers() {
   return playersPromise;
 }
 if (startQuery) $('pq').value = startQuery;
-buildBg(); applyLang(); setTab(tab, false);
+applyLang(); setTab(tab, false);
 get('data/pros.json')
   .then(j => { slugMap = proSlugs(j.players || []); ds.pros.rows = prep(j, true); ds.pros.updated = j.updated; ds.pros.loaded = true; })
   .catch(() => { ds.pros.failed = true; })

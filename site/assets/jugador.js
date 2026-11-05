@@ -35,7 +35,6 @@ en: {
 }};
 
 let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
-let bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, MAPS.length - 1);
 let shown = P.code;
 const t = () => T[lang];
 const decodeSafe = c => { try { return anyCode(c); } catch { return null; } };
@@ -55,21 +54,10 @@ function show(code) {
   $('code').textContent = shownCode(code, n);
   $('edit').href = `/conversor/?c=${encodeURIComponent(shownCode(code, n))}&n=${encodeURIComponent(P.name)}`;
   $('vals').innerHTML = vals(n);
-  const p = newParams(n); paint($('cv'), p, fitZoom($('cv').width, p), bgIdx);
+  const p = newParams(n); paint($('cv'), p, fitZoom($('cv').width, p));
   document.querySelectorAll('#hist [data-h]').forEach(b => b.setAttribute('aria-pressed', P.hist[+b.dataset.h] === code));
 }
 
-function buildBg() {
-  document.querySelectorAll('.bgChips').forEach(box => {
-    box.innerHTML = '';
-    MAPS.forEach((name, i) => {
-      const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = name;
-      b.setAttribute('aria-pressed', i === bgIdx);
-      b.onclick = () => { bgIdx = i; store.set('bg', i); buildBg(); show(shown); };
-      box.append(b);
-    });
-  });
-}
 
 function applyLang() {
   const L = t();
@@ -94,6 +82,5 @@ document.querySelectorAll('#hist [data-h]').forEach(b => b.onclick = () => show(
 $('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
 $('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
 
-buildBg();
 applyLang();
 })();
