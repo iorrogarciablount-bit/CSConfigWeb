@@ -9,63 +9,13 @@
 // Dibuja con el mismo crosshair.js que la web, así que la mira es idéntica.
 // Solo rehace las imágenes cuya mira ha cambiado. Uso: node pipeline/og/og.mjs
 
-import { createCanvas, GlobalFonts } from "@napi-rs/canvas";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, unlinkSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import { XH, proSlugs, createCanvas, ROOT, W, H, C, STYLES, decode, shown, fitText, brand, preview } from "./draw.mjs";
 
-// crosshair.js crea sus lienzos con document.createElement('canvas'): se lo damos hecho
-globalThis.document = { createElement: () => createCanvas(1, 1) };
-const { proSlugs } = await import("../../functions/_site.js");
-const XH = globalThis.XH;
-
-const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, "..", "..");
 const OUT = join(ROOT, "site", "og");
-const W = 1200, H = 630;
 const STYLE_VERSION = "1";   // súbelo si cambias el diseño, para regenerar todas
-
-GlobalFonts.registerFromPath(join(HERE, "fonts", "RobotoCondensed.ttf"), "RobotoCondensed");
-GlobalFonts.registerFromPath(join(HERE, "fonts", "RobotoMono.ttf"), "RobotoMono");
-
-const C = { bg: "#11151a", panel: "#1a2028", line: "#2b3440", ink: "#dfe5ec", muted: "#8a96a4", accent: "#3a9cf0" };
-const STYLES = ["Cruz dinámica", "Círculo dinámico", "Cruz dinámica (legacy)", "Círculo estático", "Cruz estática",
-  "Cruz estática con retroceso", "Solo punto", "Quad dinámico", "Cuadrado estático", "Quad estático"];
-
-const decode = code => { try { return XH.anyCode(code); } catch { return null; } };
-const shown = (code, n) => (/^CSGO-/.test(code) ? XH.encodeNew(n) : code);
-
-/* Texto que se encoge hasta caber en maxW */
-function fitText(ctx, text, maxW, size, weight, family) {
-  for (; size > 12; size -= 2) {
-    ctx.font = `${weight} ${size}px ${family}`;
-    if (ctx.measureText(text).width <= maxW) break;
-  }
-  return size;
-}
-
-function brand(ctx, x, y) {
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 34px RobotoCondensed";
-  // icono de mira de la cabecera de la web
-  ctx.fillStyle = C.accent;
-  const s = 22, cx = x + s / 2, cy = y - 12;
-  ctx.fillRect(cx - 1.5, cy - s / 2, 3, 8); ctx.fillRect(cx - 1.5, cy + s / 2 - 8, 3, 8);
-  ctx.fillRect(cx - s / 2, cy - 1.5, 8, 3); ctx.fillRect(cx + s / 2 - 8, cy - 1.5, 8, 3);
-  ctx.fillStyle = "#e9eef3"; ctx.fillText("CS", x + s + 12, y);
-  const w = ctx.measureText("CS ").width;
-  ctx.fillStyle = C.accent; ctx.fillText("CONFIG", x + s + 12 + w, y);
-}
-
-/* Vista previa de la mira (misma función paint() de la web) en un cuadrado */
-function preview(ctx, n, x, y, size, bg = 0) {
-  const cv = createCanvas(size, size);
-  const p = XH.newParams(n);
-  XH.paint(cv, p, XH.fitZoom(size, p), bg);
-  ctx.drawImage(cv, x, y);
-  ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, size - 2, size - 2);
-}
 
 function card(r, n) {
   const cv = createCanvas(W, H), ctx = cv.getContext("2d");
