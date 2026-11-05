@@ -213,3 +213,40 @@ a.chip{text-decoration:none}
 .ev-diff span{color:var(--muted)}
 .ev-diff b{font:500 13px var(--mono)}
 .ev-diff .muted{color:var(--muted)}
+
+/* estadísticas (/estadisticas/) */
+.stats4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.stat small{display:block;font:12px var(--sans);color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.stat span{display:block}
+.typ{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px;align-items:center}
+.typ canvas{width:220px;height:220px;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:2px}
+.typ-body{display:grid;gap:12px;min-width:0}
+.typ .specs{margin:0;font-size:13px}
+.hgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.hgrid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.hist{margin:0;min-width:0}
+.hist figcaption{font:700 13px var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--ink);margin:0 0 8px}
+.hplot{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;height:150px;padding-top:20px;border-bottom:1px solid var(--line)}
+.hbar{all:unset;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%;cursor:default;position:relative;padding-bottom:20px;margin-bottom:-20px}
+.hbar:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hfill{display:block;background:var(--accent);border-radius:4px 4px 0 0;position:relative;min-height:0}
+.hbar:hover .hfill,.hbar:focus-visible .hfill{filter:brightness(1.15)}
+.hfill em{position:absolute;bottom:100%;left:0;right:0;text-align:center;font:500 12px var(--mono);font-style:normal;color:var(--ink);padding-bottom:2px}
+.hx{position:absolute;bottom:0;left:0;right:0;text-align:center;font:12px var(--mono);color:var(--muted)}
+.hist .hplot{margin-bottom:24px}
+.rank{display:grid;gap:8px}
+.rrow{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 2.5em;gap:10px;align-items:center;font-size:13px;outline:none}
+.rrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rname{display:flex;gap:6px;align-items:center;line-height:1.25}
+.rtrack{height:12px;display:block}
+.rfill{display:block;height:100%;background:var(--accent);border-radius:0 4px 4px 0}
+.rrow:hover .rfill{filter:brightness(1.15)}
+.rval{font:500 13px var(--mono);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.tip{position:absolute;z-index:10;pointer-events:none;background:var(--bar);color:#e9eef3;font:12px var(--sans);padding:5px 9px;border-radius:var(--r);box-shadow:0 2px 8px #0006;white-space:nowrap}
+.tscroll{overflow-x:auto;margin-top:12px}
+.dtable{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.dtable th{text-align:left;font:700 11px var(--display);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.dtable td{padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.dtable td:nth-child(n+4):nth-child(-n+6){font-family:var(--mono);text-align:right}
+.dtable a{color:var(--accent);text-decoration:none}
+@media (max-width:640px){.stats4{grid-template-columns:repeat(2,minmax(0,1fr))}.typ{grid-template-columns:1fr}.typ canvas{width:100%;height:auto;aspect-ratio:1;max-width:260px}.hgrid{grid-template-columns:1fr;gap:4px}.hplot{height:110px}.hgrid2{grid-template-columns:1fr}}

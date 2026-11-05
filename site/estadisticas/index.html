@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Estadísticas de las miras de los pros de CS2 · CSConfig</title>
+<meta name="description" content="Cómo son las miras de los profesionales de CS2: la mira típica de un pro, estilos, colores, largo, separación y grosor más usados. Sacado de demos de partidas reales.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/app.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
+  <nav class="topnav">
+    <a href="../" data-i="navPros">Miras</a>
+    <a href="../cambios/" data-i="navChanges">Cambios</a>
+    <a href="./" aria-current="page" data-i="navStats">Estadísticas</a>
+    <a href="../conversor/" data-i="navConv">Conversor</a>
+    <a href="../enviar/" data-i="navSubmit">Enviar demo</a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div>
+    <h2 class="ptitle" data-i="title">Estadísticas de <span>miras</span></h2>
+    <p class="lead" id="lead"></p>
+  </div>
+
+  <div class="chips" role="group" aria-label="Quién">
+    <button class="chip" id="f_pros" aria-pressed="true" data-i="fPros">Pros</button>
+    <button class="chip" id="f_all" aria-pressed="false" data-i="fAll">Todos los jugadores</button>
+  </div>
+
+  <section class="card result">
+    <p class="step"><span data-i="typTitle">La mira típica</span></p>
+    <div class="typ">
+      <canvas id="typCv" width="220" height="220" aria-label="Vista previa de la mira típica"></canvas>
+      <div class="typ-body">
+        <p class="fine" style="margin:0" data-i="typHow"></p>
+        <div class="codebox">
+          <p class="code" id="typCode">—</p>
+          <button class="copy" id="typCopy" data-i="copy">Copiar</button>
+        </div>
+        <p class="specs" id="typVals"></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats stats4" id="tiles"></div>
+
+  <section class="card">
+    <p class="step"><span data-i="distTitle">Medidas</span></p>
+    <div class="hgrid" id="hists"></div>
+    <p class="fine" data-i="pxNote"></p>
+  </section>
+
+  <div class="hgrid2">
+    <section class="card">
+      <p class="step"><span data-i="colorTitle">Colores</span></p>
+      <div class="rank" id="colors"></div>
+    </section>
+    <section class="card">
+      <p class="step"><span data-i="styleTitle">Estilos</span></p>
+      <div class="rank" id="styles"></div>
+    </section>
+  </div>
+
+  <details>
+    <summary data-i="tableTitle">Ver todos los datos</summary>
+    <div class="tscroll"><table class="dtable"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  </details>
+
+  <footer><span data-i="footer"></span></footer>
+</main>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+
+<script src="../assets/crosshair.js"></script>
+<script>
+(() => {
+const T = {
+es: {
+  navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
+  title:'Estadísticas de <span>miras</span>', docTitle:'Estadísticas de las miras de los pros de CS2 · CSConfig',
+  lead:(n, who) => `Cómo son las miras de ${n} ${who}, sacadas de las demos de sus partidas.`, whoPros:'pros', whoAll:'jugadores',
+  fPros:'Pros', fAll:'Todos los jugadores',
+  typTitle:'La mira típica', copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
+  typHow:'El largo, la separación y el grosor que están en el medio (la mediana), con el estilo, el color y la resolución que más se repiten.',
+  tiles:[['static','usan cruz estática'], ['res','juegan a {res}'], ['dot','llevan punto central'], ['outline','llevan contorno']],
+  of:(a, b) => `${a} de ${b}`,
+  distTitle:'Medidas', len:'Largo', gap:'Separación', thick:'Grosor',
+  pxNote:'Valores en píxeles tal y como vienen en cada código. Cada código guarda la resolución de quien lo creó, así que pueden variar algo entre jugadores.',
+  colorTitle:'Colores', styleTitle:'Estilos', players:n => `${n} ${n === 1 ? 'jugador' : 'jugadores'}`,
+  colors:{ cyan:'Cian', green:'Verde', yellow:'Amarillo', white:'Blanco', blue:'Azul', red:'Rojo', pink:'Rosa / morado', orange:'Naranja', black:'Negro' },
+  styles:['Cruz dinámica','Círculo dinámico','Cruz dinámica (legacy)','Círculo estático','Cruz estática','Cruz estática con retroceso','Solo punto','Quad dinámico','Cuadrado estático','Quad estático'],
+  tableTitle:'Ver todos los datos', cols:['Jugador','Equipo','Estilo','Largo','Sep.','Grosor','Color','Punto','Resolución'],
+  yes:'Sí', no:'No', loadErr:'No se han podido cargar los datos. Recarga la página.',
+  footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
+  vals:n => `Largo <b>${n.length}</b> · Separación <b>${n.gap}</b> · Grosor <b>${n.thickness}</b>`,
+},
+en: {
+  navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
+  title:'Crosshair <span>stats</span>', docTitle:'CS2 pro crosshair stats · CSConfig',
+  lead:(n, who) => `What the crosshairs of ${n} ${who} look like, pulled from their match demos.`, whoPros:'pros', whoAll:'players',
+  fPros:'Pros', fAll:'All players',
+  typTitle:'The typical crosshair', copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
+  typHow:'The middle (median) length, gap and thickness, with the most common style, color and resolution.',
+  tiles:[['static','use a static cross'], ['res','play at {res}'], ['dot','use a center dot'], ['outline','use an outline']],
+  of:(a, b) => `${a} of ${b}`,
+  distTitle:'Sizes', len:'Length', gap:'Gap', thick:'Thickness',
+  pxNote:'Values in pixels exactly as stored in each code. Every code keeps the resolution of whoever made it, so they can vary slightly between players.',
+  colorTitle:'Colors', styleTitle:'Styles', players:n => `${n} ${n === 1 ? 'player' : 'players'}`,
+  colors:{ cyan:'Cyan', green:'Green', yellow:'Yellow', white:'White', blue:'Blue', red:'Red', pink:'Pink / purple', orange:'Orange', black:'Black' },
+  styles:['Dynamic cross','Dynamic circle','Dynamic cross (legacy)','Static circle','Static cross','Static cross with shot feedback','Dot only','Dynamic quad','Static square','Static quad'],
+  tableTitle:'See all the data', cols:['Player','Team','Style','Length','Gap','Thick.','Color','Dot','Resolution'],
+  yes:'Yes', no:'No', loadErr:'The data could not be loaded. Reload the page.',
+  footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.',
+  vals:n => `Length <b>${n.length}</b> · Gap <b>${n.gap}</b> · Thickness <b>${n.thickness}</b>`,
+}};
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
+const bgIdx = clamp(+(store.get('bg') || 0) || 0, 0, MAPS.length - 1);
+const t = () => T[lang];
+const decodeSafe = c => { try { return anyCode(c); } catch { return null; } };
+const RES = { 768:'1024×768', 864:'1152×864', 960:'1280×960', 1050:'1680×1050', 1080:'1920×1080', 1440:'2560×1440' };
+const resName = h => RES[h] || `${h}p`;
+
+let who = 'pros';
+const data = { pros: null, players: null, failed: false };
+let slugMap = new Map(), typCode = '';
+
+/* ---------- cálculo ---------- */
+const median = xs => { const s = xs.slice().sort((a, b) => a - b); return s.length ? s[(s.length - 1) >> 1] : 0; };
+function mode(xs) {
+  const m = new Map(); xs.forEach(x => m.set(x, (m.get(x) || 0) + 1));
+  return [...m].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0]?.[0];
+}
+/* Color -> grupo con nombre (por tono y saturación) */
+function colorGroup(r, g, b) {
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 510, d = mx - mn;
+  if (mx < 60) return 'black';
+  if (d < 40 || (l > 0.85 && d < 70)) return 'white';
+  let h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  h = (h * 60 + 360) % 360;
+  if (h < 15 || h >= 330) return 'red';
+  if (h < 45) return 'orange';
+  if (h < 75) return 'yellow';
+  if (h < 160) return 'green';
+  if (h < 200) return 'cyan';
+  if (h < 255) return 'blue';
+  return 'pink';
+}
+const SWATCH = { cyan:'#00ffff', green:'#00ff00', yellow:'#ffff00', white:'#ffffff', blue:'#0040ff', red:'#ff2020', pink:'#ff40ff', orange:'#ff9900', black:'#000000' };
+
+function rowsNow() {
+  const list = who === 'pros' ? data.pros.map(r => ({ ...r, pro: true })) : [...data.pros.map(r => ({ ...r, pro: true })), ...data.players];
+  return list.map(r => ({ r, n: decodeSafe(r.code) })).filter(x => x.n);
+}
+
+/* ---------- dibujo ---------- */
+function typical(rows) {
+  const ns = rows.map(x => x.n);
+  const style = mode(ns.map(n => n.style));
+  const groups = ns.map(n => colorGroup(n.r, n.g, n.b));
+  const g = mode(groups);
+  const [cr, cg, cb] = mode(ns.filter((_, i) => groups[i] === g).map(n => `${n.r},${n.g},${n.b}`)).split(',').map(Number);
+  const base = ns.find(n => n.style === style) || ns[0];
+  const n = { ...base, h: mode(ns.map(n => n.h)), style, length: median(ns.map(n => n.length)), gap: median(ns.map(n => n.gap)),
+    thickness: median(ns.map(n => n.thickness)), r: cr, g: cg, b: cb, a: 255, oa: 255, dot: mode(ns.map(n => n.dot)) ? 1 : 0,
+    t: 0, outline: mode(ns.map(n => n.outline)) ? 1 : 0, recoil: 0 };
+  typCode = encodeNew(n);
+  const back = decodeNew(typCode);                     // lo que verá el juego
+  $('typCode').textContent = typCode;
+  $('typVals').innerHTML = t().vals(back) + ` · <i class="swatch" style="background:rgb(${back.r},${back.g},${back.b})"></i> · ${resName(back.h)}`;
+  const p = newParams(back); paint($('typCv'), p, fitZoom($('typCv').width, p), bgIdx);
+}
+
+function tiles(rows) {
+  const L = t(), N = rows.length, ns = rows.map(x => x.n), topH = mode(ns.map(n => n.h));
+  const count = { static: ns.filter(n => n.style === 4).length, res: ns.filter(n => n.h === topH).length,
+    dot: ns.filter(n => n.dot).length, outline: ns.filter(n => n.outline).length };
+  $('tiles').innerHTML = L.tiles.map(([k, label]) => {
+    const pct = Math.round(100 * count[k] / N);
+    return `<div class="stat"><b>${pct}%</b><span>${esc(label.replace('{res}', resName(topH)))}</span><small>${L.of(count[k], N)}</small></div>`;
+  }).join('');
+}
+
+/* Histograma: 0..5 por separado y "6+" juntos (algunos valores sueltos son muy grandes) */
+function hist(label, values) {
+  const L = t(), buckets = ['0', '1', '2', '3', '4', '5', '6+'], counts = buckets.map(() => 0);
+  values.forEach(v => { counts[v >= 6 ? 6 : Math.max(0, v)]++; });
+  const max = Math.max(...counts);
+  const bars = buckets.map((b, i) => {
+    const h = max ? Math.round(100 * counts[i] / max) : 0;
+    const tip = `${label} ${b}: ${L.players(counts[i])}`;
+    return `<button class="hbar" type="button" data-tip="${esc(tip)}" aria-label="${esc(tip)}">
+      <span class="hfill" style="height:${counts[i] ? Math.max(h, 3) : 0}%">${counts[i] === max && max ? `<em>${counts[i]}</em>` : ''}</span><span class="hx">${b}</span></button>`;
+  }).join('');
+  return `<figure class="hist"><figcaption>${label}</figcaption><div class="hplot">${bars}</div></figure>`;
+}
+
+function ranked(box, items, swatch) {
+  const L = t(), max = Math.max(...items.map(x => x[1]), 1);
+  box.innerHTML = items.map(([name, c, sw]) => `<div class="rrow" data-tip="${esc(`${name}: ${L.players(c)}`)}" tabindex="0">
+      <span class="rname">${swatch ? `<i class="swatch" style="background:${sw}"></i>` : ''}${esc(name)}</span>
+      <span class="rtrack"><span class="rfill" style="width:${Math.max(2, Math.round(100 * c / max))}%"></span></span>
+      <span class="rval">${c}</span></div>`).join('');
+}
+
+function table(rows) {
+  const L = t();
+  $('thead').innerHTML = `<tr>${L.cols.map(c => `<th>${c}</th>`).join('')}</tr>`;
+  $('tbody').innerHTML = rows.slice().sort((a, b) => (b.r.pro - a.r.pro) || a.r.name.localeCompare(b.r.name)).map(({ r, n }) => {
+    const href = `../jugador/${encodeURIComponent(slugMap.get(r.id) || r.id)}`;
+    return `<tr><td><a href="${href}">${esc(r.name)}</a></td><td>${esc(r.pro ? r.team || '' : '')}</td><td>${esc(L.styles[n.style] ?? n.style)}</td>
+      <td>${n.length}</td><td>${n.gap}</td><td>${n.thickness}</td><td><i class="swatch" style="background:rgb(${n.r},${n.g},${n.b})"></i></td>
+      <td>${n.dot ? L.yes : L.no}</td><td>${n.h}p</td></tr>`;
+  }).join('');
+}
+
+function render() {
+  const L = t();
+  if (data.failed) { $('lead').textContent = L.loadErr; return; }
+  if (!data.pros || (who === 'all' && !data.players)) return;
+  const rows = rowsNow(), ns = rows.map(x => x.n);
+  $('lead').textContent = L.lead(rows.length, who === 'pros' ? L.whoPros : L.whoAll);
+  typical(rows); tiles(rows);
+  $('hists').innerHTML = hist(L.len, ns.map(n => n.length)) + hist(L.gap, ns.map(n => n.gap)) + hist(L.thick, ns.map(n => n.thickness));
+  const cg = {}; ns.forEach(n => { const g = colorGroup(n.r, n.g, n.b); cg[g] = (cg[g] || 0) + 1; });
+  ranked($('colors'), Object.entries(cg).sort((a, b) => b[1] - a[1]).map(([g, c]) => [L.colors[g], c, SWATCH[g]]), true);
+  const sg = {}; ns.forEach(n => { sg[n.style] = (sg[n.style] || 0) + 1; });
+  ranked($('styles'), Object.entries(sg).sort((a, b) => b[1] - a[1]).map(([s, c]) => [L.styles[s] ?? s, c]), false);
+  table(rows);
+}
+
+/* ---------- tooltip (ratón, teclado y toque) ---------- */
+const tip = $('tip');
+function showTip(el) {
+  const r = el.getBoundingClientRect();
+  tip.textContent = el.dataset.tip; tip.hidden = false;
+  const w = tip.offsetWidth;
+  tip.style.left = `${Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8)}px`;
+  tip.style.top = `${r.top + scrollY - tip.offsetHeight - 6}px`;
+}
+const hideTip = () => { tip.hidden = true; };
+document.addEventListener('pointerover', e => { const el = e.target.closest('[data-tip]'); if (el) showTip(el); else hideTip(); });
+document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); if (el) showTip(el); });
+document.addEventListener('focusout', hideTip);
+addEventListener('scroll', hideTip, { passive: true });
+
+/* ---------- interfaz ---------- */
+let timer;
+$('typCopy').onclick = async () => {
+  const L = t(), btn = $('typCopy');
+  try { await navigator.clipboard.writeText(typCode); btn.textContent = L.copied; btn.classList.add('done'); }
+  catch { const r = document.createRange(); r.selectNodeContents($('typCode')); getSelection().removeAllRanges(); getSelection().addRange(r); btn.textContent = L.selected; }
+  clearTimeout(timer); timer = setTimeout(() => { btn.textContent = t().copy; btn.classList.remove('done'); }, 1800);
+};
+function setWho(w) {
+  who = w; $('f_pros').setAttribute('aria-pressed', w === 'pros'); $('f_all').setAttribute('aria-pressed', w === 'all');
+  if (w === 'all') loadPlayers(); render();
+}
+$('f_pros').onclick = () => setWho('pros'); $('f_all').onclick = () => setWho('all');
+function applyLang() {
+  const L = t();
+  document.documentElement.lang = lang; document.title = L.docTitle;
+  document.querySelectorAll('[data-i]').forEach(el => { const v = L[el.dataset.i]; if (typeof v === 'string') el.innerHTML = v; });
+  $('lang_es').setAttribute('aria-pressed', lang === 'es'); $('lang_en').setAttribute('aria-pressed', lang === 'en');
+  render();
+}
+$('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
+$('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
+
+const get = url => fetch(url, { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+let playersPromise = null;
+function loadPlayers() {
+  if (!playersPromise) playersPromise = get('../data/players.json')
+    .then(j => { data.players = (j.players || []).filter(r => r.name && r.code); })
+    .catch(() => { data.failed = true; }).finally(render);
+  return playersPromise;
+}
+applyLang();
+get('../data/pros.json')
+  .then(j => { data.pros = (j.players || []).filter(r => r.name && r.code); slugMap = proSlugs(data.pros); })
+  .catch(() => { data.failed = true; })
+  .finally(render);
+})();
+</script>
+</body>
+</html>

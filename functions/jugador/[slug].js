@@ -116,6 +116,7 @@ ${pro ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "
   <nav class="topnav">
     <a href="/" data-i="navPros">Miras</a>
     <a href="/cambios/" data-i="navChanges">Cambios</a>
+    <a href="/estadisticas/" data-i="navStats">Estadísticas</a>
     <a href="/conversor/" data-i="navConv">Conversor</a>
     <a href="/enviar/" data-i="navSubmit">Enviar demo</a>
     <div class="lang" role="group" aria-label="Idioma / Language">
