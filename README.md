@@ -5,7 +5,7 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
 - `site/` contiene la web estática. Se publica tal cual, sin compilar nada.
   - `index.html` es la página de inicio, con la base de datos de miras.
   - `conversor/` es la herramienta de conversión.
-  - `/jugador/<nombre>` es la página de cada pro (y `/jugador/<SteamID64>` la de cualquier jugador). La genera `functions/jugador/[slug].js` en el servidor a partir de los datos, igual que `sitemap.xml` y `robots.txt`. Solo los pros se indexan en Google.
+  - `/jugador/<nombre>` es la página de cada pro (y `/jugador/<SteamID64>` la de cualquier jugador). La genera `functions/jugador/[slug].js` en el servidor (a través de `worker.js`) a partir de los datos, igual que `sitemap.xml` y `robots.txt`. Solo los pros se indexan en Google.
   - `assets/crosshair.js` lee y escribe códigos; el formato está comprobado con 30 códigos reales exportados del juego.
   - `data/pros.json` y `data/players.json` son los datos: los pros identificados y el resto de jugadores. Los genera el pipeline; no hace falta editarlos a mano.
 - `pipeline/update.py` descarga demos, extrae la mira de cada jugador con [demoparser2](https://github.com/LaihoE/demoparser) y actualiza los datos con historial de cambios.
@@ -13,15 +13,19 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
 
 ## Puesta en marcha
 
-### 1. Publicar la web en Cloudflare Pages
+### 1. Publicar la web en Cloudflare (Worker)
 
-1. En Cloudflare entra en **Workers & Pages → Create → Pages → Connect to Git** y elige este repositorio.
-2. Configuración de compilación:
-   - Framework preset: `None`
-   - Build command: déjalo vacío
-   - Build output directory: `site`
-3. Guarda. Cada vez que el workflow actualice los datos, Cloudflare vuelve a publicar la web sola.
-4. Opcional: en **Custom domains** añade tu dominio.
+La web se publica como un **Worker con archivos estáticos**, configurado en `wrangler.jsonc`:
+- Cloudflare sirve tal cual los archivos de `site/`.
+- Las rutas que no son un archivo (`/jugador/...`, `/api/...`, `sitemap.xml`, `robots.txt`) las atiende `worker.js`, que llama a la función correspondiente de `functions/`.
+
+Pasos:
+1. En Cloudflare entra en **Workers & Pages → Create → Import a repository** y elige este repositorio. El nombre del Worker tiene que ser `csconfig`, el mismo que pone `wrangler.jsonc`.
+2. Deja el comando de despliegue por defecto (`npx wrangler deploy`). No hace falta comando de compilación.
+3. Cada vez que el workflow actualice los datos, Cloudflare vuelve a publicar la web sola.
+4. Opcional: en **Settings → Domains & Routes** añade tu dominio.
+
+Para probarla en tu PC: `npx wrangler dev` y abre `http://localhost:8787`.
 
 ### 2. Activar la actualización automática (FACEIT)
 
