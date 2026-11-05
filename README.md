@@ -117,6 +117,11 @@ Cada archivo se procesa una sola vez. Las releases no cuentan para el tamaño de
 
    Las imágenes para compartir y los avisos de Discord se generan solos en GitHub al subir los datos. También puedes seguir copiando archivos a mano a `pipeline\demos\`. Si tu carpeta de descargas es otra, indícala con la variable de entorno `CSCONFIG_DESCARGAS`.
 
+**Fecha de cada partida.** Para decidir qué mira es la actual se usa la fecha de la partida, no la de descarga, así que puedes subir partidos antiguos sin miedo: se guardan en el historial sin tocar la mira actual. Se obtiene así:
+1. **Demos de FACEIT** (el archivo se llama como la sala, `1-xxxxxxxx-…`): la hora exacta de fin, desde la API de datos de FACEIT. Basta con la clave normal, `FACEIT_API_KEY`, sin el permiso de descargas. En GitHub ya se usa el secreto. En tu PC es opcional: crea la variable de entorno con la misma clave.
+2. **Comprimidos** (`.rar`/`.7z` de HLTV, `.zip` de FACEIT): la fecha en que se grabó la demo, guardada dentro del archivo.
+3. Si no hay ninguna de las dos, la fecha del archivo. El informe lo avisa.
+
 Para los `.rar` y `.7z` hace falta [7-Zip](https://www.7-zip.org), que se detecta solo. Las demos no se suben al repositorio porque pesan demasiado; ya están en `.gitignore`.
 
 **Con un enlace directo**
