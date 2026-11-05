@@ -1,0 +1,8 @@
+{
+  "name": "csconfig-og",
+  "private": true,
+  "description": "Genera las imágenes de vista previa (og:image) de cada pro",
+  "type": "module",
+  "scripts": { "og": "node og.mjs" },
+  "dependencies": { "@napi-rs/canvas": "1.0.12" }
+}

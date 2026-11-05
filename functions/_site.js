@@ -36,6 +36,20 @@ export async function loadData(env, request, { players = false } = {}) {
   return out;
 }
 
+/* Imágenes de vista previa (site/og/index.json, las genera pipeline/og/og.mjs): { slug: versión } */
+export async function loadOg(env, request) {
+  try {
+    const res = await env.ASSETS.fetch(new URL("/og/index.json", request.url));
+    return res.ok ? await res.json() : {};
+  } catch { return {}; }
+}
+
+/* URL absoluta de la imagen de un pro, o la genérica si no tiene */
+export function ogImage(base, og, slug) {
+  if (slug && og[slug]) return `${base}/og/${slug}.jpg?v=${og[slug]}`;
+  return `${base}/og/default.jpg${og.default ? `?v=${og.default}` : ""}`;
+}
+
 export function decode(code) {
   try { return XH.anyCode(code); } catch { return null; }
 }

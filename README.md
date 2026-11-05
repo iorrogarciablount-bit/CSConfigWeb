@@ -9,6 +9,7 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
   - `assets/crosshair.js` lee y escribe códigos; el formato está comprobado con 30 códigos reales exportados del juego.
   - `data/pros.json` y `data/players.json` son los datos: los pros identificados y el resto de jugadores. Los genera el pipeline; no hace falta editarlos a mano.
 - `pipeline/update.py` descarga demos, extrae la mira de cada jugador con [demoparser2](https://github.com/LaihoE/demoparser) y actualiza los datos con historial de cambios.
+- `pipeline/og/og.mjs` genera en `site/og/` la imagen que sale al compartir el enlace de cada pro (Discord, Twitter, WhatsApp…), con el mismo dibujo de `crosshair.js`. Solo rehace las que cambian.
 - `.github/workflows/update.yml` ejecuta el pipeline cada día y guarda los cambios.
 
 ## Puesta en marcha
