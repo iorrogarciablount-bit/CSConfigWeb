@@ -61,7 +61,7 @@ export const html = (body, status = 200, maxAge = 300) =>
 /* Cabecera y pie comunes de las páginas que se generan en el servidor.
    active: "navPros", "navChanges"... para marcar la sección actual. */
 const NAV = [["/", "navPros", "Miras"], ["/comparar/", "navCompare", "Comparar"], ["/cambios/", "navChanges", "Cambios"], ["/estadisticas/", "navStats", "Estadísticas"],
-  ["/conversor/", "navConv", "Conversor"], ["/enviar/", "navSubmit", "Enviar demo"]];
+  ["/conversor/", "navConv", "Conversor"], ["/enviar/", "navSubmit", "Enviar demo"], ["/comando/", "navStreamers", "Streamers"]];
 export const siteHeader = (active = "") => `<header class="top">
   <a class="brand" href="/"><h1>CS<span>Config</span></h1></a>
   <input type="checkbox" id="navt" class="navt"><label for="navt" class="navbtn" aria-label="Menú / Menu"><span></span></label>
