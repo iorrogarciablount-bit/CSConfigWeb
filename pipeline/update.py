@@ -147,6 +147,78 @@ def unpack(path: Path, workdir: Path) -> list[Path]:
     return [path]
 
 
+# ---------------------------------------------------------------- fecha de la partida
+# Lo que decide qué mira es "la actual" es la fecha de la partida, no la de descarga.
+# Orden: API de FACEIT (hora exacta de fin) -> fecha guardada dentro del comprimido
+# (HLTV .rar, FACEIT .zip: es cuando se grabó la demo) -> la que traiga la fuente.
+
+MIN_DATE = dt.date(2023, 3, 1)   # CS2 no existía antes
+
+
+def _plausible(d: dt.date) -> str | None:
+    return d.isoformat() if MIN_DATE <= d <= dt.datetime.now(dt.timezone.utc).date() + dt.timedelta(days=1) else None
+
+
+def archive_date(path: Path) -> str | None:
+    """Fecha de la demo más reciente dentro de un .zip/.rar/.7z (o None)."""
+    name = path.name.lower()
+    try:
+        if name.endswith(".zip"):
+            import zipfile  # noqa: PLC0415
+            with zipfile.ZipFile(path) as z:
+                ds = [dt.date(*i.date_time[:3]) for i in z.infolist() if ".dem" in i.filename.lower()]
+            return _plausible(max(ds)) if ds else None
+        if name.endswith((".rar", ".7z")):
+            exe = shutil.which("7z") or shutil.which("7zz")
+            for cand in (r"C:\Program Files\7-Zip\7z.exe", r"C:\Program Files (x86)\7-Zip\7z.exe"):
+                if not exe and Path(cand).exists():
+                    exe = cand
+            if not exe:
+                return None
+            out = subprocess.run([exe, "l", "-slt", str(path)], capture_output=True, text=True, timeout=120).stdout
+            ds = []
+            for block in out.split("\n\n"):
+                pth = re.search(r"^Path = (.+)$", block, re.M)
+                mod = re.search(r"^Modified = (\d{4})-(\d{2})-(\d{2})", block, re.M)
+                if pth and mod and ".dem" in pth.group(1).lower():
+                    ds.append(dt.date(*map(int, mod.groups())))
+            return _plausible(max(ds)) if ds else None
+    except Exception:  # noqa: BLE001
+        return None
+    return None
+
+
+_faceit_dates: dict[str, str | None] = {}
+
+
+def faceit_match_date(match_id: str) -> str | None:
+    """Fecha de fin de una partida de FACEIT por su id (necesita FACEIT_API_KEY, la clave normal de datos)."""
+    key = os.environ.get("FACEIT_API_KEY", "").strip()
+    if not key or not match_id:
+        return None
+    if match_id not in _faceit_dates:
+        try:
+            det = http_json(f"{FACEIT_API}/matches/{match_id}", key)
+            ts = det.get("finished_at") or det.get("started_at")
+            _faceit_dates[match_id] = _plausible(dt.datetime.fromtimestamp(ts, dt.timezone.utc).date()) if ts else None
+        except Exception:  # noqa: BLE001
+            _faceit_dates[match_id] = None
+    return _faceit_dates[match_id]
+
+
+def match_date(item: dict, src: Path, faceit_id: str | None) -> tuple[str, str]:
+    """(fecha, de dónde sale). Las fuentes de FACEIT por API ya traen la fecha exacta."""
+    if item.get("date_exact"):
+        return item["date"], "FACEIT"
+    d = faceit_match_date(faceit_id) if faceit_id else None
+    if d:
+        return d, "FACEIT"
+    d = archive_date(src)
+    if d:
+        return d, "archivo"
+    return item["date"], "descarga"
+
+
 def extract(dem: Path) -> dict:
     """Lee una demo y devuelve {steamid: {name, team, code}} al final del partido."""
     from demoparser2 import DemoParser  # noqa: PLC0415
@@ -217,7 +289,7 @@ def faceit_matches(cfg: dict, state: dict):
                     signed = http_json(FACEIT_DL, token, {"resource_url": ru})["payload"]["download_url"]
                     ts = det.get("finished_at") or det.get("started_at")
                     day = dt.datetime.fromtimestamp(ts, dt.timezone.utc).date().isoformat() if ts else today()
-                    yield {"id": f"faceit:{mid}", "url": signed, "name": ru.rsplit("/", 1)[-1], "source": f"FACEIT · {label}", "date": day}
+                    yield {"id": f"faceit:{mid}", "url": signed, "name": ru.rsplit("/", 1)[-1], "source": f"FACEIT · {label}", "date": day, "date_exact": bool(ts)}
                 done.add(mid)
             except Exception as e:  # noqa: BLE001
                 log(f"FACEIT {mid}: {e}")
@@ -344,6 +416,7 @@ def faceit_room_download(item: dict, work: Path, max_mb: int) -> Path:
     ts = det.get("finished_at") or det.get("started_at")
     if ts:
         item["date"] = dt.datetime.fromtimestamp(ts, dt.timezone.utc).date().isoformat()
+        item["date_exact"] = True
     src = work / urls[0].split("?")[0].rsplit("/", 1)[-1]
     log(f"Descargando {src.name} …")
     download(signed, src, max_mb)
@@ -581,17 +654,21 @@ def main():
                         real_teams = {clean_team(t) for t in teams} - {""}
                         tournament = len(real_teams) >= 2  # dos equipos con nombre real: partido profesional
                         fm = FACEIT_FILE.search(dem.name) or FACEIT_FILE.search(item["name"]) or (FACEIT_FILE.search(item["id"]) if item["id"].startswith("faceit:") else None)
+                        date, origin = match_date(item, src, fm.group(1) if fm else None)
+                        if origin == "descarga":
+                            note(f"{dem.name}: no sé la fecha de la partida; uso la de descarga ({date}). "
+                                 "Si es una partida antigua, podría tomarse por la mira actual.")
                         for sid, info in res["players"].items():
                             if fm:  # en los servidores de FACEIT el nombre del jugador es su usuario de FACEIT
                                 info = {**info, "faceit": info["name"], "faceit_match": fm.group(1)}
                             if tournament and clean_team(info.get("team", "")):
                                 info = {**info, "pro_auto": "torneo"}
-                            r = merge(db, sid, info, item["source"], item["date"], res["map"])
+                            r = merge(db, sid, info, item["source"], date, res["map"])
                             seen_now.add(sid)
                             if r in ("new", "changed"):
                                 stats[r] += 1
                             report["players"].append({"id": sid, "name": info["name"], "team": clean_team(info["team"]), "faceit": info.get("faceit", ""), "status": r})
-                        note(f"{dem.name}: {len(res['players'])} jugadores ({res['map'] or 'mapa desconocido'})")
+                        note(f"{dem.name}: {len(res['players'])} jugadores ({res['map'] or 'mapa desconocido'}), partida del {date}")
                 except Exception as e:  # noqa: BLE001
                     stats["errors"] += 1
                     note(f"Error con {item['name']}: {e}")
