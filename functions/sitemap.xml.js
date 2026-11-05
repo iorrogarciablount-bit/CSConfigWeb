@@ -11,6 +11,7 @@ export async function onRequestGet({ request, env }) {
     { loc: `${base}/cambios/`, lastmod: day(prosUpdated) },
     { loc: `${base}/estadisticas/`, lastmod: day(prosUpdated) },
     { loc: `${base}/parecido/` },
+    { loc: `${base}/comando/` },
     { loc: `${base}/conversor/` },
     { loc: `${base}/enviar/` },
     ...pros.map(p => ({ loc: `${base}/jugador/${slugs.get(p.id)}`, lastmod: day(p.since || p.seen) })),

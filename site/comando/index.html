@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comando !mira para tu chat de Twitch · CSConfig</title>
+<meta name="description" content="Añade a tu chat de Twitch un comando !mira que responde con el código de mira de CS2 de cualquier pro o jugador. Gratis, para Nightbot, StreamElements y otros bots.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/app.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
+  <input type="checkbox" id="navt" class="navt"><label for="navt" class="navbtn" aria-label="Menú / Menu"><span></span></label>
+  <nav class="topnav">
+    <a href="../" data-i="navPros">Miras</a>
+    <a href="../comparar/" data-i="navCompare">Comparar</a>
+    <a href="../cambios/" data-i="navChanges">Cambios</a>
+    <a href="../estadisticas/" data-i="navStats">Estadísticas</a>
+    <a href="../conversor/" data-i="navConv">Conversor</a>
+    <a href="../enviar/" data-i="navSubmit">Enviar demo</a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button id="lang_es" aria-pressed="true">ES</button><button id="lang_en" aria-pressed="false">EN</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div>
+    <h2 class="ptitle" data-i="title">Comando <span>!mira</span> para tu chat</h2>
+    <p class="lead" data-i="lead">Tus espectadores escriben <b>!mira donk</b> y el bot responde con el código de su mira y un enlace. Gratis y sin registrarte: funciona con Nightbot, StreamElements y cualquier bot que pueda leer una URL.</p>
+  </div>
+
+  <section class="card">
+    <p class="step"><i>1</i><span data-i="tryTitle">Pruébalo</span></p>
+    <div class="cmd-try">
+      <span class="cmd-prefix">!mira</span>
+      <input type="text" id="q" value="donk" autocomplete="off" spellcheck="false" aria-label="Jugador">
+    </div>
+    <div class="chat" aria-live="polite">
+      <div class="chat-line"><b class="chat-user">tu_espectador</b> <span id="said">!mira donk</span></div>
+      <div class="chat-line"><b class="chat-bot">Nightbot</b> <span id="reply">…</span></div>
+    </div>
+    <p class="fine" data-i="tryHelp">Vale el nombre (también incompleto o con @), el usuario de FACEIT, el SteamID64 o un enlace de Steam.</p>
+  </section>
+
+  <section class="card">
+    <p class="step"><i>2</i><span data-i="optTitle">Elige las opciones</span></p>
+    <div class="cmd-opts">
+      <label><span data-i="optName">Nombre del comando</span>
+        <span class="cmd-name"><span>!</span><input type="text" id="name" value="mira" maxlength="20" autocomplete="off" spellcheck="false"></span></label>
+      <label><span data-i="optLang">Idioma de las respuestas</span>
+        <select id="lang"><option value="es">Español</option><option value="en">English</option></select></label>
+      <label><span data-i="optDef">Si lo escriben sin jugador, mostrar (opcional)</span>
+        <input type="text" id="def" placeholder="tu nick, tu SteamID64…" autocomplete="off" spellcheck="false"></label>
+    </div>
+    <p class="fine" data-i="defHelp">Útil para que <b>!mira</b> a secas enseñe tu propia mira. Tiene que estar en la web: si no estás, envía una demo de una partida tuya.</p>
+  </section>
+
+  <section class="card result">
+    <p class="step"><i>3</i><span data-i="addTitle">Añádelo a tu bot</span></p>
+
+    <h3 class="cmd-bot">Nightbot</h3>
+    <p class="fine" style="margin-top:0" data-i="nbHelp">Escribe esto en tu chat de Twitch (o en Commands → Custom → Add Command, en nightbot.tv):</p>
+    <div class="codebox"><p class="code cmd-code" id="nb"></p><button class="copy" type="button" data-copy="nb" data-i="copy">Copiar</button></div>
+
+    <h3 class="cmd-bot">StreamElements</h3>
+    <p class="fine" style="margin-top:0" data-i="seHelp">Escribe esto en tu chat de Twitch (o crea un comando en Chatbot → Chat commands → Custom commands y pega lo de después del nombre como respuesta):</p>
+    <div class="codebox"><p class="code cmd-code" id="se"></p><button class="copy" type="button" data-copy="se" data-i="copy">Copiar</button></div>
+
+    <h3 class="cmd-bot" data-i="otherTitle">Otros bots</h3>
+    <p class="fine" style="margin-top:0" data-i="otherHelp">Cualquier bot que pueda leer una URL y mostrar el texto que devuelve. Pon lo que escribe el espectador (codificado para URL) en lugar de JUGADOR:</p>
+    <div class="codebox"><p class="code cmd-code" id="raw"></p><button class="copy" type="button" data-copy="raw" data-i="copy">Copiar</button></div>
+  </section>
+
+  <details>
+    <summary data-i="tipsTitle">Consejos</summary>
+    <div class="faq" id="tips" style="margin-top:14px"></div>
+  </details>
+
+  <footer><span data-i="footer"></span></footer>
+</main>
+
+<script>
+(() => {
+const T = {
+es: {
+  navPros:'Miras', navCompare:'Comparar', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
+  title:'Comando <span>!mira</span> para tu chat', docTitle:'Comando !mira para tu chat de Twitch · CSConfig',
+  lead:'Tus espectadores escriben <b>!mira donk</b> y el bot responde con el código de su mira y un enlace. Gratis y sin registrarte: funciona con Nightbot, StreamElements y cualquier bot que pueda leer una URL.',
+  tryTitle:'Pruébalo', tryHelp:'Vale el nombre (también incompleto o con @), el usuario de FACEIT, el SteamID64 o un enlace de Steam.',
+  optTitle:'Elige las opciones', optName:'Nombre del comando', optLang:'Idioma de las respuestas', optDef:'Si lo escriben sin jugador, mostrar (opcional)',
+  defPh:'tu nick, tu SteamID64…', defHelp:'Útil para que <b>!mira</b> a secas enseñe tu propia mira. Tiene que estar en la web: si no estás, envía una demo de una partida tuya.',
+  addTitle:'Añádelo a tu bot',
+  nbHelp:'Escribe esto en tu chat de Twitch (o en Commands → Custom → Add Command, en nightbot.tv):',
+  seHelp:'Escribe esto en tu chat de Twitch (o crea un comando en Chatbot → Chat commands → Custom commands y pega lo de después del nombre como respuesta):',
+  otherTitle:'Otros bots', otherHelp:'Cualquier bot que pueda leer una URL y mostrar el texto que devuelve. Pon lo que escribe el espectador (codificado para URL) en lugar de JUGADOR:',
+  copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C', viewer:'tu_espectador', loading:'…', err:'No se ha podido consultar. Inténtalo de nuevo.',
+  tipsTitle:'Consejos',
+  tips:[['El bot no responde','Comprueba que el bot está en tu canal y hazlo moderador con /mod Nightbot o /mod StreamElements: si Twitch bloquea enlaces en tu chat, sin ser moderador no podrá publicar el de la mira.'],
+        ['Que no te llenen el chat','Ponle al comando un tiempo de espera (cooldown) de unos segundos por usuario.'],
+        ['¿Cuesta algo?','No. Es gratis y no hace falta registrarse. Las miras salen de demos de partidas reales y se actualizan solas.'],
+        ['Falta un jugador','Si alguien no aparece, envía una demo de una partida suya desde «Enviar demo» y se añadirá.']],
+  footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
+},
+en: {
+  navPros:'Crosshairs', navCompare:'Compare', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
+  title:'<span>!crosshair</span> command for your chat', docTitle:'!crosshair command for your Twitch chat · CSConfig',
+  lead:'Your viewers type <b>!crosshair donk</b> and the bot replies with the crosshair code and a link. Free, no sign-up: works with Nightbot, StreamElements and any bot that can read a URL.',
+  tryTitle:'Try it', tryHelp:'Works with the name (even partial or with @), FACEIT username, SteamID64 or a Steam link.',
+  optTitle:'Pick your options', optName:'Command name', optLang:'Reply language', optDef:'If used without a player, show (optional)',
+  defPh:'your nickname, your SteamID64…', defHelp:'Handy so a bare <b>!crosshair</b> shows your own crosshair. You need to be on the site: if you are not, submit a demo of one of your matches.',
+  addTitle:'Add it to your bot',
+  nbHelp:'Type this in your Twitch chat (or in Commands → Custom → Add Command on nightbot.tv):',
+  seHelp:'Type this in your Twitch chat (or create a command in Chatbot → Chat commands → Custom commands and paste what comes after the name as the response):',
+  otherTitle:'Other bots', otherHelp:'Any bot that can read a URL and show the text it returns. Put what the viewer types (URL-encoded) instead of PLAYER:',
+  copy:'Copy', copied:'Copied!', selected:'Ctrl+C', viewer:'your_viewer', loading:'…', err:'Could not fetch it. Try again.',
+  tipsTitle:'Tips',
+  tips:[['The bot does not reply','Make sure the bot is in your channel and mod it with /mod Nightbot or /mod StreamElements: if Twitch blocks links in your chat, it cannot post the crosshair link unless it is a moderator.'],
+        ['Keep the chat clean','Give the command a cooldown of a few seconds per user.'],
+        ['Does it cost anything?','No. It is free and needs no sign-up. Crosshairs come from real match demos and update on their own.'],
+        ['A player is missing','If someone is not there, submit a demo of one of their matches from "Submit a demo" and they will be added.']],
+  footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.',
+}};
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+let lang = store.get('lang') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
+const t = () => T[lang];
+const API = `${location.origin}/api/mira`;
+
+/* ---------- comandos generados ---------- */
+function build() {
+  const name = ($('name').value.trim().replace(/^!+/, '').replace(/[^\p{L}\p{N}_-]/gu, '') || (lang === 'es' ? 'mira' : 'crosshair')).toLowerCase();
+  const extra = ($('lang').value === 'en' ? '&lang=en' : '') + ($('def').value.trim() ? `&def=${encodeURIComponent($('def').value.trim())}` : '');
+  $('nb').textContent = `!commands add !${name} $(urlfetch ${API}?q=$(querystring)${extra})`;
+  $('se').textContent = `!command add !${name} \${customapi.${API}?q=\${queryescape \${1:}}${extra}}`;
+  $('raw').textContent = `${API}?q=${t() === T.en ? 'PLAYER' : 'JUGADOR'}${extra}`;
+  $('said').textContent = `!${name} ${$('q').value.trim()}`.trim();
+  document.querySelector('.cmd-prefix').textContent = `!${name}`;
+}
+
+/* ---------- prueba en vivo ---------- */
+let timer, seq = 0;
+async function tryIt() {
+  build();
+  const my = ++seq, extra = ($('lang').value === 'en' ? '&lang=en' : '') + ($('def').value.trim() ? `&def=${encodeURIComponent($('def').value.trim())}` : '');
+  $('reply').textContent = t().loading;
+  try {
+    const r = await fetch(`${API}?q=${encodeURIComponent($('q').value.trim())}${extra}`);
+    const txt = await r.text();
+    if (my === seq) $('reply').textContent = txt;
+  } catch { if (my === seq) $('reply').textContent = t().err; }
+}
+const later = () => { clearTimeout(timer); timer = setTimeout(tryIt, 250); };
+['q', 'def'].forEach(id => $(id).addEventListener('input', later));
+$('name').addEventListener('input', build);
+$('lang').addEventListener('change', tryIt);
+
+/* ---------- copiar ---------- */
+const timers = {};
+document.querySelectorAll('[data-copy]').forEach(btn => btn.onclick = async () => {
+  const L = t(), el = $(btn.dataset.copy);
+  try { await navigator.clipboard.writeText(el.textContent); btn.textContent = L.copied; btn.classList.add('done'); }
+  catch { const r = document.createRange(); r.selectNodeContents(el); getSelection().removeAllRanges(); getSelection().addRange(r); btn.textContent = L.selected; }
+  clearTimeout(timers[btn.dataset.copy]);
+  timers[btn.dataset.copy] = setTimeout(() => { btn.textContent = t().copy; btn.classList.remove('done'); }, 1800);
+});
+
+function applyLang() {
+  const L = t();
+  document.documentElement.lang = lang; document.title = L.docTitle;
+  document.querySelectorAll('[data-i]').forEach(el => { const v = L[el.dataset.i]; if (typeof v === 'string') el.innerHTML = v; });
+  $('def').placeholder = L.defPh;
+  document.querySelector('.chat-user').textContent = L.viewer;
+  $('tips').innerHTML = L.tips.map(([q, a]) => `<div><h3>${q}</h3><p>${a}</p></div>`).join('');
+  // el nombre y el idioma del comando siguen al de la página mientras no se hayan tocado
+  if (!$('name').dataset.touched) $('name').value = lang === 'es' ? 'mira' : 'crosshair';
+  if (!$('lang').dataset.touched) $('lang').value = lang;
+  $('lang_es').setAttribute('aria-pressed', lang === 'es'); $('lang_en').setAttribute('aria-pressed', lang === 'en');
+  tryIt();
+}
+$('name').addEventListener('input', () => { $('name').dataset.touched = '1'; });
+$('lang').addEventListener('change', () => { $('lang').dataset.touched = '1'; });
+$('lang_es').onclick = () => { lang = 'es'; store.set('lang', 'es'); applyLang(); };
+$('lang_en').onclick = () => { lang = 'en'; store.set('lang', 'en'); applyLang(); };
+applyLang();
+})();
+</script>
+<script src="../assets/nav.js" defer></script>
+</body>
+</html>

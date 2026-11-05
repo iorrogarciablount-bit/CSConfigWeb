@@ -345,3 +345,27 @@ a.copy{text-decoration:none;text-align:center}
 }
 .promo .copy{text-align:center}
 @media (max-width:360px){.topnav a:nth-of-type(-n+4){font-size:11px;letter-spacing:.02em;padding-left:3px;padding-right:3px}}
+
+/* comando para streamers (/comando/) */
+.cmd-try{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);overflow:hidden}
+.cmd-prefix{font:700 16px var(--mono);color:var(--accent);padding:10px 4px 10px 14px}
+.cmd-try input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font:500 16px var(--mono);padding:10px 12px 10px 4px}
+.cmd-try input:focus{outline:none}
+.cmd-try:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.chat{margin-top:12px;background:#18181b;color:#efeff1;border-radius:var(--r);padding:10px 14px;font:14px/1.6 var(--sans);display:grid;gap:4px}
+.chat-line{overflow-wrap:anywhere}
+.chat-user{color:#ff7f50}.chat-bot{color:#9b8cff}
+.chat-user::after,.chat-bot::after{content:":";color:#efeff1;font-weight:400}
+.cmd-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.cmd-opts label{display:grid;gap:5px;font:700 12px var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:0}
+.cmd-opts input,.cmd-opts select{font:14px var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;width:100%;min-width:0;text-transform:none;letter-spacing:0}
+.cmd-name{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.cmd-name span{font:700 14px var(--mono);color:var(--accent);padding-left:10px;text-transform:none}
+.cmd-name input{border:0;padding-left:2px}
+.cmd-bot{font:700 15px var(--display);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 4px}
+.cmd-bot:first-of-type{margin-top:0}
+.cmd-code{font-size:13px;font-weight:500;user-select:all}
+.footcmd{text-align:center;margin:0;font-size:13px}
+.footcmd a{color:var(--accent);text-decoration:none;font-weight:500}
+.footcmd a:hover{text-decoration:underline}
+@media (max-width:640px){.cmd-opts{grid-template-columns:1fr}}
