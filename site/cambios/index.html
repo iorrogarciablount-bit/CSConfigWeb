@@ -14,6 +14,7 @@
   <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
   <nav class="topnav">
     <a href="../" data-i="navPros">Miras</a>
+    <a href="../comparar/" data-i="navCompare">Comparar</a>
     <a href="./" aria-current="page" data-i="navChanges">Cambios</a>
     <a href="../estadisticas/" data-i="navStats">Estadísticas</a>
     <a href="../conversor/" data-i="navConv">Conversor</a>
@@ -54,7 +55,7 @@
 (() => {
 const T = {
 es: {
-  navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', title:'Últimos <span>cambios</span>',
+  navPros:'Miras', navCompare:'Comparar', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', title:'Últimos <span>cambios</span>',
   lead:'Qué jugadores han cambiado de mira y qué han tocado exactamente, sacado de las demos de sus partidas. También los que acaban de entrar en la base de datos.',
   fPros:'Pros', fAll:'Todos los jugadores', kAll:'Todo', kChange:'Cambios de mira', kNew:'Nuevos',
   changed:'Cambio de mira', isNew:'Nuevo', before:'Antes', after:'Ahora', noTeam:'Sin equipo', retired:'Retirado',
@@ -68,7 +69,7 @@ es: {
   locale:'es-ES', docTitle:'Últimos cambios de mira de los pros de CS2 · CSConfig',
 },
 en: {
-  navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', title:'Latest <span>changes</span>',
+  navPros:'Crosshairs', navCompare:'Compare', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', title:'Latest <span>changes</span>',
   lead:'Which players changed their crosshair and exactly what they tweaked, pulled from their match demos. Plus the ones who just joined the database.',
   fPros:'Pros', fAll:'All players', kAll:'All', kChange:'Crosshair changes', kNew:'New',
   changed:'Crosshair change', isNew:'New', before:'Before', after:'Now', noTeam:'No team', retired:'Retired',
@@ -206,5 +207,6 @@ get('../data/pros.json')
   .finally(render);
 })();
 </script>
+<script src="../assets/nav.js" defer></script>
 </body>
 </html>

@@ -14,6 +14,7 @@
   <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
   <nav class="topnav">
     <a href="../" data-i="navPros">Miras</a>
+    <a href="../comparar/" data-i="navCompare">Comparar</a>
     <a href="../cambios/" data-i="navChanges">Cambios</a>
     <a href="../estadisticas/" data-i="navStats">Estadísticas</a>
     <a href="../conversor/" data-i="navConv">Conversor</a>
@@ -64,7 +65,7 @@
 (() => {
 const T = {
 es: {
-  navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
+  navPros:'Miras', navCompare:'Comparar', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo',
   title:'¿A qué pro se parece <span>tu mira</span>?', docTitle:'¿A qué pro se parece tu mira de CS2? · CSConfig',
   lead:'Pega el código de tu mira y te decimos qué profesional tiene la más parecida y en qué se diferencian.',
   pasteTitle:'Pega tu código', ph:'CS… o CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx',
@@ -80,7 +81,7 @@ es: {
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
 },
 en: {
-  navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
+  navPros:'Crosshairs', navCompare:'Compare', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo',
   title:'Which pro has <span>your crosshair</span>?', docTitle:'Which pro has your CS2 crosshair? · CSConfig',
   lead:'Paste your crosshair code and we will tell you which pro has the closest one and what is different.',
   pasteTitle:'Paste your code', ph:'CS… or CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx',
@@ -192,5 +193,6 @@ fetch('../data/pros.json', { cache: 'no-cache' }).then(r => { if (!r.ok) throw n
   .finally(render);
 })();
 </script>
+<script src="../assets/nav.js" defer></script>
 </body>
 </html>

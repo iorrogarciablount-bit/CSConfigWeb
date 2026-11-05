@@ -291,3 +291,16 @@ a.copy{text-decoration:none;text-align:center}
 .ctable tr.diff td{color:var(--ink);font-weight:700;background:var(--accent-soft)}
 .ctable tr.diff td:first-child{box-shadow:inset 3px 0 0 var(--accent);padding-left:8px}
 @media (max-width:600px){.cpick{grid-template-columns:1fr auto 1fr}.cpick .copy{grid-column:1/-1}.cgrid{gap:10px}.cname{font-size:18px}}
+
+/* menú con 6 secciones: más compacto en escritorio; en móvil, una fila que se desliza */
+.topnav{gap:0}
+.topnav a{padding:6px 7px;letter-spacing:.035em;font-size:12.5px}
+.topnav .lang{margin-left:6px}
+@media (max-width:640px){
+  .top{position:relative;display:block;padding-top:12px;padding-bottom:0}
+  .topnav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:8px -16px 0;padding:0 16px 6px;gap:2px}
+  .topnav::-webkit-scrollbar{display:none}
+  .topnav a{white-space:nowrap;flex:none;padding:8px 9px}
+  .topnav .lang{position:absolute;top:12px;right:16px;margin:0}
+  .top .brand{display:inline-block}
+}

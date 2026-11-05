@@ -48,7 +48,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
-${siteHeader()}
+${siteHeader("navCompare")}
 <main>
 ${body}
   ${siteFooter()}

@@ -45,6 +45,7 @@
   <a class="brand" href="../"><h1>CS<span>Config</span></h1></a>
   <nav class="topnav">
     <a href="../" data-i="navPros">Miras</a>
+    <a href="../comparar/" data-i="navCompare">Comparar</a>
     <a href="../cambios/" data-i="navChanges">Cambios</a>
     <a href="../estadisticas/" data-i="navStats">Estadísticas</a>
     <a href="../conversor/" data-i="navConv">Conversor</a>
@@ -100,7 +101,7 @@
 const GH_FORM = 'https://github.com/iorrogarciablount-bit/CSConfigWeb/issues/new?template=enviar-demo.yml';
 const T = {
 es: {
-  navPros:'Miras', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', title:'Enviar una <span>demo</span>',
+  navPros:'Miras', navCompare:'Comparar', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', title:'Enviar una <span>demo</span>',
   lead:'Pega el enlace de una partida y sus miras se añadirán a la web: las de los pros a la pestaña Pros y las de todos los demás a Jugadores.',
   how:[['Pega el enlace','de la sala de FACEIT o el enlace directo a la demo.'],['Revisamos','que sea una partida de CS2 válida. Suele ser rápido.'],['Listo','las miras aparecen en la web y aquí mismo ves quién se ha añadido.']],
   formTitle:'Tu partida', urlLabel:'Enlace', urlHelp:'Sala de FACEIT (faceit.com/…/cs2/room/…) o enlace directo a la demo (.dem, .zip, .rar, .7z, .gz, .zst).',
@@ -115,7 +116,7 @@ es: {
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve ni FACEIT.',
 },
 en: {
-  navPros:'Crosshairs', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', title:'Submit a <span>demo</span>',
+  navPros:'Crosshairs', navCompare:'Compare', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', title:'Submit a <span>demo</span>',
   lead:'Paste a match link and its crosshairs are added to the site: pros go to the Pros tab and everyone else to Players.',
   how:[['Paste the link','to the FACEIT room or a direct link to the demo.'],['We review it','to check it\'s a valid CS2 match. It\'s usually quick.'],['Done','the crosshairs show up on the site and you see who was added right here.']],
   formTitle:'Your match', urlLabel:'Link', urlHelp:'FACEIT room (faceit.com/…/cs2/room/…) or a direct link to the demo (.dem, .zip, .rar, .7z, .gz, .zst).',
@@ -228,5 +229,6 @@ fetch('/api/config', { cache: 'no-store' })
   });
 })();
 </script>
+<script src="../assets/nav.js" defer></script>
 </body>
 </html>
