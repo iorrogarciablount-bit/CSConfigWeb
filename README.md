@@ -5,7 +5,7 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
 - `site/` contiene la web estática. Se publica tal cual, sin compilar nada.
   - `index.html` es la página de inicio, con la base de datos de miras.
   - `cambios/` muestra los últimos cambios de mira (antes → ahora y qué valores han cambiado) y los jugadores nuevos, a partir del historial de los datos.
-  - `estadisticas/` resume cómo son las miras de los pros: la mira típica (con su código), estilos, colores, largo, separación y grosor más usados.
+  - `estadisticas/` resume cómo son las miras de los pros: la mira típica (con su código), estilos, colores, largo, separación y grosor más usados. Abajo, **Datos por equipo** dice qué equipos no tienen ninguna mira y cuánto hace de la última demo de cada uno (al día: menos de 30 días; antigua: hasta 90; muy antigua: más). Sirve para saber qué partidos descargar primero. Los equipos que se vigilan están en `site/data/equipos.json`: edítalo cuando cambie el ranking.
   - `parecido/` compara tu código de mira con los de los pros y te dice a cuál se parece más (`?c=<código>` para compartir el resultado).
   - `/comparar/<a>-vs-<b>` compara las miras de dos jugadores (la genera `functions/comparar/[pair].js`; `/comparar/` es el selector). Las comparaciones entre compañeros de equipo entran en el sitemap.
   - `/equipo/<nombre>` (`/equipo/vitality`, `/equipo/fut-esports`…) junta las miras de los pros en activo de un equipo, con sus códigos y enlaces para compararlos. La genera `functions/equipo/[slug].js`; la URL quita el "Team" del principio y `/equipo/team-vitality` redirige a la buena. Entra en el sitemap y tiene su imagen para compartir (`site/og/equipo-<nombre>.jpg`, la crea `pipeline/og/og.mjs`).

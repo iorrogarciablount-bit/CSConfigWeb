@@ -72,6 +72,14 @@
     </section>
   </div>
 
+  <section class="card" id="teamsCard">
+    <p class="step"><span data-i="teamsTitle">Datos por equipo</span></p>
+    <p class="fine" style="margin-top:0" id="teamsLead"></p>
+    <div class="fmissing" id="tmissing" hidden></div>
+    <ul class="flist" id="tlist"></ul>
+    <p class="fine"><a href="../enviar/" data-i="teamsSend">¿Tienes una demo reciente de alguno de estos equipos? Envíala →</a></p>
+  </section>
+
   <details>
     <summary data-i="tableTitle">Ver todos los datos</summary>
     <div class="tscroll"><table class="dtable"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
@@ -105,6 +113,10 @@ es: {
   yes:'Sí', no:'No', loadErr:'No se han podido cargar los datos. Recarga la página.',
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
   vals:n => `Largo <b>${n.length}</b> · Separación <b>${n.gap}</b> · Grosor <b>${n.thickness}</b>`,
+  teamsTitle:'Datos por equipo', teamsSend:'¿Tienes una demo reciente de alguno de estos equipos? Envíala →',
+  teamsLead:(a, b) => `Cómo de recientes son los datos de cada equipo: primero los que faltan o llevan más tiempo sin una demo. ${a} de ${b} equipos al día.`,
+  missing:n => `Sin ninguna mira (${n}):`, nmiras:n => `${n} ${n === 1 ? 'mira' : 'miras'}`, fresh:{ none:'Sin datos', old:'Muy antigua', mid:'Antigua', ok:'Al día' },
+  ago:d => d === 0 ? 'hoy' : d === 1 ? 'ayer' : `hace ${d} días`, locale:'es-ES',
 },
 en: {
   navPros:'Crosshairs', navCompare:'Compare', footCmd:'Streaming? Add the !crosshair command to your chat →', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', navStreamers:'Streamers',
@@ -124,6 +136,10 @@ en: {
   yes:'Yes', no:'No', loadErr:'The data could not be loaded. Reload the page.',
   footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.',
   vals:n => `Length <b>${n.length}</b> · Gap <b>${n.gap}</b> · Thickness <b>${n.thickness}</b>`,
+  teamsTitle:'Data by team', teamsSend:'Got a recent demo from one of these teams? Send it →',
+  teamsLead:(a, b) => `How fresh each team's data is: missing teams and the longest without a demo come first. ${a} of ${b} teams up to date.`,
+  missing:n => `No crosshairs yet (${n}):`, nmiras:n => `${n} ${n === 1 ? 'crosshair' : 'crosshairs'}`, fresh:{ none:'No data', old:'Very old', mid:'Old', ok:'Up to date' },
+  ago:d => d === 0 ? 'today' : d === 1 ? 'yesterday' : `${d} days ago`, locale:'en-GB',
 }};
 const $ = id => document.getElementById(id);
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
@@ -227,6 +243,42 @@ function table(rows) {
   }).join('');
 }
 
+/* ---------- datos por equipo ---------- */
+/* "Team Vitality" = "Vitality", "FUT Esports" = "FUT" */
+const teamKey = s => String(s || '').toLowerCase().replace(/^team\s+/, '').replace(/\s+(esports|gaming|clan|club)$/, '').replace(/[^a-z0-9]/g, '');
+const FRESH_OK = 30, FRESH_MID = 90;   // días
+function teamsPanel() {
+  const L = t(), today = Date.parse(new Date().toISOString().slice(0, 10));
+  const byKey = new Map();
+  const add = (name, target) => {
+    const k = teamKey(name); if (!k || k === 'retirado') return null;
+    if (!byKey.has(k)) byKey.set(k, { name, target: false, players: [], last: null });
+    const e = byKey.get(k); if (target) { e.target = true; e.name = name; }
+    return e;
+  };
+  (data.teams || []).forEach(n => add(n, true));
+  data.pros.forEach(r => {
+    const e = add(r.team, false); if (!e) return;
+    e.players.push(r);
+    const d = r.seen || r.since; if (d && (!e.last || d > e.last)) e.last = d;
+  });
+  const list = [...byKey.values()].map(e => {
+    const days = e.last ? Math.max(0, Math.round((today - Date.parse(e.last)) / 864e5)) : null;
+    const st = days === null ? 'none' : days > FRESH_MID ? 'old' : days > FRESH_OK ? 'mid' : 'ok';
+    return { ...e, days, st };
+  }).sort((a, b) => (b.days ?? 1e9) - (a.days ?? 1e9) || b.target - a.target || a.name.localeCompare(b.name));
+  const fmt = iso => new Date(iso).toLocaleDateString(L.locale, { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' });
+  $('teamsLead').textContent = L.teamsLead(list.filter(e => e.st === 'ok').length, list.length);
+  const missing = list.filter(e => e.st === 'none'), have = list.filter(e => e.st !== 'none');
+  $('tmissing').hidden = !missing.length;
+  $('tmissing').innerHTML = `<span class="fbadge f-none">${L.fresh.none}</span> <b>${L.missing(missing.length)}</b> ${missing.map(e => esc(e.name)).join(' · ')}`;
+  $('tlist').innerHTML = have.map(e => {
+    const names = e.players.map(r => `<a href="../jugador/${encodeURIComponent(slugMap.get(r.id) || r.id)}">${esc(r.name)}</a>`).join(', ');
+    return `<li><div class="fwho"><b>${esc(e.name)}</b> <small>${L.nmiras(e.players.length)}</small><span class="fnames">${names}</span></div>
+      <div class="fwhen"><span class="fbadge f-${e.st}">${L.fresh[e.st]}</span><span>${fmt(e.last)}</span><small>${L.ago(e.days)}</small></div></li>`;
+  }).join('');
+}
+
 function render() {
   const L = t();
   if (data.failed) { $('lead').textContent = L.loadErr; return; }
@@ -240,6 +292,7 @@ function render() {
   const sg = {}; ns.forEach(n => { sg[n.style] = (sg[n.style] || 0) + 1; });
   ranked($('styles'), Object.entries(sg).sort((a, b) => b[1] - a[1]).map(([s, c]) => [L.styles[s] ?? s, c]), false);
   table(rows);
+  teamsPanel();
 }
 
 /* ---------- tooltip (ratón, teclado y toque) ---------- */
@@ -289,7 +342,8 @@ function loadPlayers() {
   return playersPromise;
 }
 applyLang();
-get('../data/pros.json')
+get('../data/equipos.json').then(j => { data.teams = j.teams || []; }).catch(() => { data.teams = []; })
+  .then(() => get('../data/pros.json'))
   .then(j => { data.pros = (j.players || []).filter(r => r.name && r.code); slugMap = proSlugs(data.pros); })
   .catch(() => { data.failed = true; })
   .finally(render);

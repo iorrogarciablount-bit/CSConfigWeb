@@ -1,0 +1,9 @@
+{
+  "nota": "Equipos que la web debería tener al día (la sección 'Datos por equipo' de /estadisticas/). Edita la lista cuando cambie el ranking. Da igual escribir 'Team Vitality' o 'Vitality'.",
+  "teams": [
+    "Team Vitality", "MOUZ", "Team Spirit", "Team Falcons", "The MongolZ",
+    "FaZe Clan", "Natus Vincere", "G2 Esports", "Aurora Gaming", "Astralis",
+    "FURIA", "Team Liquid", "HEROIC", "3DMAX", "paiN Gaming",
+    "Virtus.pro", "Legacy", "B8", "GamerLegion", "FUT Esports"
+  ]
+}

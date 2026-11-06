@@ -390,3 +390,18 @@ a.copy{text-decoration:none;text-align:center}
 /* "Streamers" (/comando/) solo va en el desplegable del móvil: en escritorio no cabe una 7.ª sección
    en la línea de la cabecera; allí se llega desde el enlace de encima del pie. */
 @media (min-width:641px){ .topnav a[data-i="navStreamers"]{display:none} }
+
+/* Datos por equipo (/estadisticas/) */
+.fmissing{font-size:13px;line-height:1.7;color:var(--muted);padding:10px 12px;border:1px dashed var(--line);border-radius:var(--r);margin:0 0 6px}
+.fmissing b{color:var(--ink);font-weight:600}
+.flist{list-style:none;margin:0;padding:0}
+.flist li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.fwho{min-width:0}
+.fwho small,.fwhen small{color:var(--muted);font-size:12px}
+.fnames{display:block;font-size:13px;margin-top:2px}
+.fwhen{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-size:13px;white-space:nowrap;text-align:right}
+.fbadge{display:inline-block;padding:2px 8px;border-radius:999px;font:700 11px var(--display);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;border:1px solid currentColor}
+.f-ok{color:var(--ok)} .f-mid{color:var(--warn)} .f-old,.f-none{color:var(--err)}
+.f-none{border-style:dashed}
+.flist a,#teamsCard .fine a{color:var(--accent);text-decoration:none}
+.flist a:hover,#teamsCard .fine a:hover{text-decoration:underline}
