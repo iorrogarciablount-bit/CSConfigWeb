@@ -11,6 +11,7 @@ es: {
   navPros:'Miras', navCompare:'Comparar', footCmd:'¿Haces directos? Añade el comando !mira a tu chat →', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', navStreamers:'Streamers', crumbPros:'Pros', crumbPlayers:'Jugadores',
   titlePre:'Mira de', retired:'Retirado', codeTitle:'Código de mira', copy:'Copiar', copied:'¡Copiado!', selected:'Ctrl+C',
   howto:'En CS2: Ajustes → Juego → Mira → Compartir o importar → pega el código → Importar.',
+  cmdsTitle:'Comandos de consola', cmdsHelp:'Alternativa al código: pégalos en la consola (~) o en tu autoexec.cfg.', copyCmds:'Copiar comandos',
   edit:'Editar esta mira →', compareWith:'Comparar con', compareAny:'Comparar con otro jugador', preview:'Vista previa y valores', history:'Historial de miras', current:'actual', use:'Usar', mates:'Más miras de',
   steam:'Perfil de Steam', faceitProfile:'Perfil de FACEIT',
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve, FACEIT ni los equipos o jugadores que aparecen.',
@@ -24,6 +25,7 @@ en: {
   navPros:'Crosshairs', navCompare:'Compare', footCmd:'Streaming? Add the !crosshair command to your chat →', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', navStreamers:'Streamers', crumbPros:'Pros', crumbPlayers:'Players',
   titlePre:'Crosshair of', retired:'Retired', codeTitle:'Crosshair code', copy:'Copy', copied:'Copied!', selected:'Ctrl+C',
   howto:'In CS2: Settings → Game → Crosshair → Share or Import → paste the code → Import.',
+  cmdsTitle:'Console commands', cmdsHelp:'An alternative to the code: paste them in the console (~) or your autoexec.cfg.', copyCmds:'Copy commands',
   edit:'Edit this crosshair →', compareWith:'Compare with', compareAny:'Compare with another player', preview:'Preview and values', history:'Crosshair history', current:'current', use:'Use', mates:'More crosshairs from',
   steam:'Steam profile', faceitProfile:'FACEIT profile',
   footer:'Independent project. Not affiliated with or endorsed by Valve, FACEIT or the teams and players shown.',
@@ -54,8 +56,16 @@ function show(code) {
   $('code').textContent = shownCode(code, n);
   $('edit').href = `/conversor/?c=${encodeURIComponent(shownCode(code, n))}&n=${encodeURIComponent(P.name)}`;
   $('vals').innerHTML = vals(n);
+  $('cmds').textContent = consoleCmds(n);
   const p = newParams(n); paint($('cv'), p, fitZoom($('cv').width, p));
-  document.querySelectorAll('#hist [data-h]').forEach(b => b.setAttribute('aria-pressed', P.hist[+b.dataset.h] === code));
+  let ctimer;
+$('copyCmds').onclick = async () => {
+  const L = t(), btn = $('copyCmds');
+  try { await navigator.clipboard.writeText($('cmds').textContent); btn.textContent = L.copied; }
+  catch { const r = document.createRange(); r.selectNodeContents($('cmds')); getSelection().removeAllRanges(); getSelection().addRange(r); btn.textContent = L.selected; }
+  clearTimeout(ctimer); ctimer = setTimeout(() => { btn.textContent = t().copyCmds; }, 1800);
+};
+document.querySelectorAll('#hist [data-h]').forEach(b => b.setAttribute('aria-pressed', P.hist[+b.dataset.h] === code));
 }
 
 
