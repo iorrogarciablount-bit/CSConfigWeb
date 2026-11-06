@@ -8,6 +8,7 @@ Web de miras de CS2: base de datos con las miras de jugadores profesionales, sac
   - `estadisticas/` resume cómo son las miras de los pros: la mira típica (con su código), estilos, colores, largo, separación y grosor más usados.
   - `parecido/` compara tu código de mira con los de los pros y te dice a cuál se parece más (`?c=<código>` para compartir el resultado).
   - `/comparar/<a>-vs-<b>` compara las miras de dos jugadores (la genera `functions/comparar/[pair].js`; `/comparar/` es el selector). Las comparaciones entre compañeros de equipo entran en el sitemap.
+  - `/equipo/<nombre>` (`/equipo/vitality`, `/equipo/fut-esports`…) junta las miras de los pros en activo de un equipo, con sus códigos y enlaces para compararlos. La genera `functions/equipo/[slug].js`; la URL quita el "Team" del principio y `/equipo/team-vitality` redirige a la buena. Entra en el sitemap y tiene su imagen para compartir (`site/og/equipo-<nombre>.jpg`, la crea `pipeline/og/og.mjs`).
   - `conversor/` es la herramienta de conversión.
   - `/jugador/<nombre>` es la página de cada pro (y `/jugador/<SteamID64>` la de cualquier jugador). La genera `functions/jugador/[slug].js` en el servidor (a través de `worker.js`) a partir de los datos, igual que `sitemap.xml` y `robots.txt`. Solo los pros se indexan en Google.
   - `assets/crosshair.js` lee y escribe códigos; el formato está comprobado con 30 códigos reales exportados del juego.

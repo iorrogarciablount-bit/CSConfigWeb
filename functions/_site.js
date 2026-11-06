@@ -11,6 +11,21 @@ export const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;"
 export const slugify = XH.slugify;
 export const proSlugs = XH.proSlugs;
 
+/* URL de cada equipo: "Team Vitality" -> "vitality", "FUT Esports" -> "fut-esports" */
+export const teamSlug = team => slugify(String(team || "").replace(/^team\s+/i, ""));
+/* Equipos con al menos un pro en activo: Map slug -> { name, players[] } */
+export function teamsOf(pros) {
+  const out = new Map();
+  for (const p of pros) {
+    if (!p.team || p.status === "retired") continue;
+    const s = teamSlug(p.team); if (!s) continue;
+    if (!out.has(s)) out.set(s, { name: p.team, players: [] });
+    out.get(s).players.push(p);
+  }
+  for (const t of out.values()) t.players.sort((a, b) => a.name.localeCompare(b.name));
+  return out;
+}
+
 async function getJson(env, request, path) {
   const res = await env.ASSETS.fetch(new URL(path, request.url));
   if (!res.ok) throw new Error(`${path}: ${res.status}`);
