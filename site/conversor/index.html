@@ -281,12 +281,7 @@ function onCtl(e) {
 }
 
 /* ---------- salida ---------- */
-function cmdList() {
-  return [['cl_crosshairstyle', neu.style], ['cl_crosshair_length', neu.length], ['cl_crosshair_gap', neu.gap], ['cl_crosshair_thickness', neu.thickness],
-    ['cl_crosshairdot', neu.dot], ['cl_crosshair_t', neu.t], ['cl_crosshair_drawoutline', neu.outline],
-    ['cl_crosshaircolor_r', neu.r], ['cl_crosshaircolor_g', neu.g], ['cl_crosshaircolor_b', neu.b], ['cl_crosshaircolor_a', neu.a],
-    ['cl_crosshair_recoil', neu.recoil]].map(([k, v]) => `${k} ${v}`).join('; ');
-}
+const cmdList = () => consoleCmds(neu);
 function output() {
   $('newCode').textContent = neu ? encodeNew(neu) : '—';
   $('cmds').textContent = neu ? cmdList() : '';

@@ -184,6 +184,16 @@ function crosshairDiff(a, b) {
   return out;
 }
 
+/* La misma mira como comandos de consola del sistema nuevo (en una línea, para la consola o el autoexec.cfg).
+   cl_crosshair_screen_height va primero: largo, separación y grosor son píxeles a esa resolución. */
+function consoleCmds(n) {
+  return [['cl_crosshair_screen_height', n.h], ['cl_crosshairstyle', n.style], ['cl_crosshair_length', n.length], ['cl_crosshair_gap', n.gap],
+    ['cl_crosshair_thickness', n.thickness], ['cl_crosshairdot', n.dot], ['cl_crosshair_t', n.t], ['cl_crosshair_drawoutline', n.outline],
+    ['cl_crosshaircolor_r', n.r], ['cl_crosshaircolor_g', n.g], ['cl_crosshaircolor_b', n.b], ['cl_crosshaircolor_a', n.a],
+    ['cl_crosshair_recoil', n.recoil]].filter(([k, v]) => v !== undefined && !(k === 'cl_crosshair_screen_height' && !v))
+    .map(([k, v]) => `${k} ${v}`).join('; ');
+}
+
 /* Para las funciones de Cloudflare (functions/) y el generador de imágenes (pipeline/og/),
    que importan este archivo como módulo */
-globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode, newParams, paint, fitZoom, slugify, proSlugs, crosshairSimilarity, crosshairDiff };
+globalThis.XH = { decodeOld, decodeNew, encodeNew, convert, anyCode, newParams, paint, fitZoom, slugify, proSlugs, crosshairSimilarity, crosshairDiff, consoleCmds };

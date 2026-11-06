@@ -131,6 +131,13 @@ ${siteHeader()}
     <a class="link" id="edit" href="/conversor/?c=${encodeURIComponent(code)}&amp;n=${encodeURIComponent(r.name)}" data-i="edit">Editar esta mira →</a>
   </section>
 
+  <details class="cmdsbox">
+    <summary data-i="cmdsTitle">Comandos de consola</summary>
+    <p class="fine" data-i="cmdsHelp">Alternativa al código: pégalos en la consola (~) o en tu autoexec.cfg.</p>
+    <pre id="cmds">${esc(XH.consoleCmds(n))}</pre>
+    <button class="link" id="copyCmds" data-i="copyCmds">Copiar comandos</button>
+  </details>
+
   <section class="card">
     <p class="step"><span data-i="preview">Vista previa y valores</span></p>
     <div class="sgrid">
