@@ -50,6 +50,7 @@ await check("Script de miras", "/assets/crosshair.js", { contains: ["function de
 
 const pros = await check("Datos de pros", "/data/pros.json", { json: d => (Array.isArray(d.players) && d.players.length ? null : "sin jugadores") });
 await check("Datos de jugadores", "/data/players.json", { json: d => (Array.isArray(d.players) ? null : "sin lista de jugadores") });
+await check("Lista de equipos", "/data/equipos.json", { json: d => (Array.isArray(d.teams) ? null : "sin lista de equipos") });
 
 const list = pros.data?.players || [];
 if (list.length) {
