@@ -10,6 +10,7 @@ globalThis.document = { createElement: () => createCanvas(1, 1) };
 const site = await import("../../functions/_site.js");
 export const XH = globalThis.XH;
 export const proSlugs = site.proSlugs;
+export const teamsOf = site.teamsOf;
 export { createCanvas };
 
 export const HERE = dirname(fileURLToPath(import.meta.url));

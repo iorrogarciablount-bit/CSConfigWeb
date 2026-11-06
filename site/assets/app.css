@@ -153,6 +153,20 @@ footer{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
 .sbody{padding:16px;display:grid;gap:14px}
 .sgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
 .sgrid canvas{width:100%;max-width:100%;aspect-ratio:1;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:2px}
+/* Página de equipo: una tarjeta por jugador */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.tcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.tlink{display:flex;flex-direction:column;gap:8px;color:var(--ink);text-decoration:none}
+.tlink canvas{width:100%;aspect-ratio:1;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:2px}
+.tlink b{font:700 18px var(--display);letter-spacing:.02em}
+.tlink:hover b{color:var(--accent)}
+.tcode{margin:0;font:500 11px/1.4 var(--mono);color:var(--muted);word-break:break-all;user-select:all}
+.copy.small{min-width:0;padding:7px 10px;font-size:13px;margin-top:auto}
+.lead a.team{color:inherit;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.lead a.team:hover{color:var(--accent)}
+.step a{color:var(--accent);text-decoration:none}
+.step a:hover{text-decoration:underline}
+@media (max-width:360px){.tgrid{grid-template-columns:1fr 1fr;gap:8px}.tcard{padding:8px}}
 .vtable{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
 .vtable td{padding:5px 0;border-bottom:1px solid var(--line)}
 .vtable td:first-child{color:var(--muted)}

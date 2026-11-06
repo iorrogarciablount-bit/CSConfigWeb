@@ -2,6 +2,7 @@
 // de un pro en Discord, Twitter, WhatsApp...
 //
 //   site/og/<slug>.jpg     una por pro (1200x630)
+//   site/og/equipo-<slug>.jpg  una por equipo, con las miras de sus jugadores
 //   site/og/default.jpg    la de la web y de los jugadores que no son pros
 //   site/og/index.json     { slug: versión } -> la página usa ?v=versión para que
 //                          Discord no enseñe una imagen vieja tras un cambio de mira
@@ -12,7 +13,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
-import { XH, proSlugs, createCanvas, ROOT, W, H, C, STYLES, decode, shown, fitText, brand, preview } from "./draw.mjs";
+import { XH, proSlugs, teamsOf, createCanvas, ROOT, W, H, C, STYLES, decode, shown, fitText, brand, preview } from "./draw.mjs";
 
 const OUT = join(ROOT, "site", "og");
 const STYLE_VERSION = "2";   // súbelo si cambias el diseño, para regenerar todas
@@ -58,6 +59,32 @@ function card(r, n) {
   return cv;
 }
 
+function teamCard(name, rows) {
+  const cv = createCanvas(W, H), ctx = cv.getContext("2d");
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = C.accent; ctx.fillRect(0, H - 8, W, 8);
+  const P = 40;
+  brand(ctx, P, P + 34);
+  ctx.fillStyle = C.muted; ctx.font = "700 26px RobotoCondensed"; ctx.fillText("MIRAS DE CS2", P, 130);
+  fitText(ctx, name.toUpperCase(), W - 2 * P, 72, 700, "RobotoCondensed");
+  ctx.fillStyle = C.ink; ctx.fillText(name.toUpperCase(), P, 200);
+
+  // fila de miras, cada una con su zoom (una mira enorme no deja diminutas a las demás)
+  const shown = rows.slice(0, 6), gap = 20;
+  const S = Math.min(240, Math.floor((W - 2 * P - gap * (shown.length - 1)) / shown.length));
+  const total = shown.length * S + (shown.length - 1) * gap;
+  let x = (W - total) / 2;
+  const y = 250;
+  for (const { p: r, n } of shown) {
+    preview(ctx, n, x, y, S);
+    const label = r.name;
+    fitText(ctx, label, S, 30, 700, "RobotoCondensed");
+    ctx.fillStyle = C.ink; ctx.textAlign = "center"; ctx.fillText(label, x + S / 2, y + S + 40); ctx.textAlign = "left";
+    x += S + gap;
+  }
+  return cv;
+}
+
 function defaultCard(sample) {
   const cv = createCanvas(W, H), ctx = cv.getContext("2d");
   ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
@@ -92,6 +119,18 @@ for (const r of pros) {
   manifest[slug] = v;
   if (old[slug] === v && existsSync(join(OUT, `${slug}.jpg`))) continue;
   save(card(r, n), join(OUT, `${slug}.jpg`));
+  made++;
+}
+
+// una por equipo (misma regla de URL que la web: functions/_site.js)
+for (const [slug, t] of teamsOf(pros)) {
+  const rows = t.players.map(p => ({ p, n: decode(p.code) })).filter(x => x.n);
+  if (!rows.length) continue;
+  const key = `equipo-${slug}`;
+  const v = version(`team|${t.name}|${rows.map(x => `${x.p.name}:${x.p.code}`).join("|")}`);
+  manifest[key] = v;
+  if (old[key] === v && existsSync(join(OUT, `${key}.jpg`))) continue;
+  save(teamCard(t.name, rows), join(OUT, `${key}.jpg`));
   made++;
 }
 

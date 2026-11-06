@@ -3,7 +3,7 @@
 // el nombre, el código y los valores sin ejecutar JavaScript.
 // Los pros se indexan; el resto de jugadores lleva noindex.
 
-import { esc, proSlugs, loadData, loadOg, ogImage, decode, shownCode, origin, html, siteHeader, siteFooter } from "../_site.js";
+import { esc, proSlugs, teamSlug, loadData, loadOg, ogImage, decode, shownCode, origin, html, siteHeader, siteFooter } from "../_site.js";
 
 const STYLES = ["Cruz dinámica", "Círculo dinámico", "Cruz dinámica (legacy)", "Círculo estático", "Cruz estática",
   "Cruz estática con retroceso", "Solo punto", "Quad dinámico", "Cuadrado estático", "Quad estático"];
@@ -74,7 +74,7 @@ export async function onRequestGet({ params, request, env }) {
     ? data.pros.filter(p => p.id !== r.id && p.team === r.team && p.status !== "retired").sort((a, b) => a.name.localeCompare(b.name))
     : [];
   const matesHtml = mates.length
-    ? `<section class="card"><p class="step"><span><span data-i="mates">Más miras de</span> ${esc(r.team)}</span></p>
+    ? `<section class="card"><p class="step"><span><span data-i="mates">Más miras de</span> <a href="/equipo/${esc(teamSlug(r.team))}">${esc(r.team)}</a></span></p>
        <div class="chips">${mates.map(p => `<a class="chip" href="/jugador/${esc(slugs.get(p.id))}">${esc(p.name)}</a>`).join("")}</div>
        <div class="chips under"><span class="lbl" data-i="compareWith">Comparar con</span>${mates.map(p => { const [x, y] = [slugs.get(r.id), slugs.get(p.id)].sort(); return `<a class="chip" href="/comparar/${esc(x)}-vs-${esc(y)}">${esc(p.name)}</a>`; }).join("")}</div></section>`
     : "";
@@ -118,7 +118,7 @@ ${siteHeader()}
   <nav class="crumbs" aria-label="Ruta"><a href="/${pro ? "" : "#jugadores"}" data-i="${pro ? "crumbPros" : "crumbPlayers"}">${pro ? "Pros" : "Jugadores"}</a><span aria-hidden="true">›</span><span>${esc(r.name)}</span></nav>
   <div>
     <h1 class="ptitle"><b data-i="titlePre">Mira de</b> <span>${esc(r.name)}</span></h1>
-    <p class="lead">${team ? `<span ${r.status === "retired" ? 'data-i="retired"' : ""}>${esc(team)}</span>` : r.faceit ? `<span class="fc">FACEIT</span> ${esc(r.faceit)}` : ""}</p>
+    <p class="lead">${team ? (r.status === "retired" ? `<span data-i="retired">${esc(team)}</span>` : `<a class="team" href="/equipo/${esc(teamSlug(team))}">${esc(team)}</a>`) : r.faceit ? `<span class="fc">FACEIT</span> ${esc(r.faceit)}` : ""}</p>
   </div>
 
   <section class="card result">

@@ -1,5 +1,5 @@
 // sitemap.xml: las páginas fijas y una por cada pro. Google lo lee para descubrir todas las páginas.
-import { loadData, proSlugs, origin } from "./_site.js";
+import { loadData, proSlugs, teamsOf, origin } from "./_site.js";
 
 export async function onRequestGet({ request, env }) {
   const base = origin(request);
@@ -15,6 +15,8 @@ export async function onRequestGet({ request, env }) {
     { loc: `${base}/conversor/` },
     { loc: `${base}/enviar/` },
     ...pros.map(p => ({ loc: `${base}/jugador/${slugs.get(p.id)}`, lastmod: day(p.since || p.seen) })),
+    // una por equipo con algún pro en activo
+    ...[...teamsOf(pros)].map(([s, t]) => ({ loc: `${base}/equipo/${s}`, lastmod: day(t.players.map(p => p.seen || p.since).filter(Boolean).sort().pop()) })),
     { loc: `${base}/comparar/` },
     // comparaciones entre compañeros de equipo (las que más se buscan; todas las parejas serían demasiadas)
     ...pros.flatMap(p => pros.filter(q => q.team && q.team === p.team && q.status !== "retired" && p.status !== "retired" && slugs.get(p.id) < slugs.get(q.id))
