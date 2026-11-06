@@ -39,6 +39,7 @@ STATE = PIPE / "state.json"
 CONFIG = PIPE / "config.json"
 MANUAL = PIPE / "manual.json"
 URLS = PIPE / "demo_urls.txt"
+COLA = PIPE / "faceit_cola.txt"   # salas de FACEIT enviadas desde la web, esperando a poder descargarse
 LOCAL_DIR = PIPE / "demos"
 
 NEW_CODE = re.compile(r"^CS[A-Za-z0-9]{44}$")
@@ -427,27 +428,49 @@ def url_matches(state: dict):
     lines = []
     if URLS.exists():
         lines += [l.strip() for l in URLS.read_text(encoding="utf-8").splitlines()]
+    if COLA.exists():
+        lines += [l.strip() for l in COLA.read_text(encoding="utf-8").splitlines()]
     if os.environ.get("DEMO_URL", "").strip():
         lines.append(os.environ["DEMO_URL"].strip())
     done = set(state.get("urls", []))
+    can_rooms = bool(os.environ.get("FACEIT_API_KEY", "").strip() and os.environ.get("FACEIT_DOWNLOADS_TOKEN", "").strip())
+    waiting = 0
     for line in lines:
         if not line or line.startswith("#"):
             continue
         url, _, label = line.partition(" ")
+        issue = re.search(r"\s*#(\d+)$", label)          # "… #25": número del envío (cola de salas)
+        if issue:
+            label = label[:issue.start()]
         hid = hashlib.sha1(url.encode()).hexdigest()[:16]
         if hid in done:
             continue
         room = FACEIT_ROOM.match(url)
         if room:  # enlace a una sala de FACEIT: la demo se baja con la API
+            if not can_rooms:  # sin acceso a descargas se queda en la cola, sin contar como error
+                waiting += 1
+                continue
+            done.add(hid)
+            state["urls"] = sorted(done)
             yield {"id": f"faceit:{room.group(1)}", "faceit_room": room.group(1), "name": room.group(1),
-                   "source": label.strip() or "FACEIT", "date": today()}
-            if os.environ.get("FACEIT_DOWNLOADS_TOKEN", "").strip():
-                done.add(hid)  # sin acceso a descargas no se marca, para poder reintentarlo más adelante
+                   "source": label.strip() or "FACEIT", "date": today(), "issue": int(issue.group(1)) if issue else None,
+                   "queue_line": line}
             continue
         name = url.split("?")[0].rsplit("/", 1)[-1] or "demo.dem"
-        yield {"id": f"url:{hid}", "url": url, "name": name, "source": label.strip() or "demo", "date": today()}
         done.add(hid)
+        state["urls"] = sorted(done)
+        yield {"id": f"url:{hid}", "url": url, "name": name, "source": label.strip() or "demo", "date": today()}
     state["urls"] = sorted(done)
+    if waiting:
+        log(f"FACEIT: {waiting} {'sala' if waiting == 1 else 'salas'} en cola, esperando FACEIT_DOWNLOADS_TOKEN.")
+
+
+def prune_queue(lines_done: set[str]):
+    """Quita de la cola las salas ya intentadas (bien o mal: un error no se reintenta cada día)."""
+    if not lines_done or not COLA.exists():
+        return
+    keep = [l for l in COLA.read_text(encoding="utf-8").splitlines() if l.strip() not in lines_done]
+    COLA.write_text("".join(f"{l}\n" for l in keep), encoding="utf-8")
 
 
 DEMO_EXT = (".dem", ".dem.gz", ".dem.zst", ".zip", ".rar", ".7z", ".gz", ".zst")
@@ -604,7 +627,8 @@ def main():
             db["players"][p["id"]] = p
     min_players = int(cfg.get("min_players_per_demo", 8))
     stats = {"demos": 0, "new": 0, "changed": 0, "errors": 0}
-    report = {"messages": [], "players": []}
+    report = {"messages": [], "players": [], "cola": []}   # cola: resultado de cada sala enviada desde la web
+    queue_done: set[str] = set()
     seen_now: set[str] = set()
     max_mb = int(cfg.get("max_demo_mb", 1500))
 
@@ -632,6 +656,7 @@ def main():
                     break
                 work = tmp / hashlib.sha1(item["id"].encode()).hexdigest()[:10]
                 work.mkdir()
+                p0, m0, e0 = len(report["players"]), len(report["messages"]), stats["errors"]
                 try:
                     if "path" in item:
                         src = item["path"]
@@ -674,7 +699,13 @@ def main():
                     note(f"Error con {item['name']}: {e}")
                 finally:
                     shutil.rmtree(work, ignore_errors=True)
+                    if item.get("queue_line"):
+                        queue_done.add(item["queue_line"])
+                        report["cola"].append({"issue": item.get("issue"), "room": item["faceit_room"],
+                                               "ok": stats["errors"] == e0 and len(report["players"]) > p0,
+                                               "players": report["players"][p0:], "messages": report["messages"][m0:]})
 
+    prune_queue(queue_done)
     apply_manual(db, only_hidden=args.only not in (None, "manual"))
     faceit_verify(db, state, cfg)
 
@@ -719,7 +750,9 @@ def main():
     if args.report:
         save_json(args.report, {**stats, **report, "total": len(players)})
     log(f"Hecho: {stats['demos']} demos, {stats['new']} jugadores nuevos, {stats['changed']} cambios de mira, {stats['errors']} errores. Total: {len(players)} jugadores.")
-    return 0 if stats["errors"] == 0 or stats["demos"] > 0 else 1
+    # las salas de la cola que fallan (demo caducada…) se contestan en su envío; no hacen fallar la actualización
+    errors = stats["errors"] - sum(1 for c in report["cola"] if c["messages"] and not c["ok"] and any(m.startswith("Error con") for m in c["messages"]))
+    return 0 if errors <= 0 or stats["demos"] > 0 else 1
 
 
 if __name__ == "__main__":
