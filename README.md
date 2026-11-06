@@ -83,6 +83,8 @@ Publica como máximo 10 avisos por ejecución. Para ver qué publicaría sin env
 3. En GitHub ve a **Settings → Secrets and variables → Actions** y crea estos secretos:
    - `FACEIT_API_KEY`: la clave de la Data API.
    - `FACEIT_DOWNLOADS_TOKEN`: el token con permiso de descargas, cuando te lo aprueben.
+
+   **Salas de FACEIT enviadas desde la web.** Se comprueban al momento con `FACEIT_API_KEY` (que la sala exista, sea de CS2 y haya terminado) y, si valen, se apuntan en `pipeline/faceit_cola.txt` sin esperar a la etiqueta "aprobada". En /enviar/ salen como **En cola** con los equipos y la fecha. Mientras no haya `FACEIT_DOWNLOADS_TOKEN` la cola solo crece. Cuando lo añadas, la actualización diaria (o *Run workflow* en "Actualizar miras") procesa toda la cola, contesta en cada envío con las miras añadidas y los quita de la lista. Si una demo ya no está disponible, el envío se marca como descartado y no se reintenta.
 4. En `pipeline/config.json` añade los hubs o campeonatos de FACEIT que quieres seguir. El ID está en la URL del hub o campeonato:
 
 ```json

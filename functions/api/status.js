@@ -1,6 +1,7 @@
 import { json, gh, configured } from "./_lib.js";
 
 // Estado de un envío: pendiente → procesando → procesada / rechazada / error.
+// Las salas de FACEIT pasan por "en-cola" hasta que se puede descargar su demo.
 export async function onRequestGet({ request, env }) {
   if (!configured(env)) return json({ error: "No disponible." }, 503);
   const id = Number(new URL(request.url).searchParams.get("id"));
@@ -13,11 +14,11 @@ export async function onRequestGet({ request, env }) {
   if (!labels.includes("demo")) return json({ error: "Envío no encontrado." }, 404);
 
   let state = "pendiente";
-  for (const s of ["procesada", "rechazada", "error"]) if (labels.includes(s)) state = s;
+  for (const s of ["en-cola", "procesada", "rechazada", "error"]) if (labels.includes(s)) state = s;
   if (state === "pendiente" && labels.includes("aprobada")) state = "procesando";
 
   let result = null;
-  if (["procesada", "rechazada", "error"].includes(state)) {
+  if (["en-cola", "procesada", "rechazada", "error"].includes(state)) {
     const cr = await gh(env, `/issues/${id}/comments?per_page=30`);
     const comments = cr.ok ? await cr.json() : [];
     for (const c of comments.reverse()) {

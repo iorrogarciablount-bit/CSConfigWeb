@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: write
+  issues: write      # contestar en los envíos de salas de FACEIT que estaban en cola
 
 concurrency:
   group: update-crosshairs
@@ -52,7 +53,7 @@ jobs:
           FACEIT_DOWNLOADS_TOKEN: ${{ secrets.FACEIT_DOWNLOADS_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
           DEMO_URL: ${{ inputs.demo_url }} ${{ inputs.label }}
-        run: python pipeline/update.py
+        run: python pipeline/update.py --report "$RUNNER_TEMP/report.json"
 
       - uses: actions/setup-node@v4
         with:
@@ -82,10 +83,16 @@ jobs:
         run: |
           git config user.name "csconfig-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A site/data site/og pipeline/state.json
+          git add -A site/data site/og pipeline/state.json pipeline/faceit_cola.txt
           if git diff --cached --quiet; then
             echo "Sin cambios."
           else
             git commit -m "Actualizar miras $(date -u +%F)"
             for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
           fi
+
+      - name: Contestar en los envíos de la cola de FACEIT
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: python .github/scripts/cola_respuestas.py

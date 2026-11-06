@@ -1,0 +1,3 @@
+# Salas de FACEIT enviadas desde la web, esperando a poder descargar la demo.
+# Las apunta .github/scripts/sala_faceit.py y las procesa pipeline/update.py en cuanto exista
+# el secreto FACEIT_DOWNLOADS_TOKEN; al procesarlas se quitan de aquí. Formato: enlace etiqueta #envío

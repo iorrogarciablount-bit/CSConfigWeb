@@ -7,14 +7,42 @@ on:
 permissions:
   contents: write
   issues: write
+  actions: write     # lanzar la actualización cuando ya se puedan descargar salas de FACEIT
 
 jobs:
+  # Enlaces a salas de FACEIT: se comprueban al momento y van a la cola (pipeline/faceit_cola.txt),
+  # sin esperar a la etiqueta "aprobada": la Data API de FACEIT confirma que la partida es real.
+  sala:
+    if: >-
+      github.event.action == 'opened' &&
+      contains(github.event.issue.labels.*.name, 'demo') &&
+      contains(github.event.issue.body, 'faceit.com/') && contains(github.event.issue.body, '/cs2/room/')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: update-crosshairs
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Comprobar la sala y ponerla en cola
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUM: ${{ github.event.issue.number }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
+          FACEIT_DOWNLOADS_TOKEN: ${{ secrets.FACEIT_DOWNLOADS_TOKEN }}
+        run: python .github/scripts/sala_faceit.py
+
   # Envíos de personas sin permisos en el repo, o hechos desde el formulario de la web (que se crean con tu token):
   # quedan pendientes hasta que les pongas la etiqueta "aprobada".
   pendiente:
     if: >-
       github.event.action == 'opened' &&
-      contains(github.event.issue.labels.*.name, 'demo') && (
+      contains(github.event.issue.labels.*.name, 'demo') &&
+      !(contains(github.event.issue.body, 'faceit.com/') && contains(github.event.issue.body, '/cs2/room/')) && (
         contains(github.event.issue.labels.*.name, 'web') ||
         !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
       )
@@ -34,7 +62,8 @@ jobs:
   # Tus propios envíos se procesan al momento; los de otros, cuando les pones la etiqueta "aprobada".
   procesar:
     if: >-
-      contains(github.event.issue.labels.*.name, 'demo') && (
+      contains(github.event.issue.labels.*.name, 'demo') &&
+      !(contains(github.event.issue.body, 'faceit.com/') && contains(github.event.issue.body, '/cs2/room/')) && (
         (github.event.action == 'opened' && !contains(github.event.issue.labels.*.name, 'web') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)) ||
         (github.event.action == 'labeled' && github.event.label.name == 'aprobada')
       )

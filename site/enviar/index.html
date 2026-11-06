@@ -28,7 +28,7 @@
 .sub .what{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
 .pill{font:700 11px var(--display);text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:2px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
 .pill.pendiente{color:var(--warn);border-color:var(--warn)}
-.pill.procesando{color:var(--accent);border-color:var(--accent)}
+.pill.procesando,.pill.en-cola{color:var(--accent);border-color:var(--accent)}
 .pill.procesada{background:var(--ok);border-color:var(--ok);color:#fff}
 .pill.rechazada,.pill.error{color:var(--err);border-color:var(--err)}
 .sub ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
@@ -106,14 +106,16 @@ const T = {
 es: {
   navPros:'Miras', navCompare:'Comparar', footCmd:'¿Haces directos? Añade el comando !mira a tu chat →', navChanges:'Cambios', navStats:'Estadísticas', navConv:'Conversor', navSubmit:'Enviar demo', navStreamers:'Streamers', title:'Enviar una <span>demo</span>',
   lead:'Pega el enlace de una partida y sus miras se añadirán a la web: las de los pros a la pestaña Pros y las de todos los demás a Jugadores.',
-  how:[['Pega el enlace','de la sala de FACEIT o el enlace directo a la demo.'],['Revisamos','que sea una partida de CS2 válida. Suele ser rápido.'],['Listo','las miras aparecen en la web y aquí mismo ves quién se ha añadido.']],
+  how:[['Pega el enlace','de la sala de FACEIT o el enlace directo a la demo.'],['Revisamos','que sea una partida de CS2 válida. Las salas de FACEIT se comprueban al momento.'],['Listo','las miras aparecen en la web y aquí mismo ves quién se ha añadido.']],
   formTitle:'Tu partida', urlLabel:'Enlace', urlHelp:'Sala de FACEIT (faceit.com/…/cs2/room/…) o enlace directo a la demo (.dem, .zip, .rar, .7z, .gz, .zst).',
   urlPh:'https://www.faceit.com/es/cs2/room/1-…', eventLabel:'Torneo o partido (opcional)', eventPh:'Por ejemplo: FPL · 13 oct', send:'Enviar', sending:'Enviando…',
   needUrl:'Pega un enlace que empiece por https://', needCaptcha:'Completa la comprobación anti-bots.', sent:'Recibido. Te mostramos el estado aquí abajo.',
   netErr:'No se ha podido enviar. Revisa tu conexión y vuelve a intentarlo.',
   off:`El envío desde la web todavía no está activado. Mientras tanto puedes usar el <a href="${GH_FORM}" target="_blank" rel="noopener">formulario de GitHub</a>.`,
-  mine:'Tus envíos', states:{pendiente:'En revisión', procesando:'Procesando', procesada:'Añadida', rechazada:'Descartada', error:'Error'},
-  notes:{pendiente:'Esperando revisión. Puedes cerrar la página: el estado se guarda en este navegador.', procesando:'Procesando la demo, tarda unos minutos.', error:'Algo ha fallado al procesarla. Lo revisaremos.'},
+  mine:'Tus envíos', states:{pendiente:'En revisión', procesando:'Procesando', 'en-cola':'En cola', procesada:'Añadida', rechazada:'Descartada', error:'Error'},
+  notes:{pendiente:'Esperando revisión. Puedes cerrar la página: el estado se guarda en este navegador.', procesando:'Procesando la demo, tarda unos minutos.', error:'Algo ha fallado al procesarla. Lo revisaremos.',
+    'en-cola':'Partida comprobada. FACEIT aún no nos deja descargar sus demos: en cuanto lo haga se procesará sola y aquí verás las miras.'},
+  queuedMatch:(t, d) => `${t}${d ? ` · ${d}` : ''}`,
   added:(n, c) => `${n} jugadores nuevos${c ? ` y ${c} con la mira cambiada` : ''}. Ya están en la web.`,
   st:{new:'nueva', changed:'cambiada', same:'igual', old:'historial'},
   footer:'Proyecto independiente. No está afiliado ni respaldado por Valve ni FACEIT.',
@@ -121,14 +123,16 @@ es: {
 en: {
   navPros:'Crosshairs', navCompare:'Compare', footCmd:'Streaming? Add the !crosshair command to your chat →', navChanges:'Changes', navStats:'Stats', navConv:'Converter', navSubmit:'Submit a demo', navStreamers:'Streamers', title:'Submit a <span>demo</span>',
   lead:'Paste a match link and its crosshairs are added to the site: pros go to the Pros tab and everyone else to Players.',
-  how:[['Paste the link','to the FACEIT room or a direct link to the demo.'],['We review it','to check it\'s a valid CS2 match. It\'s usually quick.'],['Done','the crosshairs show up on the site and you see who was added right here.']],
+  how:[['Paste the link','to the FACEIT room or a direct link to the demo.'],['We review it','to check it\'s a valid CS2 match. FACEIT rooms are checked right away.'],['Done','the crosshairs show up on the site and you see who was added right here.']],
   formTitle:'Your match', urlLabel:'Link', urlHelp:'FACEIT room (faceit.com/…/cs2/room/…) or a direct link to the demo (.dem, .zip, .rar, .7z, .gz, .zst).',
   urlPh:'https://www.faceit.com/en/cs2/room/1-…', eventLabel:'Tournament or match (optional)', eventPh:'For example: FPL · 13 Oct', send:'Submit', sending:'Sending…',
   needUrl:'Paste a link that starts with https://', needCaptcha:'Complete the anti-bot check.', sent:'Received. You can follow its status below.',
   netErr:'It could not be sent. Check your connection and try again.',
   off:`Submitting from the site isn't enabled yet. Meanwhile you can use the <a href="${GH_FORM}" target="_blank" rel="noopener">GitHub form</a>.`,
-  mine:'Your submissions', states:{pendiente:'In review', procesando:'Processing', procesada:'Added', rechazada:'Rejected', error:'Error'},
-  notes:{pendiente:'Waiting for review. You can close the page: the status is saved in this browser.', procesando:'Processing the demo, it takes a few minutes.', error:'Something went wrong while processing it. We\'ll look into it.'},
+  mine:'Your submissions', states:{pendiente:'In review', procesando:'Processing', 'en-cola':'Queued', procesada:'Added', rechazada:'Rejected', error:'Error'},
+  notes:{pendiente:'Waiting for review. You can close the page: the status is saved in this browser.', procesando:'Processing the demo, it takes a few minutes.', error:'Something went wrong while processing it. We\'ll look into it.',
+    'en-cola':'Match checked. FACEIT doesn\'t let us download its demos yet: as soon as it does, it will be processed automatically and you\'ll see the crosshairs here.'},
+  queuedMatch:(t, d) => `${t}${d ? ` · ${d}` : ''}`,
   added:(n, c) => `${n} new players${c ? ` and ${c} with a changed crosshair` : ''}. They're on the site now.`,
   st:{new:'new', changed:'changed', same:'same', old:'history'},
   footer:'Independent project. Not affiliated with or endorsed by Valve or FACEIT.',
@@ -154,6 +158,11 @@ function renderSubs() {
         `<li><a href="../?jugador=${encodeURIComponent(p.id)}">${esc(p.name)} <small>${L.st[p.status] || ''}</small></a></li>`).join('')}</ul>`;
     } else if (st === 'rechazada') {
       extra = `<p class="note">${(r.messages || []).map(esc).join('<br>')}</p>`;
+    } else if (st === 'en-cola') {
+      const m = r.match || {};
+      let d = m.date || '';
+      try { if (d) d = new Date(d).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-GB', { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' }); } catch {}
+      extra = `${m.teams && m.teams.length ? `<p class="note"><b>${esc(L.queuedMatch(m.teams.join(' vs '), d))}</b></p>` : ''}<p class="note">${L.notes[st]}</p>`;
     } else if (L.notes[st]) {
       extra = `<p class="note">${L.notes[st]}</p>`;
     }
