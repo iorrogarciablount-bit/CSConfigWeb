@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26T16:20:03+00:00",
+ "updated": "2026-11-15T12:42:44+00:00",
  "players": [
   {
    "id": "76561198993617372",
@@ -212,7 +212,6 @@
    "status": "active",
    "lp_team": "Clutchain",
    "lp_status": "active",
-   "auto_pro": "faceit",
    "pro": true,
    "nick": "ScreaM",
    "demo_team": ""
